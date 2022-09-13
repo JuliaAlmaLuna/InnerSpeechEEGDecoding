@@ -1,0 +1,12 @@
+2.1.0 2021-11-25
+  - Corrected EEG files from sub 09 ses 01 and sub 10 ses 03
+2.0.0 2021-07-30
+  - Several corrupted raw files fixed
+1.0.3 2021-06-02
+  - Events files corrected
+1.0.2 2021-04-20
+  - Preprint available
+1.0.1 2021-04-17
+  - Readme upload
+1.0.0 2021-04-17
+  - Initial Upload
