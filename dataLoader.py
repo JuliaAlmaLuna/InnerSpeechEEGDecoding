@@ -54,8 +54,9 @@ def load_data(datatype, sampling_rate=256, subject_nr=3, t_start=0, t_end=5, ver
     # The class for the above condition
     Classes    = [  ["Up"] ,["Down"] ]
 
-    # Transform data and keep only the trials of interes
-    X , Y =  Transform_for_classificator(X, Y, Classes, Conditions)
+    # Transform data and keep only the trials of interest
+    if datatype!= "baseline":
+        X , Y =  Transform_for_classificator(X, Y, Classes, Conditions)
     if verbose == True:
         print("Final data shape")
         print(X.shape)
