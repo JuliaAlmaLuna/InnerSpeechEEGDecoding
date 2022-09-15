@@ -67,5 +67,30 @@ def load_data(datatype, sampling_rate=256, subject_nr=3, t_start=0, t_end=5, ver
     print("Up is {} and Down is {}".format(np.unique(Y)[0], np.unique(Y)[1]))
     return X, Y
 
+
+def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64):
+    # Minus nr 3
+
+    datax, labelsx = load_data(datatype="EEG", subject_nr=1, verbose=True,sampling_rate=sampling_rate) 
+    for x in range(2,nr_of_datasets+1):
+        if x == 3:
+            continue
+        data1, labels1 = load_data(datatype="EEG", subject_nr=x, verbose=False,sampling_rate=sampling_rate) 
+        datax = np.concatenate([datax, data1], axis = 0)
+        labelsx = np.concatenate([labelsx, labels1], axis = 0)
+
+    data = datax
+    labels1d = labelsx
+
+    labels = np.zeros([labels1d.shape[0], 2])
+    for row, label in enumerate(labels1d,0):
+        if label == 0:
+            labels[row,0] = 1
+        if label == 1:
+            labels[row,1] = 1
+
+    return data, labels
+
+
 def get_channelnames():
     return ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', 'A18', 'A19', 'A20', 'A21', 'A22', 'A23', 'A24', 'A25', 'A26', 'A27', 'A28', 'A29', 'A30', 'A31', 'A32', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11', 'B12', 'B13', 'B14', 'B15', 'B16', 'B17', 'B18', 'B19', 'B20', 'B21', 'B22', 'B23', 'B24', 'B25', 'B26', 'B27', 'B28', 'B29', 'B30', 'B31', 'B32', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21', 'C22', 'C23', 'C24', 'C25', 'C26', 'C27', 'C28', 'C29', 'C30', 'C31', 'C32', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'D11', 'D12', 'D13', 'D14', 'D15', 'D16', 'D17', 'D18', 'D19', 'D20', 'D21', 'D22', 'D23', 'D24', 'D25', 'D26', 'D27', 'D28', 'D29', 'D30', 'D31', 'D32']
