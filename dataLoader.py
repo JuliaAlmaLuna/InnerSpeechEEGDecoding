@@ -68,16 +68,16 @@ def load_data(datatype, sampling_rate=256, subject_nr=3, t_start=0, t_end=5, ver
     return X, Y
 
 
-def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64):
+def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64, t_min=0, t_max=4.5):
     # Minus nr 3
     if nr_of_datasets > 9:
         nr_of_datasets = 9
         
-    datax, labelsx = load_data(datatype="EEG", subject_nr=1, verbose=True,sampling_rate=sampling_rate) 
+    datax, labelsx = load_data(datatype="EEG", subject_nr=1, verbose=True,sampling_rate=sampling_rate, t_start=t_min, t_end=t_max) 
     for x in range(2,nr_of_datasets+1):
         if x == 3:
             continue
-        data1, labels1 = load_data(datatype="EEG", subject_nr=x, verbose=False,sampling_rate=sampling_rate) 
+        data1, labels1 = load_data(datatype="EEG", subject_nr=x, verbose=False,sampling_rate=sampling_rate, t_start=t_min, t_end=t_max) 
         datax = np.concatenate([datax, data1], axis = 0)
         labelsx = np.concatenate([labelsx, labels1], axis = 0)
 
