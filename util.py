@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 import random
 import warnings
 import numpy as np
@@ -86,13 +87,26 @@ def data_into_freq_array(data):
     return freqarray
 
 def fftCovariance(data):
+    channelXE = np.zeros([data.shape[0], data.shape[1], data.shape[2]])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
             e = np.mean(channel)
+            channelXE[tr_nr, ch_nr, :] = channel - e
             #for f in enumerate(channel):
             #ff_c = abs(rfft(channel))[:(channel.shape[0]//2)]
-            
-    
+    #channelCV = np.zeros([data.shape[0], data.shape[1] , data.shape[1]])
+    channelCV = []
+    for tr_nr, trial in enumerate(channelXE):
+        channelCV.append(np.cov(trial))
+        # for ch_nr, channel in enumerate(trial):
+        #     for ch_nr2, channel2 in enumerate(trial):
+        #         #if ch_nr2 == ch_nr:
+        #         #    continue
+        #         np.cov(channel ,channel2)
+        #         cv = np.mean(np.multiply(channel,channel2)) 
+        #         channelCV[tr_nr, ch_nr, ch_nr2] = cv
+               
+    return channelCV
 
 
 #Channel name array
