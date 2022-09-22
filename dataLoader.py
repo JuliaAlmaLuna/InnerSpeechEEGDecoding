@@ -90,7 +90,6 @@ def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64, 
             labels[row,0] = 1
         if label == 1:
             labels[row,1] = 1
-
     return data, labels
 
 

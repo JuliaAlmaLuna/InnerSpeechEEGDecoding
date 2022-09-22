@@ -76,6 +76,24 @@ def data_into_freq_buckets(data, nr_of_buckets, buckets):
                 freqAmps[tr_nr, ch_nr, b] = np.sum(ff_c[int(buckets[b, 0]):int(buckets[b,1])])
     return freqAmps
 
+def data_into_freq_array(data):
+
+    freqarray = np.zeros([data.shape[0], data.shape[1], data.shape[2]//2])
+    for tr_nr, trial in enumerate(data):
+        for ch_nr, channel in enumerate(trial):
+            ff_c = abs(rfft(channel))[:(channel.shape[0]//2)]
+            freqarray[tr_nr, ch_nr, :] = ff_c 
+    return freqarray
+
+def fftCovariance(data):
+    for tr_nr, trial in enumerate(data):
+        for ch_nr, channel in enumerate(trial):
+            e = np.mean(channel)
+            #for f in enumerate(channel):
+            #ff_c = abs(rfft(channel))[:(channel.shape[0]//2)]
+            
+    
+
 
 #Channel name array
 
