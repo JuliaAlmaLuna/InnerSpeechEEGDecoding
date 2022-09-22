@@ -108,6 +108,24 @@ def fftCovariance(data):
                
     return channelCV
 
+def fftData(data):
+    fftData = np.zeros([data.shape[0], data.shape[1], data.shape[2]//2])
+    for tr_nr, trial in enumerate(data):
+        for ch_nr, channel in enumerate(trial):
+            fftData[tr_nr, ch_nr, :] = abs(rfft(channel))[:(channel.shape[0]//2)]
+    return fftData
+
+def welchData(data, nperseg, fs = 256):
+    from scipy.signal import welch
+    if nperseg<fs:
+        arSize = nperseg//2
+    else:
+        arSize = fs//2
+    welchData = np.zeros([data.shape[0], data.shape[1], arSize ])
+    for tr_nr, trial in enumerate(data):
+        for ch_nr, channel in enumerate(trial):
+            welchData[tr_nr, ch_nr, :] = welch(channel, fs=fs, nperseg=nperseg)[1][0:arSize ]
+    return welchData   
 
 #Channel name array
 
