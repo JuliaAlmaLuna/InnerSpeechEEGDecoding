@@ -68,28 +68,35 @@ def load_data(datatype, sampling_rate=256, subject_nr=3, t_start=0, t_end=5, ver
     return X, Y
 
 
-def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64, t_min=0, t_max=4.5):
+def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64, t_min=0, t_max=4.5, twoDLabels=True):
     # Minus nr 3
     if nr_of_datasets > 9:
         nr_of_datasets = 9
         
     datax, labelsx = load_data(datatype="EEG", subject_nr=1, verbose=True,sampling_rate=sampling_rate, t_start=t_min, t_end=t_max) 
+    #datax = np.concatenate([datax[0:datax.shape[1]//2], np.zeros([datax.shape[0], 1, datax.shape[2]]), datax[datax.shape[1]//2:]], axis=1)
+    #datax[:,(datax.shape[1]//2)+1, (datax.shape[2]//nr_of_datasets)*0:(datax.shape[2]//nr_of_datasets)*1 ] = 1
+    
     for x in range(2,nr_of_datasets+1):
         if x == 3:
             continue
         data1, labels1 = load_data(datatype="EEG", subject_nr=x, verbose=False,sampling_rate=sampling_rate, t_start=t_min, t_end=t_max) 
+        #data1 = np.concatenate([data1, np.zeros([data1.shape[0], nr_of_datasets, data1.shape[2]])], axis=1)
+        #data1[:,data1.shape[1]-x, : ] = 1
         datax = np.concatenate([datax, data1], axis = 0)
         labelsx = np.concatenate([labelsx, labels1], axis = 0)
 
     data = datax
     labels1d = labelsx
-
-    labels = np.zeros([labels1d.shape[0], 2])
-    for row, label in enumerate(labels1d,0):
-        if label == 0:
-            labels[row,0] = 1
-        if label == 1:
-            labels[row,1] = 1
+    if twoDLabels == True:
+        labels = np.zeros([labels1d.shape[0], 2])
+        for row, label in enumerate(labels1d,0):
+            if label == 0:
+                labels[row,0] = 1
+            if label == 1:
+                labels[row,1] = 1
+    else:
+        labels = labels1d
     return data, labels
 
 
