@@ -198,7 +198,7 @@ def splitData(data, labels, split, seed = None):
 
     if seed != None:
         np.random.seed(seed)
-    
+
     order = np.arange(labels.shape[0])
     np.random.shuffle(order)
 
