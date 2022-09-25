@@ -78,6 +78,7 @@ def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64, 
     #datax[:,(datax.shape[1]//2)+1, (datax.shape[2]//nr_of_datasets)*0:(datax.shape[2]//nr_of_datasets)*1 ] = 1
     
     for x in range(2,nr_of_datasets+1):
+        print("runninghere")
         if x == 3:
             continue
         data1, labels1 = load_data(datatype="EEG", subject_nr=x, verbose=False,sampling_rate=sampling_rate, t_start=t_min, t_end=t_max) 
