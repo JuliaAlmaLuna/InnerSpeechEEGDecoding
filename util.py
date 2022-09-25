@@ -194,18 +194,21 @@ def getFreqBuckets(data, nr_of_buckets = 15):
     print(buckets)
     return buckets
 
-def splitData(dataT, labels, split):
+def splitData(data, labels, split, seed = None):
 
+    if seed != None:
+        np.random.seed(seed)
+    
     order = np.arange(labels.shape[0])
     np.random.shuffle(order)
 
-    temp_data = np.zeros(dataT.shape)
+    temp_data = np.zeros(data.shape)
     temp_labels = np.zeros(labels.shape)
 
     for x in range(labels.shape[0]):
         i = order[x]
         
-        temp_data[x] = dataT[i]
+        temp_data[x] = data[i]
         temp_labels[x] = labels[i]
 
     dataT = temp_data
