@@ -177,5 +177,46 @@ def get_power_array(split_data , samplingRate, trialSplit = 1, t_min = 0, t_max 
     #print(data_power.shape)
     return data_power
     
+#Create Frequency buckets using either, 
+#equal amp splits, equal band width splits or manual
+def getFreqBuckets(data, nr_of_buckets = 15):
+    #Equal amp splits
+    buckets = createFreqBuckets(data[:,:128,:], nr_of_buckets)
 
+    #Equal band width splits
+    #buckets = np.reshape(np.linspace(0,80,nr_of_buckets*2),[nr_of_buckets, -1])
 
+    #Manual 
+    #buckets = np.array([[0,3],[4,8],[9,15],[16,34],[35,45],[45,80]])
+
+    nr_of_buckets = buckets.shape[0]
+    print("buckets")
+    print(buckets)
+    return buckets
+
+def splitData(data, labels, split, seed = None):
+
+    if seed != None:
+        np.random.seed(seed)
+
+    order = np.arange(labels.shape[0])
+    np.random.shuffle(order)
+
+    temp_data = np.zeros(data.shape)
+    temp_labels = np.zeros(labels.shape)
+
+    for x in range(labels.shape[0]):
+        i = order[x]
+        
+        temp_data[x] = data[i]
+        temp_labels[x] = labels[i]
+
+    dataT = temp_data
+    labelsT = temp_labels
+
+    data_train, data_test = np.split(dataT, indices_or_sections=[int(labelsT.shape[0]*split)],axis=0)
+    labels_train, labels_test = np.split(labelsT, indices_or_sections=[int(labelsT.shape[0]*split)],axis=0)
+    print(labels_train.shape)
+    print(data_train.shape)
+    print(data_test.shape)
+    return data_train, data_test, labels_train, labels_test
