@@ -19,7 +19,7 @@ warnings.filterwarnings(action = "ignore", category = DeprecationWarning )
 warnings.filterwarnings(action = "ignore", category = FutureWarning )
 
 
-def load_data(datatype, sampling_rate=256, subject_nr=3, t_start=0, t_end=5, verbose=True):
+def load_data(datatype, sampling_rate=256, subject_nr=1, t_start=0, t_end=5, verbose=True):
     
     root_dir = "eeg-imagined-speech-nieto"
     np.random.seed(23)
@@ -50,9 +50,13 @@ def load_data(datatype, sampling_rate=256, subject_nr=3, t_start=0, t_end=5, ver
     #Conditions : 0 = Pronounced, 1 = Inner, 2 = Visualized
     
     # Conditions to compared
+    #Conditions = [["Inner"],["Inner"], ["Pronounced"], ["Pronounced"]]
     Conditions = [["Inner"],["Inner"]]
+
     # The class for the above condition
     Classes    = [  ["Up"] ,["Down"] ]
+    #Classes    = [  ["Up"] ,["Down"], ["Up"] ,["Down"]]
+    #Classes    = [  ["Up"] ,["Down"], ["Right"], ["Left"] ]
 
     # Transform data and keep only the trials of interest
     if datatype!= "baseline":
@@ -77,6 +81,7 @@ def load_multiple_datasets(nr_of_datasets=1, datatype="EEG" , sampling_rate=64, 
     #datax = np.concatenate([datax[0:datax.shape[1]//2], np.zeros([datax.shape[0], 1, datax.shape[2]]), datax[datax.shape[1]//2:]], axis=1)
     #datax[:,(datax.shape[1]//2)+1, (datax.shape[2]//nr_of_datasets)*0:(datax.shape[2]//nr_of_datasets)*1 ] = 1
     
+    # for x in range(2,nr_of_datasets+1):
     for x in range(2,nr_of_datasets+1):
         print("runninghere")
         if x == 3:
