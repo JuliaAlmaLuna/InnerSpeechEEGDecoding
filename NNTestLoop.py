@@ -1,41 +1,10 @@
 
-import random
-import warnings
+
 import numpy as np
-import matplotlib.pyplot as plt
-import dataLoader as dl
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-import util as ut
 
-from copy import copy as dp
-import itertools
-
-#!pip3 install sklearn -q
-from tabnanny import verbose
-from sklearn.svm import SVC
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import SelectKBest, f_classif
-from sklearn.metrics import classification_report
-
-from scipy.fft import rfft, ifft, fftshift, fftfreq
-import seaborn as sn
-import scipy as sc
-from scipy import ndimage
-from scipy.signal import hilbert
-
-import featureExtraction as fclass
+import feature_extraction as fclass
 import NNMethods as nnM
-
-# from Inner_Speech_Dataset.Plotting.ERPs import
-from Inner_Speech_Dataset.Python_Processing.Data_extractions import Extract_data_from_subject
-from Inner_Speech_Dataset.Python_Processing.Data_processing import Select_time_window, Transform_for_classificator, Split_trial_in_time
-from Inner_Speech_Dataset.Python_Processing.Data_processing import Calculate_power_windowed
-from Inner_Speech_Dataset.Python_Processing.Utilitys import picks_from_channels
-from Inner_Speech_Dataset.Python_Processing.Data_processing import Average_in_frec
-from scipy import linalg
 
 
 # This loop works when Dataset concatenaded and normal zed using Old way.
@@ -62,7 +31,7 @@ for seed in np.arange(25, 40):
             useBest = False
 
             print(f"\n Running dataset: {name} \n")
-            #eeg_model = nnM.makeModel(data_train, reg1=3, reg2=3, reg3=3, dropout=1)
+            # eeg_model = nnM.makeModel(data_train, reg1=3, reg2=3, reg3=3, dropout=1)
             eeg_model = nnM.makeModel(
                 data_train, reg1=3, reg2=3, reg3=3, dropout=1)
 
@@ -73,7 +42,7 @@ for seed in np.arange(25, 40):
 
             tf.keras.utils.set_random_seed(1)
 
-            if useBest == True:
+            if useBest is True:
                 tf.keras.backend.clear_session()
                 eeg_model = nnM.useBestModel(data_train)
                 eeg_model.build()
@@ -96,13 +65,14 @@ for seed in np.arange(25, 40):
                                 print("reg = {}, drp = {}  lz = {} , act = {}".format(
                                     reg, drp, lz, act))
                                 best_loss, this_acc = nnM.trainTestModel(eeg_model, data_train, data_test, labels_train,
-                                                                         labels_test, reg, drp, lz=lz, act=act, best_loss=best_loss,
+                                                                         labels_test, reg, drp, lz=lz, act=act,
+                                                                         best_loss=best_loss,
                                                                          saveBest=True, specificSubject=specificSubject)
 
                                 dataset_losses.append(
                                     [name, this_acc, act, lz, reg, drp])
             # Saving the results
-            #ResultsPerDataSet.append([best_loss, name])
+            # ResultsPerDataSet.append([best_loss, name])
             ResultsPerDataSet.append(dataset_losses)
             dataset_losses = []
             if first:
@@ -111,7 +81,7 @@ for seed in np.arange(25, 40):
                 bestResultsTot = np.array([best_loss, name], dtype=object)
         print(bestResultsTot)
 
-        #savearray = np.array([ResultsPerDataSet, seed, specificSubject], dtype=object)
+        # savearray = np.array([ResultsPerDataSet, seed, specificSubject], dtype=object)
         savearray = np.array(
             [bestResultsTot, seed, specificSubject, ResultsPerDataSet], dtype=object)
         from datetime import datetime
@@ -121,7 +91,8 @@ for seed in np.arange(25, 40):
         now_string = now.strftime("D--%d-%m-%Y-T--%H-%M-%S")
 
         np.save(
-            f"F:/PythonProjects/NietoExcercise-1/SavedResultsNN/savedBestSeed-{seed}-Subject-{specificSubject}-Date-{now_string}", savearray)
+            f"F:/PythonProjects/NietoExcercise-1/SavedResultsNN/savedBestSeed-{seed}-Subject-{specificSubject}\
+                -Date-{now_string}", savearray)
 
         # savearray = np.array([bestResultsPerDataSet, seed, specificSubject], dtype=object)
         # from datetime import datetime
