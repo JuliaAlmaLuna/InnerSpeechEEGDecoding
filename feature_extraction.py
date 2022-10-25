@@ -1,16 +1,8 @@
-"""
-File that holds class handling feature extraction
-and creation of test/train data
-
-Returns:
-    test train data
-"""
-
 import itertools
 from copy import copy as dp
 import numpy as np
 import matplotlib.pyplot as plt
-# !pip3 install sklearn -q
+
 from scipy import ndimage
 from scipy.signal import hilbert
 import dataLoader as dl
@@ -18,25 +10,77 @@ import util as ut
 
 
 # pylint: disable=C0103
-class featureEClass():
-
+class featureEClass:
     def __init__(self):
+        """
+        File that holds class handling feature extraction
+        and creation of test/train data
+
+        Returns:
+            test train data
+        """
         print("newFClass")
 
-    # Plot heatmaps
-
     def plotHeatMaps(plotData):
+        # Plots heatmaps, used for covariance features.
+        # This function does not need to be in this class
         plt.figure()
         plt.imshow(plotData, cmap="hot", interpolation="nearest")
         plt.show()
 
-    def createListOfDataMixes(self, dataArray, labels, order):
+    def normalizeData(self, trainData, testData, verbose=False):
+        # Normalizes train and test data based on trainData max/min
+        # This function does not need to be in this class
+        min = np.min(trainData)
+        max = np.max(trainData)
+        trainData = (trainData - min) / (max - min)
+        testData = (testData - min) / (max - min)
+        trainData = (trainData - 0.5) * 2
+        testData = (testData - 0.5) * 2
+
+        if verbose:
+            print(np.mean(trainData))
+            print(np.mean(testData))
+            print(np.min(trainData))
+            print(np.min(testData))
+            print(np.max(trainData))
+            print(np.max(testData))
+            print(np.var(trainData))
+
+        return trainData, testData
+
+    def standardizeData(trainData, testData):
+        # Standardizes train and test data based on trainData avg/std
+        # This function does not need to be in this class
+        avg = np.mean(trainData)
+        std = np.std(trainData)
+        trainData = (trainData - avg) / std
+        testData = (testData - avg) / std
+
+        return trainData, testData
+
+    def createListOfDataMixes(self, featureList, labels, order):
+        """
+        Mixes the features that are sent in into combinations
+        then shuffles and splits them before sending back. Combines the names for each as well
+
+        Args:
+            featureList (list): List of features that are to be mixed, split, shuffle and sent back
+            labels (np.array): labels for the data
+            order (_type_): Order prerandomized that the data is shuffled according to before splitting into train/test
+
+        Returns:
+            list normShufflesDataList: List of all mixes of features that have
+            been normalized, shuffled and split into training test datasets
+        """
 
         print("Mixing Data")
         dataList = []
         nameList = []
         labelsList = []
-        dataNrs = np.arange(len(dataArray))
+        dataNrs = np.arange(len(featureList))
+        print(dataNrs)
+        print("julia")
         combos = []
         for L in range(1, len(dataNrs) + 1):
             for subsetNr in itertools.combinations(dataNrs, L):
@@ -48,15 +92,15 @@ class featureEClass():
         for comb in combos:
 
             nameRow = ""
-            dataRo = np.copy(dataArray[comb[0]][0])
+            dataRo = np.copy(featureList[comb[0]][0])
             labelsRo = np.copy(labels)
-            nameRow = nameRow + "" + dataArray[comb[0]][1]
+            nameRow = nameRow + "" + featureList[comb[0]][1]
 
             for nr in comb[1:]:
 
-                data = np.copy(dataArray[nr][0])
+                data = np.copy(featureList[nr][0])
                 dataRo = np.concatenate([dataRo, data], axis=1)
-                nameRow = nameRow + "" + dataArray[nr][1]
+                nameRow = nameRow + "" + featureList[nr][1]
 
             dataList.append(dataRo)
             nameList.append(nameRow)
@@ -65,69 +109,70 @@ class featureEClass():
         normShuffledDataList = []
         for x, dataR in enumerate(dataList):
 
+            # Copying to be sure no information is kept between rows, subjects, seeds when running pipeline
+            # Probably not needed
             nData = np.copy(dataR)
             lData = np.copy(labelsList[x])
 
-            # nDataRow = keras.utils.normalize(nData, axis=0, order=2)
-
+            #  Shuffle the data according to order randomized earlier, and then split it.
             nDataRow = nData
-            sDataRow = np.array(self.shuffleSplitData(
-                nDataRow, lData, nameList[x], order=order), dtype=object)
-            # sDataRow[0] = keras.utils.normalize(sDataRow[0], axis=0, order=2)
-            # sDataRow[1] = keras.utils.normalize(sDataRow[1], axis=0, order=2)
+            sDataRow = np.array(
+                self.shuffleSplitData(nDataRow, lData, nameList[x], order=order),
+                dtype=object,
+            )
 
-            # avg = np.mean(sDataRow[0])
-            # std = np.std(sDataRow[0])
-            # sDataRow[0] = (sDataRow[0]- avg) / std
-            # sDataRow[1] = (sDataRow[1]- avg) / std
-            # print(np.mean(sDataRow[0]))
+            # Normalizing data, if standardization is wanted. Use other function called standardizeData
+            sDataRow[0], sDataRow[1] = self.normalizeData(
+                trainData=sDataRow[0], testData=sDataRow[1]
+            )
 
-            min = np.min(sDataRow[0])
-            max = np.max(sDataRow[0])
-            sDataRow[0] = (sDataRow[0] - min) / (max - min)
-            sDataRow[1] = (sDataRow[1] - min) / (max - min)
-            sDataRow[0] = (sDataRow[0] - 0.5) * 2
-            sDataRow[1] = (sDataRow[1] - 0.5) * 2
-
-            # print(np.mean(sDataRow[0]))
-            # print(np.mean(sDataRow[1]))
-            # print(np.min(sDataRow[0]))
-            # print(np.min(sDataRow[1]))
-            # print(np.max(sDataRow[0]))
-            # print(np.max(sDataRow[1]))
-            # print(np.var(sDataRow[0]))
             normShuffledDataList.append(sDataRow)
-        """
 
-        Returns:
-            list normShufflesDataList: List of all mixes of features that have
-            been normalized, shuffled and split into training test datasets
-        """
-        return normShuffledDataList  # npDataList
-
-    # Splitting into training and test data
-    # print(f"\n\nTesting {name} ")
-    # This split seems to work!
+        return normShuffledDataList
 
     def shuffleSplitData(self, data_t, labels_t, name, order):
 
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
 
-        data_train = data_s[order[0:int(labels_s.shape[0] * 0.8)]]
-        data_test = data_s[order[int(labels_s.shape[0] * 0.8):]]
-        labels_train = labels_s[order[0:int(labels_s.shape[0] * 0.8)]]
-        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8):]]
+        data_train = data_s[order[0 : int(labels_s.shape[0] * 0.8)]]
+        data_test = data_s[order[int(labels_s.shape[0] * 0.8) :]]
+        labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
+        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
 
         return data_train, data_test, labels_train, labels_test, name
 
-    def getFeatures(self, subject, t_min=2, t_max=3,
-                    sampling_rate=256, twoDLabels=False):
+    def getFeatures(
+        self,
+        subject,
+        t_min=2,
+        t_max=3,
+        sampling_rate=256,
+        twoDLabels=False,
+        maxCombinationAmount=1,
+        featureList=[
+            False,  # FFT
+            False,  # Welch
+            False,  # Hilbert
+            False,  # Powerbands
+            False,  # FFT frequency buckets
+            False,  # FFT Covariance
+            True,  # Welch Covariance
+            True,  # Hilbert Covariance
+            False,  # Covariance on smoothed Data
+            # More to be added
+        ],
+        verbose=True,
+    ):
 
         # featurearray = [0,1,1,1,1] Not added yet
         """
         Takes in subject nr and array of features: 1 for include 0 for not,
         True for each one that should be recieved in return array.
+        maxCombinationAmount = Maximum amount of separate features ( for example WCV, FFT) that are combined to form one
+        dataset to be trained/tested on. If set to Default = 1, the features are not combined at all.
+
+
         Possible features arranged by order in array:
         FFTCV = Fourier Covariance,
         HRCV = Hilbert real part Covariance,
@@ -137,23 +182,23 @@ class featureEClass():
         TBadded Frequency bands, power bands
         """
 
+        # Load the Nieto datasets if those are the ones tested. If not, data and labels loaded
+        # from some other dataset needs to be
+        # In the same shape they are for the rest of the function.
         nr_of_datasets = 1
         specificSubject = subject
         data, labels = dl.load_multiple_datasets(
-            nr_of_datasets=nr_of_datasets, sampling_rate=sampling_rate,
-            t_min=2, t_max=3, specificSubject=specificSubject,
-            twoDLabels=twoDLabels)
-
-        # Names of EEG channels
-        # ch_names = ut.get_channelNames()
+            nr_of_datasets=nr_of_datasets,
+            sampling_rate=sampling_rate,
+            t_min=2,
+            t_max=3,
+            specificSubject=specificSubject,
+            twoDLabels=twoDLabels,
+        )
 
         # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
         # trialSplit=1).squeeze()
         # print("Power band data shape: {}".format(data_p.shape))
-
-        # #Creating freqBandBuckets
-        # nr_of_buckets = 15
-        # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
 
         # #Getting Freq Data
         # data_f = ut.data_into_freq_buckets(data[:,:128,:],
@@ -167,76 +212,98 @@ class featureEClass():
         # print(labels)
         # Make FFT data'
 
-        fftdata = ut.fftData(dp(data))
-        print("FFT data shape: {}".format(fftdata.shape))
+        #    True,  # FFT
+        #     True,  # Welch
+        #     True,  # Hilbert
+        #     True,  # Powerbands
+        #     True,  # FFT frequency buckets
+        #     True,  # FFT Covariance
+        #     True,  # Welch Covariance
+        #     True,  # Hilbert Covariance
+        #     True,  # Covariance on smoothed Data
+        createdFeatureList = []
+        tempData = np.copy(data)
+        for fNr, useFeature in enumerate(featureList, 1):
 
-        # Make covariance of FFT data
-        dataFFTCV = np.array(ut.fftCovariance(fftdata))
-        # dataFFTCV  = keras.utils.normalize(dataFFTCV , axis=1, order=2)
-        print(dataFFTCV.shape)
+            del tempData
+            tempData = np.copy(
+                data
+            )  # To make sure every feature is created from original data
+            if useFeature:
+                if fNr == 1:
+                    createdFeature = [ut.fftData(tempData), "fftData"]  # fftData
 
-        # Make Welch data
-        welchdata = ut.welchData(dp(data), fs=256, nperseg=256)
-        print("Welchdata data shape: {}".format(welchdata.shape))
+                if fNr == 2:
+                    createdFeature = [
+                        ut.welchData(tempData, fs=256, nperseg=256),
+                        "welchData",
+                    ]  # welchData
 
-        # Make covariance of welch data
-        dataWCV = np.array(ut.fftCovariance(dp(welchdata)))
-        # dataWCV2 = np.array(ut.fftCorrelation(dp(welchdata)))
-        # dataWCV  = keras.utils.normalize(dataWCV , axis=1, order=2)
+                if fNr == 3:
+                    dataH = hilbert(tempData, axis=2, N=256)
+                    createdFeature = [dataH.real, "dataHR"]  # dataHR
+                    # dataHI = dataH.imag
 
-        print(dataWCV.shape)
+                if fNr == 4:
+                    print("Powerbands")
 
-        # Hilbert data
-        dataH = hilbert(dp(data), axis=2, N=256)
-        dataHR = dataH.real
-        dataHI = dataH.imag
-        print("Hilbert real data shape: {}".format(dataHR.shape))
+                if fNr == 5:
+                    print("Frequency buckets")
+                    # #Creating freqBandBuckets
+                    # nr_of_buckets = 15
+                    # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
 
-        # Make covariance of Hilber data
-        dataHRCV = np.array(ut.fftCovariance(dataHR))
-        # dataHRCV = keras.utils.normalize(dataHRCV , axis=1, order=2)
-        print(dataHRCV.shape)
-        dataHICV = np.array(ut.fftCovariance(dataHI))
-        # dataHICV = keras.utils.normalize(dataHICV , axis=1, order=2)
+                if fNr == 6:
+                    fftdata = ut.fftData(tempData)
+                    createdFeature = [
+                        np.array(ut.fftCovariance(fftdata)),
+                        "dataFFTCV",
+                    ]  # dataFFTCV
 
-        print(dataHICV.shape)
+                if fNr == 7:
+                    welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+                    createdFeature = [
+                        np.array(ut.fftCovariance(welchdata)),
+                        "dataWCV",
+                    ]  # dataWCV
 
-        # Make covariance of non fft data
-        # Try covariance with time allowing for different times.
-        # Maybe each channel becomes 5 channels. zero padded. Moved 1, 2 steps
-        # back or forward
-        datagauss = ndimage.gaussian_filter1d(dp(data), 5, axis=2)
-        # dataCVRoll5= ut.fftCovarianceRoll(datagauss, 5)
-        dataCV = np.array(ut.fftCovariance(datagauss))
-        # dataCV = keras.utils.normalize(dataCV , axis=1, order=2)
+                if fNr == 8:
+                    dataH = hilbert(tempData, axis=2, N=256)  # dataH
+                    dataHR = dataH.real
+                    createdFeature = [
+                        np.array(ut.fftCovariance(dataHR)),
+                        "dataHRCV",
+                    ]  # dataHRCV
+                    # dataHICV = np.array(ut.fftCovariance(dataHI))
 
-        print(dataCV.shape)
+                if fNr == 9:
+                    datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
+                    createdFeature = [
+                        np.array(ut.fftCovariance(datagauss)),
+                        "dataCV",
+                    ]  # dataCV
 
-        datagauss2 = ndimage.gaussian_filter1d(dp(data), 10, axis=2)
-        dataCV2 = np.array(ut.fftCovariance(datagauss2))
-        # dataCV2 = keras.utils.normalize(dataCV2 , axis=1, order=2)
+                if fNr == 10:
+                    datagauss2 = ndimage.gaussian_filter1d(tempData, 10, axis=2)
+                    createdFeature = [
+                        np.array(ut.fftCovariance(datagauss2)),
+                        "dataCV2",
+                    ]  # dataCV2
 
-        print(dataCV2.shape)
+                if verbose:
+                    print(f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
 
-        datagauss3 = ndimage.gaussian_filter1d(dp(data), 2, axis=2)
-        dataCV3 = np.array(ut.fftCovariance(datagauss3))
-        # dataCV3 = keras.utils.normalize(dataCV3 , axis=1, order=2)
-
-        print(dataCV3.shape)
+                createdFeatureList.append(createdFeature)
 
         order = np.arange(labels.shape[0])
         np.random.shuffle(order)
 
+        # Also send in max number of combinations
         mDataList = self.createListOfDataMixes(
-            [[dataWCV, "dataWCV"], [dataCV2, "dataCV2"],
-             [dataHRCV, "dataHRCV"]], labels,
-            order=order)
+            featureList=createdFeatureList,
+            labels=labels,
+            order=order,
+            maxCombinationAmount=1,
+        )
 
         return mDataList
-
-    """
-    Class that handles extracting features from data
-
-    Returns:
-        features usually : for use in learning/classification
-    """

@@ -1,34 +1,68 @@
-
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+
 # from sklearn.feature_selection import f_classif  # SelectKBest ,
 
 
-class SvmMets():
-    """
-    This class handles SVM pipeline
-    Right now it is very janky!
-    """
-
+class SvmMets:
     def __init__(self):
         print("new SvmMets")
 
-    def svmPipeline(self, data_train, data_test, labels_train,
-                    labels_test, kernel="linear", degree=3, gamma="auto", C=1, coefs=None):
+        """
+        This class handles SVM pipeline testing.
+        Right now it is very janky!
+        """
 
+    def svmPipeline(
+        self,
+        data_train,
+        data_test,
+        labels_train,
+        labels_test,
+        kernel="linear",
+        degree=3,
+        gamma="auto",
+        C=1,
+        coefs=None,
+    ):
+        """
+        Pipeline using SVM
+
+        Args:
+            data_train (np.array): Training data for SVM pipeline
+            data_test (np.array): Test data for SVM pipeline
+            labels_train (np.array): Training labels for SVM pipeline
+            labels_test (np.array): Test labels for SVM pipeline
+            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
+            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
+            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
+            . Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         if coefs is None:
             coefs = np.zeros([1, data_train.shape[1] * data_train.shape[2]])
         # anova_filter = SelectKBest(f_classif, k=10)
 
-        clf = make_pipeline(StandardScaler(),  SVC(  # anova_filter/#,
-            gamma=gamma, kernel=kernel, degree=degree, verbose=False, C=C, cache_size=1800))
+        clf = make_pipeline(
+            StandardScaler(),
+            SVC(  # anova_filter/#,
+                gamma=gamma,
+                kernel=kernel,
+                degree=degree,
+                verbose=False,
+                C=C,
+                cache_size=1800,
+            ),
+        )
 
-        clf.fit(np.reshape(data_train, [
-                data_train.shape[0], -1]), labels_train)
-        predictions = clf.predict(np.reshape(
-            data_test, [data_test.shape[0], -1]))
+        clf.fit(np.reshape(data_train, [data_train.shape[0], -1]), labels_train)
+        predictions = clf.predict(np.reshape(data_test, [data_test.shape[0], -1]))
 
         # if selectKBest is used
         if kernel == "linear":
@@ -43,7 +77,7 @@ class SvmMets():
                 correct[nr] = 1
                 correctamount += 1
 
-        return correctamount/labels_test.shape[0], coefs
+        return correctamount / labels_test.shape[0], coefs
 
     def testSuite(self, data_train, data_test, labels_train, labels_test, name):
 
@@ -57,10 +91,21 @@ class SvmMets():
                 for C in [0.5]:
 
                     for degree in range(1, 2):
-                        res, coefs = self.svmPipeline(data_train, data_test, labels_train,
-                                                      labels_test, degree=degree, kernel=kernel, C=C, coefs=coefs)
-                        print("Result for degree {}, kernel {}, C = {}: {}".format(
-                            degree, kernel, (C*100//10)/10,  res))
+                        res, coefs = self.svmPipeline(
+                            data_train,
+                            data_test,
+                            labels_train,
+                            labels_test,
+                            degree=degree,
+                            kernel=kernel,
+                            C=C,
+                            coefs=coefs,
+                        )
+                        print(
+                            "Result for degree {}, kernel {}, C = {}: {}".format(
+                                degree, kernel, (C * 100 // 10) / 10, res
+                            )
+                        )
                         allResults.append([name, res, kernel, C])
 
             else:
@@ -68,10 +113,21 @@ class SvmMets():
 
                     for gamma in ["auto"]:
 
-                        res = self.svmPipeline(data_train, data_test, labels_train,
-                                               labels_test, degree=degree, kernel=kernel, gamma=gamma, C=C)
-                        print("Result for gamma {}, kernel {}, C = {}: {}".format(
-                            gamma, kernel, (C*100//10)/10, res[0]))
+                        res = self.svmPipeline(
+                            data_train,
+                            data_test,
+                            labels_train,
+                            labels_test,
+                            degree=degree,
+                            kernel=kernel,
+                            gamma=gamma,
+                            C=C,
+                        )
+                        print(
+                            "Result for gamma {}, kernel {}, C = {}: {}".format(
+                                gamma, kernel, (C * 100 // 10) / 10, res[0]
+                            )
+                        )
                         allResults.append([name, res[0], kernel, C])
 
         coefs = np.reshape(coefs, [128, -1])

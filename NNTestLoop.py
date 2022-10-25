@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import tensorflow as tf
 
@@ -18,8 +16,9 @@ for seed in np.arange(25, 40):
 
         specificSubject = sub
         mDataList = None
-        mDataList = fClassDict[f"{seed},{sub}"].getFeatures(specificSubject, t_min=2, t_max=3, sampling_rate=256,
-                                                            twoDLabels=True)
+        mDataList = fClassDict[f"{seed},{sub}"].getFeatures(
+            specificSubject, t_min=2, t_max=3, sampling_rate=256, twoDLabels=True
+        )
 
         bestResultsTot = None
         ResultsPerDataSet = []
@@ -32,8 +31,7 @@ for seed in np.arange(25, 40):
 
             print(f"\n Running dataset: {name} \n")
             # eeg_model = nnM.makeModel(data_train, reg1=3, reg2=3, reg3=3, dropout=1)
-            eeg_model = nnM.makeModel(
-                data_train, reg1=3, reg2=3, reg3=3, dropout=1)
+            eeg_model = nnM.makeModel(data_train, reg1=3, reg2=3, reg3=3, dropout=1)
 
             eeg_model.build()
             eeg_model.summary()
@@ -47,9 +45,17 @@ for seed in np.arange(25, 40):
                 eeg_model = nnM.useBestModel(data_train)
                 eeg_model.build()
                 print("Training best model")
-                best_loss, this_loss = nnM.trainTestModel(eeg_model, data_train, data_test,
-                                                          labels_train, labels_test, saveBest=False, reg=1, drp=1,
-                                                          specificSubject=specificSubject)
+                best_loss, this_loss = nnM.trainTestModel(
+                    eeg_model,
+                    data_train,
+                    data_test,
+                    labels_train,
+                    labels_test,
+                    saveBest=False,
+                    reg=1,
+                    drp=1,
+                    specificSubject=specificSubject,
+                )
 
             else:
                 for act in ["relu"]:  # "Leaky_relu"
@@ -59,18 +65,39 @@ for seed in np.arange(25, 40):
                                 tf.keras.backend.clear_session()
 
                                 eeg_model = nnM.makeModel(
-                                    data_train, reg1=reg, reg2=reg, reg3=reg, dropout=drp, layerSize=lz, activation=act)
+                                    data_train,
+                                    reg1=reg,
+                                    reg2=reg,
+                                    reg3=reg,
+                                    dropout=drp,
+                                    layerSize=lz,
+                                    activation=act,
+                                )
                                 eeg_model.build()
                                 # eeg_model.summary()
-                                print("reg = {}, drp = {}  lz = {} , act = {}".format(
-                                    reg, drp, lz, act))
-                                best_loss, this_acc = nnM.trainTestModel(eeg_model, data_train, data_test, labels_train,
-                                                                         labels_test, reg, drp, lz=lz, act=act,
-                                                                         best_loss=best_loss,
-                                                                         saveBest=True, specificSubject=specificSubject)
+                                print(
+                                    "reg = {}, drp = {}  lz = {} , act = {}".format(
+                                        reg, drp, lz, act
+                                    )
+                                )
+                                best_loss, this_acc = nnM.trainTestModel(
+                                    eeg_model,
+                                    data_train,
+                                    data_test,
+                                    labels_train,
+                                    labels_test,
+                                    reg,
+                                    drp,
+                                    lz=lz,
+                                    act=act,
+                                    best_loss=best_loss,
+                                    saveBest=True,
+                                    specificSubject=specificSubject,
+                                )
 
                                 dataset_losses.append(
-                                    [name, this_acc, act, lz, reg, drp])
+                                    [name, this_acc, act, lz, reg, drp]
+                                )
             # Saving the results
             # ResultsPerDataSet.append([best_loss, name])
             ResultsPerDataSet.append(dataset_losses)
@@ -83,8 +110,10 @@ for seed in np.arange(25, 40):
 
         # savearray = np.array([ResultsPerDataSet, seed, specificSubject], dtype=object)
         savearray = np.array(
-            [bestResultsTot, seed, specificSubject, ResultsPerDataSet], dtype=object)
+            [bestResultsTot, seed, specificSubject, ResultsPerDataSet], dtype=object
+        )
         from datetime import datetime
+
         now = datetime.now()
 
         # Month abbreviation, day and year
@@ -92,7 +121,9 @@ for seed in np.arange(25, 40):
 
         np.save(
             f"F:/PythonProjects/NietoExcercise-1/SavedResultsNN/savedBestSeed-{seed}-Subject-{specificSubject}\
-                -Date-{now_string}", savearray)
+                -Date-{now_string}",
+            savearray,
+        )
 
         # savearray = np.array([bestResultsPerDataSet, seed, specificSubject], dtype=object)
         # from datetime import datetime
