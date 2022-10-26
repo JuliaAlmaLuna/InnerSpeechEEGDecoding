@@ -8,8 +8,8 @@ import svmMethods as svmMet
 
 fClassDict = dict()
 fmetDict = dict()
-testSize = 100
-seedStart = 25  # Arbitrary, could be randomized as well.
+testSize = 50
+seedStart = 28  # Arbitrary, could be randomized as well.
 
 validationRepetition = True
 # Running the same seed and subjects again in a different folder after changing code to see
@@ -35,7 +35,26 @@ for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
         # Uses class feature_extraction to get combinations of features,
         # then splits into test and training. With labels
         mDataList = fClassDict[f"{seed},{sub}"].getFeatures(
-            specificSubject, t_min=2, t_max=3, sampling_rate=256, twoDLabels=False
+            specificSubject,
+            t_min=2,
+            t_max=3,
+            sampling_rate=256,
+            twoDLabels=False,
+            maxCombinationAmount=2,
+            featureList=[
+                False,  # FFT
+                False,  # Welch
+                False,  # Hilbert
+                False,  # Powerbands
+                False,  # FFT frequency buckets
+                True,  # FFT Covariance
+                True,  # Welch Covariance
+                True,  # Hilbert Covariance
+                True,  # Covariance on smoothed Data
+                False,  # Covariance on smoothed Data 2
+                # More to be added
+            ],
+            verbose=True,
         )
 
         allResultsPerSubject = []
@@ -67,7 +86,7 @@ for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
         foldername = now.strftime("%d-%m")
 
         if validationRepetition:
-            foldername = f"{foldername}-2"
+            foldername = f"{foldername}-5"
         saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedResults/{foldername}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)

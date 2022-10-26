@@ -59,7 +59,7 @@ class featureEClass:
 
         return trainData, testData
 
-    def createListOfDataMixes(self, featureList, labels, order):
+    def createListOfDataMixes(self, featureList, labels, order, maxCombinationAmount):
         """
         Mixes the features that are sent in into combinations
         then shuffles and splits them before sending back. Combines the names for each as well
@@ -79,10 +79,11 @@ class featureEClass:
         nameList = []
         labelsList = []
         dataNrs = np.arange(len(featureList))
-        print(dataNrs)
-        print("julia")
         combos = []
-        for L in range(1, len(dataNrs) + 1):
+
+        if maxCombinationAmount > len(dataNrs):
+            maxCombinationAmount = len(dataNrs)
+        for L in range(1, maxCombinationAmount + 1):
             for subsetNr in itertools.combinations(dataNrs, L):
                 combos.append(dp(subsetNr))
 
@@ -94,13 +95,13 @@ class featureEClass:
             nameRow = ""
             dataRo = np.copy(featureList[comb[0]][0])
             labelsRo = np.copy(labels)
-            nameRow = nameRow + "" + featureList[comb[0]][1]
+            nameRow = nameRow + "-" + featureList[comb[0]][1]
 
             for nr in comb[1:]:
 
                 data = np.copy(featureList[nr][0])
                 dataRo = np.concatenate([dataRo, data], axis=1)
-                nameRow = nameRow + "" + featureList[nr][1]
+                nameRow = nameRow + "-" + featureList[nr][1]
 
             dataList.append(dataRo)
             nameList.append(nameRow)
@@ -160,6 +161,7 @@ class featureEClass:
             True,  # Welch Covariance
             True,  # Hilbert Covariance
             False,  # Covariance on smoothed Data
+            False,  # Covariance on smoothed Data 2
             # More to be added
         ],
         verbose=True,
@@ -190,15 +192,11 @@ class featureEClass:
         data, labels = dl.load_multiple_datasets(
             nr_of_datasets=nr_of_datasets,
             sampling_rate=sampling_rate,
-            t_min=2,
-            t_max=3,
+            t_min=t_min,
+            t_max=t_max,
             specificSubject=specificSubject,
             twoDLabels=twoDLabels,
         )
-
-        # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
-        # trialSplit=1).squeeze()
-        # print("Power band data shape: {}".format(data_p.shape))
 
         # #Getting Freq Data
         # data_f = ut.data_into_freq_buckets(data[:,:128,:],
@@ -206,21 +204,6 @@ class featureEClass:
         # print("Freq band bucket separated data shape: \
         # {}".format(data_f.shape))
 
-        # print(labels)
-        # labels[np.where(labels==2)] = 0
-        # labels[np.where(labels==3)] = 1
-        # print(labels)
-        # Make FFT data'
-
-        #    True,  # FFT
-        #     True,  # Welch
-        #     True,  # Hilbert
-        #     True,  # Powerbands
-        #     True,  # FFT frequency buckets
-        #     True,  # FFT Covariance
-        #     True,  # Welch Covariance
-        #     True,  # Hilbert Covariance
-        #     True,  # Covariance on smoothed Data
         createdFeatureList = []
         tempData = np.copy(data)
         for fNr, useFeature in enumerate(featureList, 1):
@@ -240,11 +223,15 @@ class featureEClass:
                     ]  # welchData
 
                 if fNr == 3:
-                    dataH = hilbert(tempData, axis=2, N=256)
+                    dataH = hilbert(tempData, axis=2, N=128)
                     createdFeature = [dataH.real, "dataHR"]  # dataHR
                     # dataHI = dataH.imag
 
                 if fNr == 4:
+                    # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
+                    # trialSplit=1).squeeze()
+                    # print("Power band data shape: {}".format(data_p.shape))
+
                     print("Powerbands")
 
                 if fNr == 5:
@@ -303,7 +290,7 @@ class featureEClass:
             featureList=createdFeatureList,
             labels=labels,
             order=order,
-            maxCombinationAmount=1,
+            maxCombinationAmount=maxCombinationAmount,
         )
 
         return mDataList
