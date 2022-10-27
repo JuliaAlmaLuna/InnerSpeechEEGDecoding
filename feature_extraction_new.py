@@ -1,8 +1,8 @@
 import itertools
-from copy import copy as dp
+from copy import copy as cp
 import numpy as np
 import matplotlib.pyplot as plt
-
+from copy import deepcopy as dp
 from scipy import ndimage
 from scipy.signal import hilbert
 import dataLoader as dl
@@ -19,7 +19,11 @@ class featureEClass:
         Returns:
             test train data
         """
+        self.labels = None
+        self.createdFeatureList = []
+        # self.goodData = None
         self.subject = subject
+
         print(f"Feature class for subject {self.subject} created")
 
     def plotHeatMaps(plotData):
@@ -60,7 +64,13 @@ class featureEClass:
 
         return trainData, testData
 
-    def createListOfDataMixes(self, featureList, labels, order, maxCombinationAmount):
+    def flattenAllExceptTrial(self, unflatdata):
+        flatData = np.reshape(unflatdata, [unflatdata.shape[0], -1])
+        return flatData
+
+    def createListOfDataMixes(
+        self, featureList, labels, order, maxCombinationAmount, goodDataList
+    ):  #
         """
         Mixes the features that are sent in into combinations
         then shuffles and splits them before sending back. Combines the names for each as well
@@ -77,6 +87,7 @@ class featureEClass:
 
         print("Mixing Data")
         dataList = []
+        gddataList = []
         nameList = []
         labelsList = []
         dataNrs = np.arange(len(featureList))
@@ -86,7 +97,7 @@ class featureEClass:
             maxCombinationAmount = len(dataNrs)
         for L in range(1, maxCombinationAmount + 1):
             for subsetNr in itertools.combinations(dataNrs, L):
-                combos.append(dp(subsetNr))
+                combos.append(cp(subsetNr))
 
         print(f"Nr of combinations = {len(combos)}")
         combos = np.array(combos, dtype=object)
@@ -94,17 +105,21 @@ class featureEClass:
         for comb in combos:
 
             nameRow = ""
-            dataRo = np.copy(featureList[comb[0]][0])
+            dataRo = self.flattenAllExceptTrial(np.copy(featureList[comb[0]][0]))
+            gddataRo = goodDataList[comb[0]]
             labelsRo = np.copy(labels)
             nameRow = nameRow + "-" + featureList[comb[0]][1]
 
             for nr in comb[1:]:
 
-                data = np.copy(featureList[nr][0])
+                data = self.flattenAllExceptTrial(np.copy(featureList[nr][0]))
+                gddata = goodDataList[nr]
                 dataRo = np.concatenate([dataRo, data], axis=1)
-                nameRow = nameRow + "-" + featureList[nr][1]
+                gddataRo = np.concatenate([gddataRo, gddata], axis=0)
+                nameRow = featureList[nr][1] + "-" + nameRow
 
             dataList.append(dataRo)
+            gddataList.append(gddataRo)
             nameList.append(nameRow)
             labelsList.append(labelsRo)
 
@@ -119,7 +134,9 @@ class featureEClass:
             #  Shuffle the data according to order randomized earlier, and then split it.
             nDataRow = nData
             sDataRow = np.array(
-                self.shuffleSplitData(nDataRow, lData, nameList[x], order=order),
+                self.shuffleSplitData(
+                    nDataRow, lData, nameList[x], order=order, gdData=gddataList[x]
+                ),
                 dtype=object,
             )
 
@@ -132,7 +149,7 @@ class featureEClass:
 
         return normShuffledDataList
 
-    def shuffleSplitData(self, data_t, labels_t, name, order):
+    def shuffleSplitData(self, data_t, labels_t, name, order, gdData):
 
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
@@ -142,7 +159,7 @@ class featureEClass:
         labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
         labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
 
-        return data_train, data_test, labels_train, labels_test, name
+        return data_train, data_test, labels_train, labels_test, name, gdData
 
     def getFeatures(
         self,
@@ -190,7 +207,7 @@ class featureEClass:
         # In the same shape they are for the rest of the function.
         nr_of_datasets = 1
         specificSubject = subject
-        data, labels = dl.load_multiple_datasets(
+        data, self.labels = dl.load_multiple_datasets(
             nr_of_datasets=nr_of_datasets,
             sampling_rate=sampling_rate,
             t_min=t_min,
@@ -199,7 +216,6 @@ class featureEClass:
             twoDLabels=twoDLabels,
         )
 
-        createdFeatureList = []
         tempData = np.copy(data)
         for fNr, useFeature in enumerate(featureList, 1):
 
@@ -275,36 +291,40 @@ class featureEClass:
                 if verbose:
                     print(f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
 
-                createdFeatureList.append(createdFeature)
+                self.createdFeatureList.append(createdFeature)
 
-        order = np.arange(labels.shape[0])
-        np.random.shuffle(order)
+        return self.createdFeatureList, self.labels
 
-        # Also send in max number of combinations
-        mDataList = self.createListOfDataMixes(
-            featureList=createdFeatureList,
-            labels=labels,
-            order=order,
-            maxCombinationAmount=maxCombinationAmount,
-        )
+    def getFeatureList(self):
+        tempFeatureList = dp(self.createdFeatureList)
+        return tempFeatureList
 
-        return mDataList
+    def getLabels(self):
+        tempLabels = dp(self.labels)
+        return tempLabels
 
-    def multiLabels(labels):
-        mlabels = np.zeros([labels.shape[0], 2])
-        for ind, label in enumerate(labels):
-            if label > 3 and label < 8:
-                mlabels[ind, 1] = 1
-                mlabels[ind, 0] = label - 4
-            if label < 4:
-                mlabels[ind, 1] = 0
-            if label > 7:
-                mlabels[ind, 1] = 2
-                mlabels[ind, 0] = label - 8
-        labels = mlabels
-        return labels
-        # Getting Freq Data
-        # data_f = ut.data_into_freq_buckets(data[:,:128,:],
-        # nr_of_buckets, buckets)
-        # print("Freq band bucket separated data shape: \
-        # {}".format(data_f.shape))
+    # def setgoodData(self, goodData):
+    #     self.goodData = goodData
+
+    # def getgoodData(self):
+    #     tempgoodData = dp(self.goodData)
+    #     return tempgoodData
+
+    # def multiLabels(labels):
+    #     mlabels = np.zeros([labels.shape[0], 2])
+    #     for ind, label in enumerate(labels):
+    #         if label > 3 and label < 8:
+    #             mlabels[ind, 1] = 1
+    #             mlabels[ind, 0] = label - 4
+    #         if label < 4:
+    #             mlabels[ind, 1] = 0
+    #         if label > 7:
+    #             mlabels[ind, 1] = 2
+    #             mlabels[ind, 0] = label - 8
+    #     labels = mlabels
+    #     return labels
+    #     # Getting Freq Data
+    #     # data_f = ut.data_into_freq_buckets(data[:,:128,:],
+    #     # nr_of_buckets, buckets)
+    #     # print("Freq band bucket separated data shape: \
+    #     # {}".format(data_f.shape))

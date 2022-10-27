@@ -9,7 +9,7 @@ import svmMethods as svmMet
 fClassDict = dict()
 fmetDict = dict()
 testSize = 50
-seedStart = 28  # Arbitrary, could be randomized as well.
+seedStart = 29  # Arbitrary, could be randomized as well.
 
 validationRepetition = True
 # Running the same seed and subjects again in a different folder after changing code to see
@@ -86,7 +86,7 @@ for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
         foldername = now.strftime("%d-%m")
 
         if validationRepetition:
-            foldername = f"{foldername}-5"
+            foldername = f"{foldername}-8"
         saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedResults/{foldername}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)

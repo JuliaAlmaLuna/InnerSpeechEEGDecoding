@@ -53,12 +53,27 @@ def load_data(
 
     # Conditions to compared
     # Conditions = [["Inner"],["Inner"], ["Pronounced"], ["Pronounced"]]
-    Conditions = [["Inner"], ["Inner"]]
+    Conditions = [
+        ["Inner"],
+        ["Inner"],
+        ["Inner"],
+        ["Inner"],
+        #  ["Visualized"], ["Visualized"], [            TRY SEPARATING INNER AND PRONOUNCED AND VISUALIZED
+        #         "Visualized"], ["Visualized"],
+        # ["Pronounced"], ["Pronounced"], ["Pronounced"], ["Pronounced"]
+    ]
 
     # The class for the above condition
-    Classes = [["Up"], ["Down"]]
+    # Classes = [["Up"], ["Down"]]
     # Classes    = [  ["Up"] ,["Down"], ["Up"] ,["Down"]]
-    # Classes    = [  ["Up"] ,["Down"], ["Right"], ["Left"] ]
+    Classes = [
+        ["Up"],
+        ["Down"],
+        ["Right"],
+        ["Left"],
+        # ["Up"], ["Down"], ["Right"], ["Left"],
+        # ["Up"], ["Down"], ["Right"], ["Left"]
+    ]
 
     # Transform data and keep only the trials of interest
     if datatype != "baseline":
@@ -71,6 +86,7 @@ def load_data(
 
         print(Y.shape)
     print("Up is {} and Down is {}".format(np.unique(Y)[0], np.unique(Y)[1]))
+
     return X, Y
 
 
