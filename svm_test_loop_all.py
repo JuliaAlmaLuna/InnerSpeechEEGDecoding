@@ -4,7 +4,7 @@ This class runs a pipeline testing SVM classification on data
 
 from copy import deepcopy as dp
 import numpy as np
-import feature_extraction_new as fclass
+import feature_extraction as fclass
 import svmMethods as svmMet
 from sklearn import feature_selection
 from sklearn.preprocessing import StandardScaler
@@ -114,7 +114,7 @@ def main():
     # if the results are the same
 
     # Creating the features for each subject and putting them in a dict
-    for sub in [1, 2, 3, 4, 5, 6, 7, 8, 9]:  # 
+    for sub in [1, 2, 3, 4, 5, 6, 7, 8, 9]:  #
         fClassDict[f"{sub}"] = fclass.featureEClass(sub)
         fmetDict[f"{sub}"] = svmMet.SvmMets()
         print(f"Creating features for subject:{sub}")

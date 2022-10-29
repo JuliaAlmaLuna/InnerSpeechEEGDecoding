@@ -21,7 +21,21 @@ warnings.filterwarnings(action="ignore", category=FutureWarning)
 
 
 def load_data(
-    datatype, sampling_rate=256, subject_nr=1, t_start=0, t_end=5, verbose=True
+    datatype,
+    sampling_rate=256,
+    subject_nr=1,
+    t_start=0,
+    t_end=5,
+    verbose=True,
+    paradigms=[
+        [["Inner"], ["Inner"], ["Inner"], ["Inner"]],
+        [
+            ["Up"],
+            ["Down"],
+            ["Right"],
+            ["Left"],
+        ],
+    ],
 ):
 
     root_dir = "eeg-imagined-speech-nieto"
@@ -53,27 +67,29 @@ def load_data(
 
     # Conditions to compared
     # Conditions = [["Inner"],["Inner"], ["Pronounced"], ["Pronounced"]]
-    Conditions = [
-        ["Inner"],
-        ["Inner"],
-        ["Inner"],
-        ["Inner"],
-        #  ["Visualized"], ["Visualized"], [            TRY SEPARATING INNER AND PRONOUNCED AND VISUALIZED
-        #         "Visualized"], ["Visualized"],
-        # ["Pronounced"], ["Pronounced"], ["Pronounced"], ["Pronounced"]
-    ]
+    Conditions = paradigms[0]
+    # [
+    #     ["Inner"],
+    #     ["Inner"],
+    #     ["Inner"],
+    #     ["Inner"],
+    #     #  ["Visualized"], ["Visualized"], [            TRY SEPARATING INNER AND PRONOUNCED AND VISUALIZED
+    #     #         "Visualized"], ["Visualized"],
+    #     # ["Pronounced"], ["Pronounced"], ["Pronounced"], ["Pronounced"]
+    # ]
 
     # The class for the above condition
     # Classes = [["Up"], ["Down"]]
     # Classes    = [  ["Up"] ,["Down"], ["Up"] ,["Down"]]
-    Classes = [
-        ["Up"],
-        ["Down"],
-        ["Right"],
-        ["Left"],
-        # ["Up"], ["Down"], ["Right"], ["Left"],
-        # ["Up"], ["Down"], ["Right"], ["Left"]
-    ]
+    Classes = paradigms[1]
+    # [
+    #     ["Up"],
+    #     ["Down"],
+    #     ["Right"],
+    #     ["Left"],
+    # ["Up"], ["Down"], ["Right"], ["Left"],
+    # ["Up"], ["Down"], ["Right"], ["Left"]
+    # ]
 
     # Transform data and keep only the trials of interest
     if datatype != "baseline":
@@ -98,6 +114,15 @@ def load_multiple_datasets(
     t_max=4.5,
     twoDLabels=True,
     specificSubject=1,
+    paradigms=[
+        [["Inner"], ["Inner"], ["Inner"], ["Inner"]],
+        [
+            ["Up"],
+            ["Down"],
+            ["Right"],
+            ["Left"],
+        ],
+    ],
 ):
     # Minus nr 3
     if nr_of_datasets > 9:
@@ -110,6 +135,7 @@ def load_multiple_datasets(
         sampling_rate=sampling_rate,
         t_start=t_min,
         t_end=t_max,
+        paradigms=paradigms,
     )
     # datax = np.concatenate([datax[0:datax.shape[1]//2], np.zeros([datax.shape[0], 1, datax.shape[2]]),
     # datax[datax.shape[1]//2:]], axis=1)

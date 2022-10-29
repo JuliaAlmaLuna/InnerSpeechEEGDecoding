@@ -11,9 +11,37 @@ import matplotlib.pyplot as plt
 
 
 class SvmMets:
-    def __init__(self):
+    def __init__(
+        self,
+        signAll=False,
+        signSolo=True,
+        tol=0.001,
+        significanceThreshold=0.1,
+        verbose=True,
+        quickTest=False
+    ):
         print("new SvmMets")
+        self.signAll = signAll
+        self.signSolo = signSolo
+        self.significanceThreshold = significanceThreshold
+        self.verbose = verbose
+        self.tol = tol
+        self.quickTest = quickTest
 
+        if verbose is not True:
+            import warnings
+
+            warnings.filterwarnings(
+                action="ignore", category=UserWarning
+            )  # setting ignore as a parameter and further adding category
+            warnings.filterwarnings(
+                action="ignore", category=RuntimeWarning
+            )  # setting ignore as a parameter and further adding category
+
+        if self.signAll or self.signSolo:
+            self.onlySign = True
+        else:
+            self.onlySign = False
         """
         This class handles SVM pipeline testing.
         Right now it is very janky!
@@ -26,14 +54,58 @@ class SvmMets:
         plt.imshow(plotData, cmap="hot", interpolation="nearest")
         plt.show()
 
+    from functools import lru_cache
+
+    # @lru_cache(10)
+    def anovaSolo(self, ndata_train, labels_train):
+
+        # from sklearn.feature_selection import VarianceThreshold
+
+        # vartresh = VarianceThreshold()
+        # ndata_train = vartresh.fit_transform(ndata_train)
+        f_statistic, p_values = feature_selection.f_classif(
+            ndata_train, labels_train)
+        p_values[
+            p_values > self.significanceThreshold
+        ] = 0  # Use sklearn selectpercentile instead?
+        p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
+        goodData2 = f_statistic * p_values
+        return goodData2
+
+    # @lru_cache(10)
+    def onlySignData(
+        self, ndata_train, ndata_test, goodData=None, goodData2=None, coefs=None
+    ):
+
+        if self.signAll and self.signSolo:
+            if ndata_train[:, [goodData != 0][0] + [goodData2 != 0][0]].shape[1] < 3:
+                return 0.25, coefs
+            ndata_train = ndata_train[:, [
+                goodData != 0][0] + [goodData2 != 0][0]]
+            ndata_test = ndata_test[:, [goodData != 0]
+                                    [0] + [goodData2 != 0][0]]
+
+        elif self.signAll:
+            if ndata_train[:, np.where(goodData != 0)[0]].shape[1] < 3:
+                return 0.25, coefs
+            ndata_train = ndata_train[:, np.where(goodData != 0)[0]]
+            ndata_test = ndata_test[:, np.where(goodData != 0)[0]]
+
+        elif self.signSolo:
+            if ndata_train[:, np.where(goodData2 != 0)[0]].shape[1] < 3:
+                return 0.25, coefs
+            ndata_train = ndata_train[:, np.where(goodData2 != 0)[0]]
+            ndata_test = ndata_test[:, np.where(goodData2 != 0)[0]]
+
+        return ndata_train, ndata_test
+
     def svmPipeline(
         self,
-        data_train,
-        data_test,
+        ndata_train,
+        ndata_test,
         labels_train,
         labels_test,
         goodData,
-        onlySign,
         kernel="linear",
         degree=3,
         gamma="auto",
@@ -59,23 +131,23 @@ class SvmMets:
             _type_: _description_
         """
         if coefs is None:
-            coefs = np.zeros([1, data_train.shape[1]])
+            coefs = np.zeros([1, ndata_train.shape[1]])
             #  * data_train.shape[2]]
         # anova_filter = SelectKBest(f_classif, k=10)
 
         # Moved the standarScaler out of the pipeline, so ensemble can be used. Does not need to be like this
         # unless ensemble is used. Usefull for ANOVA before though.
 
-        scaler = StandardScaler()
-        # scaler = scaler.fit(np.reshape(data_train, [data_train.shape[0], -1]))
-        scaler = scaler.fit(data_train)
+        # scaler = StandardScaler()
+        # # scaler = scaler.fit(np.reshape(data_train, [data_train.shape[0], -1]))
+        # scaler = scaler.fit(data_train)
 
-        ndata_train = scaler.transform(
-            # np.reshape(data_train, [data_train.shape[0], -1])
-            data_train
-        )
-        # ndata_test = scaler.transform(np.reshape(data_test, [data_test.shape[0], -1]))
-        ndata_test = scaler.transform(data_test)
+        # ndata_train = scaler.transform(
+        #     # np.reshape(data_train, [data_train.shape[0], -1])
+        #     data_train
+        # )
+        # # ndata_test = scaler.transform(np.reshape(data_test, [data_test.shape[0], -1]))
+        # ndata_test = scaler.transform(data_test)
 
         # from sklearn import multioutput as multiO, create new class for multiOutput
         clf = make_pipeline(
@@ -87,23 +159,41 @@ class SvmMets:
                 verbose=False,
                 C=C,
                 cache_size=1800,
+                tol=self.tol,
             ),
         )
 
-        # Anova Test and keep only features with p value less than 0.05
-        # f_statistic, p_values = feature_selection.f_classif(ndata_train, labels_train)
-        # p_values[p_values > 0.05] = 0  # Use sklearn selectpercentile instead?
+        # # print(goodData.shape)
+        # goodData2 = None
+        # # Anova Test and keep only features with p value less than 0.05
+        # if self.signSolo:
+        #     goodData2 = self.anovaSolo(ndata_train, labels_train)
+        #     # from sklearn.feature_selection import VarianceThreshold
+
+        #     # # vartresh = VarianceThreshold()
+        #     # # ndata_train = vartresh.fit_transform(ndata_train)
+        #     # f_statistic, p_values = feature_selection.f_classif(
+        #     #     ndata_train, labels_train
+        #     # )
+        #     # p_values[
+        #     #     p_values > self.significanceThreshold
+        #     # ] = 0  # Use sklearn selectpercentile instead?
+        #     # p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
+        #     # goodData2 = f_statistic * p_values
+        # goodData2 = None
+        # if self.signSolo:
+        #     goodData2 = self.anovaSolo(ndata_train, labels_train)
+        # if self.onlySign:
+        #     ndata_train, ndata_test = self.onlySignData(
+        #         self,
+        #         ndata_train=ndata_train,
+        #         ndata_test=ndata_test,
+        #         goodData=goodData,
+        #         goodData2=goodData2,
+        #         coefs=coefs,
+        #     )
 
         # goodData = f_statistic * p_values
-
-        # print(goodData.shape)
-
-        if onlySign:
-            if ndata_train[:, np.where(goodData != 0)[0]].shape[1] < 3:
-                return 0.25, coefs
-            ndata_train = ndata_train[:, np.where(goodData != 0)[0]]
-            ndata_test = ndata_test[:, np.where(goodData != 0)[0]]
-
         clf.fit(ndata_train, labels_train)
         # clf.fit(ndata_train2, labels_train)
 
@@ -133,60 +223,86 @@ class SvmMets:
         labels_test,
         name,
         goodData,
-        onlySignificantFeatures,
+        kernels=["linear", "rbf", "sigmoid"],
     ):
 
-        allResults = []
-
-        # testing using different kernels, C and degrees.
         coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
 
-        for kernel in ["linear", "rbf", "sigmoid"]:
+        scaler = StandardScaler()
+        # scaler = scaler.fit(np.reshape(data_train, [data_train.shape[0], -1]))
+        scaler = scaler.fit(data_train)
+
+        ndata_train = scaler.transform(
+            # np.reshape(data_train, [data_train.shape[0], -1])
+            data_train
+        )
+        # ndata_test = scaler.transform(np.reshape(data_test, [data_test.shape[0], -1]))
+        ndata_test = scaler.transform(data_test)
+
+        goodData2 = None
+        if self.signSolo:
+            goodData2 = self.anovaSolo(ndata_train, labels_train)
+        if self.onlySign:
+            ndata_train, ndata_test = self.onlySignData(
+                ndata_train=ndata_train,
+                ndata_test=ndata_test,
+                goodData=goodData,
+                goodData2=goodData2,
+                coefs=coefs,
+            )
+
+        allResults = []
+        if self.quickTest:
+            clist = [2.5]
+        else:
+            clist = np.linspace(0.5, 5, 5)
+        # testing using different kernels, C and degrees.
+        for kernel in kernels:
             if kernel == "linear":
                 for C in [0.5]:
 
                     for degree in range(1, 2):
                         res, coefs = self.svmPipeline(
-                            data_train,
-                            data_test,
+                            ndata_train,
+                            ndata_test,
                             labels_train,
                             labels_test,
-                            onlySign=onlySignificantFeatures,
                             goodData=goodData,
                             degree=degree,
                             kernel=kernel,
                             C=C,
                             coefs=coefs,
                         )
-                        print(
-                            "Result for degree {}, kernel {}, C = {}: {}".format(
-                                degree, kernel, (C * 100 // 10) / 10, res
+                        if self.verbose:
+                            print(
+                                "Result for degree {}, kernel {}, C = {}: {}".format(
+                                    degree, kernel, (C * 100 // 10) / 10, res
+                                )
                             )
-                        )
                         allResults.append([name, res, kernel, C])
 
             else:
-                for C in np.linspace(0.5, 5, 5):
+                for C in clist:
 
                     for gamma in ["auto"]:
 
                         res = self.svmPipeline(
-                            data_train,
-                            data_test,
+                            ndata_train,
+                            ndata_test,
                             labels_train,
                             labels_test,
-                            onlySign=onlySignificantFeatures,
                             goodData=goodData,
                             degree=degree,
                             kernel=kernel,
                             gamma=gamma,
                             C=C,
                         )
-                        print(
-                            "Result for gamma {}, kernel {}, C = {}: {}".format(
-                                gamma, kernel, (C * 100 // 10) / 10, res[0]
+                        if self.verbose:
+                            print(
+                                "Result for gamma {}, kernel {}, C = {}: {}".format(
+                                    gamma, kernel, (C * 100 // 10) / 10, res[0]
+                                )
                             )
-                        )
                         allResults.append([name, res[0], kernel, C])
 
         coefs = np.reshape(coefs, [128, -1])
@@ -199,7 +315,10 @@ class SvmMets:
 
         # testing using different kernels, C and degrees.
         coefs = np.zeros([1, data_train.shape[1] * data_train.shape[2]])
-
+        if self.quickTest:
+            clist = [2.5]
+        else:
+            clist = np.linspace(0.5, 5, 5)
         for kernel in ["linear"]:
             if kernel == "linear":
                 for C in [0.5]:
@@ -223,7 +342,7 @@ class SvmMets:
                         allResults.append([name, res, kernel, C])
 
             else:
-                for C in np.linspace(0.5, 5, 5):
+                for C in clist:
 
                     for gamma in ["auto"]:
 
@@ -352,11 +471,13 @@ class SvmMets:
         ndata_train = scaler.transform(
             np.reshape(data_train, [data_train.shape[0], -1])
         )
-        ndata_test = scaler.transform(np.reshape(data_test, [data_test.shape[0], -1]))
+        ndata_test = scaler.transform(np.reshape(
+            data_test, [data_test.shape[0], -1]))
 
         print(len(estimatorList))
         clf = VotingClassifier(estimatorList, n_jobs=-2, voting="soft")
-        f_statistic, p_values = feature_selection.f_classif(ndata_train, labels_train)
+        f_statistic, p_values = feature_selection.f_classif(
+            ndata_train, labels_train)
         p_values[p_values > 0.1] = 0  # Use sklearn selectpercentile instead?
 
         goodData = f_statistic * p_values
