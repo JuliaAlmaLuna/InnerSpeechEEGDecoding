@@ -12,6 +12,7 @@ import paradigmSetting
 import cProfile
 import pstats
 import io
+import glob
 
 
 def mixShuffleSplit(
@@ -110,6 +111,45 @@ def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
     # print(allSubjFLabels.shape)
 
     return allSubjFList, allSubjFLabels
+
+
+def saveFeatures(name, subject, array):
+
+    import os
+    saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/{subject}"
+    if os.path.exists(saveDir) is not True:
+        os.makedirs(saveDir)
+
+    np.save(
+        f"{saveDir}/{name}",
+        array,
+    )
+
+
+def loadFeatures(name, subject):
+    curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/{subject}"
+    path = glob.glob(curSavePath + f"{name}")
+    savedFeatures = np.load(path, allow_pickle=True)
+    return savedFeatures
+
+
+def loadAnovaMask(name, subject):
+    curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/{subject}"
+    path = glob.glob(curSavePath + f"{name}")
+    savedAnovaMask = np.load(path, allow_pickle=True)
+    return savedAnovaMask
+
+
+def saveAnovaMask(name, subject, array):
+    import os
+    saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/{subject}"
+    if os.path.exists(saveDir) is not True:
+        os.makedirs(saveDir)
+
+    np.save(
+        f"{saveDir}/{name}",
+        array,
+    )
 
 
 def main():
