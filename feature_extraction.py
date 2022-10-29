@@ -22,7 +22,7 @@ class featureEClass:
         self.labels = None
         self.order = None
         self.createdFeatureList = []
-        # self.goodData = None
+        self.globalGoodFeatureMask = None
         self.subject = subject
 
         print(f"Feature class for subject {self.subject} created")
@@ -70,7 +70,7 @@ class featureEClass:
         return flatData
 
     def createListOfDataMixes(
-        self, featureList, labels, order, maxCombinationAmount, goodDataList
+        self, featureList, labels, order, maxCombinationAmount
     ):  #
         """
         Mixes the features that are sent in into combinations
@@ -106,26 +106,33 @@ class featureEClass:
         for comb in combos:
 
             nameRow = ""
-            dataRo = self.flattenAllExceptTrial(np.copy(featureList[comb[0]][0]))
-            gddataRo = goodDataList[comb[0]]
+            dataRo = self.flattenAllExceptTrial(
+                np.copy(featureList[comb[0]][0]))
+            if self.globalGoodFeatureMask is not None:
+                gddataRo = self.globalGoodFeatureMask[comb[0]]
             labelsRo = np.copy(labels)
             nameRow = nameRow + "-" + featureList[comb[0]][1]
 
             for nr in comb[1:]:
 
                 data = self.flattenAllExceptTrial(np.copy(featureList[nr][0]))
-                gddata = goodDataList[nr]
+                if self.globalGoodFeatureMask is not None:
+                    gddata = self.globalGoodFeatureMask[nr]
                 dataRo = np.concatenate([dataRo, data], axis=1)
-                gddataRo = np.concatenate([gddataRo, gddata], axis=0)
+                if self.globalGoodFeatureMask is not None:
+                    gddataRo = np.concatenate([gddataRo, gddata], axis=0)
                 nameRow = featureList[nr][1] + "-" + nameRow
 
             dataList.append(dataRo)
-            gddataList.append(gddataRo)
+            if self.globalGoodFeatureMask is not None:
+                gddataList.append(gddataRo)
+            else:
+                gddataList.append(None)
             nameList.append(nameRow)
             labelsList.append(labelsRo)
 
         normShuffledDataList = []
-        for x, dataR in enumerate(dataList):
+        for x, dataR in enumerate(dataList):  # Should be zip
 
             # Copying to be sure no information is kept between rows, subjects, seeds when running pipeline
             # Probably not needed
@@ -141,7 +148,9 @@ class featureEClass:
                 dtype=object,
             )
 
-            # Normalizing data, if standardization is wanted. Use other function called standardizeData
+            # # Normalizing data, if standardization is wanted. Use other function called standardizeData
+            # # THIS might be unnecessary since Standardscaler is used later
+            # # It does help it seems. Even tho it takes time
             sDataRow[0], sDataRow[1] = self.normalizeData(
                 trainData=sDataRow[0], testData=sDataRow[1]
             )
@@ -155,10 +164,10 @@ class featureEClass:
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
 
-        data_train = data_s[order[0 : int(labels_s.shape[0] * 0.8)]]
-        data_test = data_s[order[int(labels_s.shape[0] * 0.8) :]]
-        labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
-        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
+        data_train = data_s[order[0: int(labels_s.shape[0] * 0.8)]]
+        data_test = data_s[order[int(labels_s.shape[0] * 0.8):]]
+        labels_train = labels_s[order[0: int(labels_s.shape[0] * 0.8)]]
+        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8):]]
 
         return data_train, data_test, labels_train, labels_test, name, gdData
 
@@ -181,7 +190,12 @@ class featureEClass:
             True,  # Hilbert Covariance
             False,  # Covariance on smoothed Data
             False,  # Covariance on smoothed Data 2
+            False,  # Correlate1d
             # More to be added
+            # Add a feature that tells you if it is inner, pronounced or visualized
+            # Make it shape(128,1) with maybe 10 ones at specific points if it is
+            # each one of these
+            # Maybe also make one similar with 10 for each subject
         ],
         verbose=True,
         paradigms=[
@@ -236,7 +250,8 @@ class featureEClass:
             )  # To make sure every feature is created from original data
             if useFeature:
                 if fNr == 1:
-                    createdFeature = [ut.fftData(tempData), "fftData"]  # fftData
+                    createdFeature = [ut.fftData(
+                        tempData), "fftData"]  # fftData
 
                 if fNr == 2:
                     createdFeature = [
@@ -293,14 +308,24 @@ class featureEClass:
                     ]  # dataCV
 
                 if fNr == 10:
-                    datagauss2 = ndimage.gaussian_filter1d(tempData, 10, axis=2)
+
+                    datagauss2 = ndimage.gaussian_filter1d(
+                        tempData, 10, axis=2)
                     createdFeature = [
                         np.array(ut.fftCovariance(datagauss2)),
                         "dataCV2",
                     ]  # dataCV2
 
+                if fNr == 11:
+                    weights = np.zeros(shape=[20])
+                    weights[:3] = 1
+                    weights[16:] = 1
+                    createdFeature = [ndimage.correlate1d(
+                        tempData, weights=weights, axis=2), "dataCorr1d"
+                    ]
                 if verbose:
-                    print(f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
+                    print(
+                        f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
 
                 self.createdFeatureList.append(createdFeature)
 
@@ -314,7 +339,7 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[0 : int(self.labels.shape[0] * 0.8)]]
+            f[0] = f[0][self.order[0: int(self.labels.shape[0] * 0.8)]]
 
         return tempFeatureList
 
@@ -322,17 +347,17 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8) :]]
+            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8):]]
 
         return tempFeatureList
 
     def getTrainLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[0 : int(self.labels.shape[0] * 0.8)]]
+        return tempLabels[self.order[0: int(self.labels.shape[0] * 0.8)]]
 
     def getTestLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[int(self.labels.shape[0] * 0.8) :]]
+        return tempLabels[self.order[int(self.labels.shape[0] * 0.8):]]
 
     def getLabels(self):
         tempLabels = dp(self.labels)
@@ -343,6 +368,13 @@ class featureEClass:
         np.random.seed(seed)
         self.order = np.arange(self.labels.shape[0])
         np.random.shuffle(self.order)
+
+    def setGlobalGoodFeaturesMask(self, goodFeatures):
+        self.globalGoodFeatureMask = goodFeatures
+
+    def getGlobalGoodFeaturesMask(self):
+        tempFeatureMask = dp(self.globalGoodFeatureMask)
+        return tempFeatureMask
 
     def getOrder(self):
         return self.order

@@ -9,10 +9,13 @@ import svmMethods as svmMet
 from sklearn import feature_selection
 from sklearn.preprocessing import StandardScaler
 import paradigmSetting
+import cProfile
+import pstats
+import io
 
 
 def mixShuffleSplit(
-    createdFeatureList, labels, order, featureClass, maxCombinationAmount, goodDataList
+    createdFeatureList, labels, order, featureClass, maxCombinationAmount
 ):
 
     # np.random.shuffle(order)
@@ -26,7 +29,6 @@ def mixShuffleSplit(
         labels=tempLabels,
         order=order,
         maxCombinationAmount=maxCombinationAmount,
-        goodDataList=goodDataList,
     )
     return mDataList
 
@@ -36,7 +38,7 @@ def anovaTest(featureList, labels, significanceThreshold):
     scaler = StandardScaler()
 
     goodFeatureList = dp(featureList)
-    goodDataList = []
+    goodFeatureMaskList = []
     # Anova Test and keep only features with p value less than 0.05
 
     for feature, goodfeature in zip(featureList, goodFeatureList):  # Features
@@ -62,19 +64,21 @@ def anovaTest(featureList, labels, significanceThreshold):
         ] = 0  # Use sklearn selectpercentile instead?
         p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
         goodData = f_statistic * p_values
-        goodDataList.append(goodData)
+        goodFeatureMaskList.append(goodData)
         goodfeature = flatfeature[:, np.where(goodData != 0)[0]]
 
         print(goodfeature.shape)
         print(np.count_nonzero(goodData))
         print(goodData.shape)
-    return goodFeatureList, goodDataList
+    return goodFeatureList, goodFeatureMaskList
 
 
-def combineAllSubjects(fclassDict, onlyTrain=False):
+def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
 
     first = True
     for subName, fClass in fclassDict.items():
+        if subName == f"{subjectLeftOut}":
+            continue
         if first:
             if onlyTrain:
                 allSubjFList = fClass.getTrainFeatureList()
@@ -111,38 +115,45 @@ def combineAllSubjects(fclassDict, onlyTrain=False):
 def main():
     fClassDict = dict()
     fmetDict = dict()
-    testSize = 50
+    testSize = 10
     seedStart = 39  # Arbitrary, could be randomized as well.
-    # Since Anova on one Subject gives immense results. There is lots of subject specific data
-    # onlySignificantFeatures = True
 
     # Try using ANOVA from all other subjects only. Because then you only need to do it
-    # Once for every subject. Not every seed
-    signAll = False
+    # Once for every subject. Not every seed ( Done?!Yes?)
+
+    # Here, wrap all in another for loop that tests:
+    # signAll, SignSolo, thresholds, paradigms, and saves them all in separateFolders
+    # Fix soloSignThreshold ( Make sure it is correct)
+    # Fix a timer for each loop of this for loop, as well as for each subject
+    # and seed in the other two for loops. Save all times in a separate folder
+    #
+
+    # It seems like something is wrong since results are barely significant
+    # Maybe just bad!
+
+    signAll = True
     signSolo = False
     # 0.1 seems best, barely any difference though , 0.05 a little faster
-    significanceThreshold = 0.1
+    globalSignificanceThreshold = 0.1
+    soloSignificanceThreshold = 0.005
     tolerance = 0.001  # Untested
     validationRepetition = True
-    repetitionName = "x01sign4labels"
-    repetitionValue = f"{15}{repetitionName}"
-    maxCombinationAmount = 3  # Depends on features. 3 can help with current
+    repetitionName = "2"
+    repetitionValue = f"{21}{repetitionName}"
+    maxCombinationAmount = 1  # Depends on features. 3 can help with current
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]   # 2,
     quickTest = True  # Runs less hyperparameters
 
-    # paradigms = paradigmSetting.upDownInner()
-    paradigms = paradigmSetting.upDownRightLeftInner()
+    paradigms = paradigmSetting.upDownInner()
+    # paradigms = paradigmSetting.upDownRightLeftInner()
     # paradigms = paradigmSetting.rightLeftInner()
-
-    # Running the same seed and subjects again in a different folder after changing code to see
-    # if the results are the same
 
     # Creating the features for each subject and putting them in a dict
     for sub in subjects:  #
 
         fClassDict[f"{sub}"] = fclass.featureEClass(sub)
         fmetDict[f"{sub}"] = svmMet.SvmMets(
-            significanceThreshold=significanceThreshold,
+            significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
             signSolo=signSolo,
             verbose=False,
@@ -168,7 +179,8 @@ def main():
                 True,  # Welch Covariance
                 True,  # Hilbert Covariance
                 True,  # Covariance on smoothed Data
-                False,  # Covariance on smoothed Data 2
+                True,  # Covariance on smoothed Data 2
+                False,  # Correlate1d
                 # More to be added
             ],
             verbose=True,
@@ -178,10 +190,19 @@ def main():
     # goodFeatureList, goodDataList = anovaTest(
     #     allSubjFList, allSubjFLabels, significanceThreshold
     # )
-
+    if signAll:
+        for sub in subjects:
+            allSubjFList, allSubjFLabels = combineAllSubjects(
+                fClassDict, subjectLeftOut=sub, onlyTrain=False
+            )
+            goodFeatureList, goodFeatureMaskList = anovaTest(
+                allSubjFList, allSubjFLabels, globalSignificanceThreshold
+            )
+            fClassDict[f"{sub}"].setGlobalGoodFeaturesMask(goodFeatureMaskList)
+    testNr = 0
     # A for loop just running all subjects using different seeds for train/data split
     for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
-
+        testNr += 1
         for sub in subjects:
             fClassDict[f"{sub}"].setOrder(seed)
 
@@ -194,21 +215,12 @@ def main():
 
             # order = fClassDict[f"{sub}"].getOrder()
 
-            # Combine all subjects, only training sets. And do Anova on
-            allSubjFList, allSubjFLabels = combineAllSubjects(
-                fClassDict, onlyTrain=True
-            )
-            goodFeatureList, goodDataList = anovaTest(
-                allSubjFList, allSubjFLabels, significanceThreshold
-            )
-
             mDataList = mixShuffleSplit(
                 fClassDict[f"{sub}"].getFeatureList(),
                 labels=fClassDict[f"{sub}"].getLabels(),
                 order=fClassDict[f"{sub}"].getOrder(),
                 featureClass=fClassDict[f"{sub}"],
                 maxCombinationAmount=maxCombinationAmount,
-                goodDataList=goodDataList,
             )
 
             allResultsPerSubject = []
@@ -225,7 +237,8 @@ def main():
             ) in mDataList:
 
                 # print(f"\n Running dataset: {name} \n")
-                print(f" Progress {count}/{len(mDataList)}")
+                print(
+                    f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
                 count += 1
                 allResults = fmetDict[f"{sub}"].testSuite(
                     data_train,
@@ -266,4 +279,12 @@ def main():
 
 
 if __name__ == "__main__":
+    pr = cProfile.Profile()
+    pr.enable()
     main()
+    pr.disable()
+    s = io.StringIO()
+    ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+    ps.print_stats()
+    with open('testStats.txt', 'w+') as f:
+        f.write(s.getvalue())

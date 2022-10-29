@@ -160,6 +160,7 @@ class SvmMets:
                 C=C,
                 cache_size=1800,
                 tol=self.tol,
+                # class_weight="balanced"
             ),
         )
 
