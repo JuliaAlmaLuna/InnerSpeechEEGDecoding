@@ -12,7 +12,6 @@ import paradigmSetting
 import cProfile
 import pstats
 import io
-import glob
 
 
 def mixShuffleSplit(
@@ -113,45 +112,6 @@ def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
     return allSubjFList, allSubjFLabels
 
 
-def saveFeatures(name, subject, array):
-
-    import os
-    saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/{subject}"
-    if os.path.exists(saveDir) is not True:
-        os.makedirs(saveDir)
-
-    np.save(
-        f"{saveDir}/{name}",
-        array,
-    )
-
-
-def loadFeatures(name, subject):
-    curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/{subject}"
-    path = glob.glob(curSavePath + f"{name}")
-    savedFeatures = np.load(path, allow_pickle=True)
-    return savedFeatures
-
-
-def loadAnovaMask(name, subject):
-    curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/{subject}"
-    path = glob.glob(curSavePath + f"{name}")
-    savedAnovaMask = np.load(path, allow_pickle=True)
-    return savedAnovaMask
-
-
-def saveAnovaMask(name, subject, array):
-    import os
-    saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/{subject}"
-    if os.path.exists(saveDir) is not True:
-        os.makedirs(saveDir)
-
-    np.save(
-        f"{saveDir}/{name}",
-        array,
-    )
-
-
 def main():
     fClassDict = dict()
     fmetDict = dict()
@@ -178,20 +138,35 @@ def main():
     soloSignificanceThreshold = 0.005
     tolerance = 0.001  # Untested
     validationRepetition = True
-    repetitionName = "2"
-    repetitionValue = f"{21}{repetitionName}"
+    repetitionName = "x"
+    repetitionValue = f"{22}{repetitionName}"
     maxCombinationAmount = 1  # Depends on features. 3 can help with current
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]   # 2,
     quickTest = True  # Runs less hyperparameters
 
-    paradigms = paradigmSetting.upDownInner()
+    paradigm = paradigmSetting.upDownInner()
     # paradigms = paradigmSetting.upDownRightLeftInner()
     # paradigms = paradigmSetting.rightLeftInner()
+    featureList = [
+        True,  # FFT
+        True,  # Welch
+        True,  # Hilbert
+        False,  # Powerbands
+        False,  # FFT frequency buckets
+        True,  # FFT Covariance
+        True,  # Welch Covariance
+        True,  # Hilbert Covariance
+        True,  # Covariance on smoothed Data
+        True,  # Covariance on smoothed Data 2
+        False,  # Correlate1d
+        # More to be added
+    ]
 
     # Creating the features for each subject and putting them in a dict
     for sub in subjects:  #
 
-        fClassDict[f"{sub}"] = fclass.featureEClass(sub)
+        fClassDict[f"{sub}"] = fclass.featureEClass(
+            sub, paradigm[0], globalSignificance=globalSignificanceThreshold)
         fmetDict[f"{sub}"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
@@ -202,27 +177,14 @@ def main():
         )
         print(f"Creating features for subject:{sub}")
         createdFeatureList, labels = fClassDict[f"{sub}"].getFeatures(
-            paradigms=paradigms,
+            paradigms=paradigm[1],
             subject=sub,
             t_min=1.8,
             t_max=3,
             sampling_rate=256,
             twoDLabels=False,
             maxCombinationAmount=maxCombinationAmount,
-            featureList=[
-                True,  # FFT
-                True,  # Welch
-                True,  # Hilbert
-                False,  # Powerbands
-                False,  # FFT frequency buckets
-                True,  # FFT Covariance
-                True,  # Welch Covariance
-                True,  # Hilbert Covariance
-                True,  # Covariance on smoothed Data
-                True,  # Covariance on smoothed Data 2
-                False,  # Correlate1d
-                # More to be added
-            ],
+            featureList=featureList,
             verbose=True,
         )
 
@@ -232,13 +194,18 @@ def main():
     # )
     if signAll:
         for sub in subjects:
-            allSubjFList, allSubjFLabels = combineAllSubjects(
-                fClassDict, subjectLeftOut=sub, onlyTrain=False
-            )
-            goodFeatureList, goodFeatureMaskList = anovaTest(
-                allSubjFList, allSubjFLabels, globalSignificanceThreshold
-            )
-            fClassDict[f"{sub}"].setGlobalGoodFeaturesMask(goodFeatureMaskList)
+            if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
+                allSubjFList, allSubjFLabels = combineAllSubjects(
+                    fClassDict, subjectLeftOut=sub, onlyTrain=False
+                )
+                goodFeatureList, goodFeatureMaskList = anovaTest(
+                    allSubjFList, allSubjFLabels, globalSignificanceThreshold
+                )
+                fClassDict[f"{sub}"].setGlobalGoodFeaturesMask(
+                    goodFeatureMaskList)  # WHY IS THIS WEIRD SHAPE???
+            else:
+                goodFeatureMaskList = fClassDict[f"{sub}"].getGlobalGoodFeaturesMask(
+                )
     testNr = 0
     # A for loop just running all subjects using different seeds for train/data split
     for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):

@@ -1,5 +1,5 @@
 def upDownRightLeftInner():
-    return [
+    return ("iiiiudrl"[
         [["Inner"], ["Inner"], ["Inner"], ["Inner"]],
         [
             ["Up"],
@@ -7,24 +7,24 @@ def upDownRightLeftInner():
             ["Right"],
             ["Left"],
         ],
-    ]
+    ])
 
 
 def upDownInner():
-    return [
+    return ("iiud", [
         [["Inner"], ["Inner"]],
         [
             ["Up"],
             ["Down"],
         ],
-    ]
+    ])
 
 
 def rightLeftInner():
-    return [
+    return ("iirl", [
         [["Inner"], ["Inner"]],
         [
             ["Right"],
             ["Left"],
         ],
-    ]
+    ])

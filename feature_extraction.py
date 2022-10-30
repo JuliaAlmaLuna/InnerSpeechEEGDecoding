@@ -7,11 +7,13 @@ from scipy import ndimage
 from scipy.signal import hilbert
 import dataLoader as dl
 import util as ut
-
+import glob
 
 # pylint: disable=C0103
+
+
 class featureEClass:
-    def __init__(self, subject):
+    def __init__(self, subject, paradigmName, globalSignificance):
         """
         File that holds class handling feature extraction
         and creation of test/train data
@@ -19,13 +21,58 @@ class featureEClass:
         Returns:
             test train data
         """
+        self.paradigmName = paradigmName
         self.labels = None
         self.order = None
         self.createdFeatureList = []
         self.globalGoodFeatureMask = None
+        self.globalSignificance = globalSignificance
         self.subject = subject
 
         print(f"Feature class for subject {self.subject} created")
+
+    def saveFeatures(self, name, array):
+
+        import os
+        saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/sub-{self.subject}-par-{self.paradigmName}"
+        if os.path.exists(saveDir) is not True:
+            os.makedirs(saveDir)
+
+        np.save(
+            f"{saveDir}/{name}",
+            array,
+        )
+
+    def loadFeatures(self, name):
+        curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/sub-{self.subject}-par-{self.paradigmName}"
+        path = glob.glob(curSavePath + f"/{name}*")
+        if len(path) > 0:
+            savedFeatures = np.load(path[0], allow_pickle=True)
+            return savedFeatures
+        else:
+            return None
+
+    def loadAnovaMask(self, featurename, maskname):
+        name = f"{featurename}{maskname}"
+        curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        path = glob.glob(curSavePath + f"/{name}*")
+        if len(path) > 0:
+            savedAnovaMask = np.load(path[0], allow_pickle=True)
+            return savedAnovaMask
+        else:
+            return None
+
+    def saveAnovaMask(self, featurename, maskname, array):
+        name = f"{featurename}{maskname}"
+        import os
+        saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        if os.path.exists(saveDir) is not True:
+            os.makedirs(saveDir)
+
+        np.save(
+            f"{saveDir}/{name}",
+            array,
+        )
 
     def plotHeatMaps(plotData):
         # Plots heatmaps, used for covariance features.
@@ -250,18 +297,33 @@ class featureEClass:
             )  # To make sure every feature is created from original data
             if useFeature:
                 if fNr == 1:
-                    createdFeature = [ut.fftData(
-                        tempData), "fftData"]  # fftData
+                    loadedFeature = self.loadFeatures("fftData")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+
+                    else:
+                        createdFeature = [ut.fftData(
+                            tempData), "fftData"]  # fftData
+                        self.saveFeatures("fftData", createdFeature)
 
                 if fNr == 2:
-                    createdFeature = [
-                        ut.welchData(tempData, fs=256, nperseg=256),
-                        "welchData",
-                    ]  # welchData
-
+                    loadedFeature = self.loadFeatures("welchData")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        createdFeature = [
+                            ut.welchData(tempData, fs=256, nperseg=256),
+                            "welchData",
+                        ]  # welchData
+                        self.saveFeatures("welchData", createdFeature)
                 if fNr == 3:
-                    dataH = hilbert(tempData, axis=2, N=128)
-                    createdFeature = [dataH.real, "dataHR"]  # dataHR
+                    loadedFeature = self.loadFeatures("dataHR")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        dataH = hilbert(tempData, axis=2, N=128)
+                        createdFeature = [dataH.real, "dataHR"]  # dataHR
+                        self.saveFeatures("dataHR", createdFeature)
                     # dataHI = dataH.imag
 
                 if fNr == 4:
@@ -278,51 +340,77 @@ class featureEClass:
                     # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
 
                 if fNr == 6:
-                    fftdata = ut.fftData(tempData)
-                    createdFeature = [
-                        np.array(ut.fftCovariance(fftdata)),
-                        "dataFFTCV",
-                    ]  # dataFFTCV
-
+                    loadedFeature = self.loadFeatures("dataFFTCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        fftdata = ut.fftData(tempData)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(fftdata)),
+                            "dataFFTCV",
+                        ]  # dataFFTCV
+                        self.saveFeatures("dataFFTCV", createdFeature)
                 if fNr == 7:
-                    welchdata = ut.welchData(tempData, fs=256, nperseg=256)
-                    createdFeature = [
-                        np.array(ut.fftCovariance(welchdata)),
-                        "dataWCV",
-                    ]  # dataWCV
-
+                    loadedFeature = self.loadFeatures("dataWCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(welchdata)),
+                            "dataWCV",
+                        ]  # dataWCV
+                        self.saveFeatures("dataWCV", createdFeature)
                 if fNr == 8:
-                    dataH = hilbert(tempData, axis=2, N=256)  # dataH
-                    dataHR = dataH.real
-                    createdFeature = [
-                        np.array(ut.fftCovariance(dataHR)),
-                        "dataHRCV",
-                    ]  # dataHRCV
-                    # dataHICV = np.array(ut.fftCovariance(dataHI))
+                    loadedFeature = self.loadFeatures("dataHRCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        dataH = hilbert(tempData, axis=2, N=256)  # dataH
+                        dataHR = dataH.real
+                        createdFeature = [
+                            np.array(ut.fftCovariance(dataHR)),
+                            "dataHRCV",
+                        ]  # dataHRCV
+                        self.saveFeatures("dataHRCV", createdFeature)
+                        # dataHICV = np.array(ut.fftCovariance(dataHI))
 
                 if fNr == 9:
-                    datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
-                    createdFeature = [
-                        np.array(ut.fftCovariance(datagauss)),
-                        "dataCV",
-                    ]  # dataCV
-
+                    loadedFeature = self.loadFeatures("dataCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        datagauss = ndimage.gaussian_filter1d(
+                            tempData, 5, axis=2)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(datagauss)),
+                            "dataCV",
+                        ]  # dataCV
+                        self.saveFeatures("dataCV", createdFeature)
                 if fNr == 10:
-
-                    datagauss2 = ndimage.gaussian_filter1d(
-                        tempData, 10, axis=2)
-                    createdFeature = [
-                        np.array(ut.fftCovariance(datagauss2)),
-                        "dataCV2",
-                    ]  # dataCV2
-
+                    loadedFeature = self.loadFeatures("dataCV2")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        datagauss2 = ndimage.gaussian_filter1d(
+                            tempData, 10, axis=2)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(datagauss2)),
+                            "dataCV2",
+                        ]  # dataCV2
+                        self.saveFeatures("dataCV2", createdFeature)
                 if fNr == 11:
-                    weights = np.zeros(shape=[20])
-                    weights[:3] = 1
-                    weights[16:] = 1
-                    createdFeature = [ndimage.correlate1d(
-                        tempData, weights=weights, axis=2), "dataCorr1d"
-                    ]
+                    loadedFeature = self.loadFeatures("dataCorr1d")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        weights = np.zeros(shape=[20])
+                        weights[:3] = 1
+                        weights[16:] = 1
+                        createdFeature = [ndimage.correlate1d(
+                            tempData, weights=weights, axis=2), "dataCorr1d"
+                        ]
+                        self.saveFeatures("dataCorr1d", createdFeature)
                 if verbose:
                     print(
                         f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
@@ -370,9 +458,29 @@ class featureEClass:
         np.random.shuffle(self.order)
 
     def setGlobalGoodFeaturesMask(self, goodFeatures):
+        # Needs to loop through feature mask and save them, using their name which is [1] in the list/tuple
+
+        for feature, mask in zip(self.getFeatureList(), goodFeatures):
+
+            self.saveAnovaMask(
+                feature[1], f"sign{self.globalSignificance}", mask)  # Here feature[1] is correct?
+
         self.globalGoodFeatureMask = goodFeatures
 
     def getGlobalGoodFeaturesMask(self):
+        # Needs to loop through feature mask and get them, using their name which is [0][1] in the list/tuple
+        goodFeatures = []
+        if self.globalGoodFeatureMask is None:
+            for feature in self.getFeatureList():
+                if self.loadAnovaMask(
+                        feature[1], f"sign{self.globalSignificance}") is None:
+                    return None
+
+                goodFeatures.append(self.loadAnovaMask(
+                    feature[1], f"sign{self.globalSignificance}"))
+
+            self.globalGoodFeatureMask = goodFeatures
+
         tempFeatureMask = dp(self.globalGoodFeatureMask)
         return tempFeatureMask
 
