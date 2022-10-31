@@ -1,5 +1,5 @@
 def upDownRightLeftInner():
-    return ("iiiiudrl"[
+    return ("iiiiudrl", [
         [["Inner"], ["Inner"], ["Inner"], ["Inner"]],
         [
             ["Up"],

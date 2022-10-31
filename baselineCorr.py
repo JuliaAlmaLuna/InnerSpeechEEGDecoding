@@ -128,7 +128,7 @@ class baseLineCorrection(featureEClass):
         return tempData
 
     def baselineCorrect(
-        self, unCorrectedFeatureList, labelsAux
+        self, unCorrectedFeatureList, labelsAux, paradigmName2
     ):  # Correct before creating Features of real data
         # or after, or both. Probably correct FFT, Welch, and Hilbert after creating them
         # And no correction using covariance for now. Create new fClasses for corrected?
@@ -148,9 +148,14 @@ class baseLineCorrection(featureEClass):
                     # print(cfeature[0][0][0][0])
                     # print("ada")
                     cfeature[0] = corrFeature
+                    cfeature[1] = f"{cfeature[1]}BC"
                     # print(cfeature[0][0][0][0])
-
+                    self.featureFolder = "SavedFeatures"
+                    self.paradigmName = f"{paradigmName2}"
+                    self.saveFeatures(f"{cfeature[1]}", cfeature)
+                    self.featureFolder = "SavedBaselineFeatures",
         self.correctedFeaturesList = correctedFeatureList
+
         return correctedFeatureList
 
         # THIS MIGHT! MIGHT! WORK NOW

@@ -142,15 +142,15 @@ def main():
     soloSignificanceThreshold = 0.005
     tolerance = 0.001  # Untested
     validationRepetition = True
-    repetitionName = "x"
-    repetitionValue = f"{23}{repetitionName}"
-    maxCombinationAmount = 1  # Depends on features. 3 can help with current
+    repetitionName = "udrlBC2"
+    repetitionValue = f"{24}{repetitionName}"
+    maxCombinationAmount = 2  # Depends on features. 3 can help with current
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
     quickTest = True  # Runs less hyperparameters
 
-    paradigm = paradigmSetting.upDownInner()
-    # paradigms = paradigmSetting.upDownRightLeftInner()
-    # paradigms = paradigmSetting.rightLeftInner()
+    # paradigm = paradigmSetting.upDownInner()
+    paradigm = paradigmSetting.upDownRightLeftInner()
+    # paradigm = paradigmSetting.rightLeftInner()
     featureList = [
         True,  # FFT
         True,  # Welch
@@ -163,6 +163,9 @@ def main():
         True,  # Covariance on smoothed Data
         True,  # Covariance on smoothed Data 2
         False,  # Correlate1d # SEEMS BAD
+        True,  # dataFFTCVBC
+        True,  # dataWCVBC
+        True,  # dataHRCVBC
         # More to be added
     ]
 
@@ -181,7 +184,7 @@ def main():
             quickTest=quickTest,
         )
         print(f"Creating features for subject:{sub}")
-        createdFeatureList, labels = fClassDict[f"{sub}"].getFeatures(
+        createdFeatureList, labels, correctedExists = fClassDict[f"{sub}"].getFeatures(
             paradigms=paradigm[1],
             subject=sub,
             t_min=t_min,
@@ -192,15 +195,34 @@ def main():
             featureList=featureList,
             verbose=True,
         )
+        print(len(createdFeatureList))
+        for createdFeature in createdFeatureList:
+            print(createdFeature[1])
+        print(correctedExists)
+        if correctedExists is False:
+            # If loop here, checking if the specific corrected
+            # Features have already been created. If so.
+            # Load them and move on
 
-        # Creating baselineData and Features
-        bClassDict[f"{sub}"] = baseLineCorrection(
-            subject=sub, sampling_rate=sampling_rate)
-        bClassDict[f"{sub}"].loadBaselineData()
-        bClassDict[f"{sub}"].getBaselineFeatures(
-            t_min=t_min, t_max=t_max, featureList=featureList)
-        bClassDict[f"{sub}"].baselineCorrect(
-            fClassDict[f"{sub}"].getFeatureList(), fClassDict[f"{sub}"].getLabelsAux())
+            # Make it so they are saved at end of if loop if not
+            #
+
+            # Creating baselineData and Features
+            bClassDict[f"{sub}"] = baseLineCorrection(
+                subject=sub, sampling_rate=sampling_rate)
+
+            bClassDict[f"{sub}"].loadBaselineData()
+
+            bClassDict[f"{sub}"].getBaselineFeatures(
+                t_min=t_min, t_max=t_max, featureList=featureList)
+
+            fClassDict[f"{sub}"].correctedFeatureList = bClassDict[f"{sub}"].baselineCorrect(
+                fClassDict[f"{sub}"].getFeatureList(
+                ), fClassDict[f"{sub}"].getLabelsAux(),
+                fClassDict[f"{sub}"].paradigmName)
+
+        # fClassDict[f"{sub}"].saved
+
         # I only really want to correct some features
 
         # TODO: Here, get baseline as well and create the same features for them
