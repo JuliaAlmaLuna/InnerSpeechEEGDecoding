@@ -54,6 +54,8 @@ def load_data(
     # Load all trials for a sigle subject
     X, Y = Extract_data_from_subject(root_dir, N_S, datatype)
 
+    print("Data shape: [trials x channels x samples]")
+    print(X.shape)
     # Cut usefull time. i.e action interval
     X = Select_time_window(X=X, t_start=t_start, t_end=t_end, fs=fs)
     if verbose is True:
@@ -90,18 +92,24 @@ def load_data(
     # ["Up"], ["Down"], ["Right"], ["Left"],
     # ["Up"], ["Down"], ["Right"], ["Left"]
     # ]
-
     # Transform data and keep only the trials of interest
     if datatype != "baseline":
-        X, Y = Transform_for_classificator(X, Y, Classes, Conditions)
-    if verbose is True:
-        print("Final data shape")
-        print(X.shape)
+        X, Y, Y_AUX = Transform_for_classificator(X, Y, Classes, Conditions)
+        Y_AUX = np.reshape(Y_AUX, [-1, 4])
+        print("Final labels2 shape")
 
-        print("Final labels shape")
+        print(Y_AUX.shape)
 
-        print(Y.shape)
-    print("Up is {} and Down is {}".format(np.unique(Y)[0], np.unique(Y)[1]))
+        if verbose is True:
+            print("Final data shape")
+            print(X.shape)
+
+            print("Final labels shape")
+
+            print(Y.shape)
+
+        # print("Up is {} and Down is {}".format(np.unique(Y)[0], np.unique(Y)[1]))
+        return X, Y, Y_AUX
 
     return X, Y
 
@@ -128,7 +136,7 @@ def load_multiple_datasets(
     if nr_of_datasets > 9:
         nr_of_datasets = 9
 
-    datax, labelsx = load_data(
+    datax, labelsx, labelsAux = load_data(
         datatype="EEG",
         subject_nr=specificSubject,
         verbose=True,
@@ -170,7 +178,7 @@ def load_multiple_datasets(
                 labels[row, 1] = 1
     else:
         labels = labels1d
-    return data, labels
+    return data, labels, labelsAux
 
 
 def get_channelnames():

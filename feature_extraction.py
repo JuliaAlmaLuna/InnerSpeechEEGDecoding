@@ -13,7 +13,9 @@ import glob
 
 
 class featureEClass:
-    def __init__(self, subject, paradigmName, globalSignificance):
+    def __init__(
+        self, subject, paradigmName, globalSignificance, featureFolder="SavedFeatures"
+    ):
         """
         File that holds class handling feature extraction
         and creation of test/train data
@@ -23,18 +25,22 @@ class featureEClass:
         """
         self.paradigmName = paradigmName
         self.labels = None
+        self.labelsAux = None
+        self.data = None
         self.order = None
         self.createdFeatureList = []
         self.globalGoodFeatureMask = None
         self.globalSignificance = globalSignificance
         self.subject = subject
+        self.featureFolder = featureFolder
 
         print(f"Feature class for subject {self.subject} created")
 
     def saveFeatures(self, name, array):
 
         import os
-        saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/sub-{self.subject}-par-{self.paradigmName}"
+
+        saveDir = f"F:/PythonProjects/NietoExcercise-1/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
 
@@ -44,8 +50,8 @@ class featureEClass:
         )
 
     def loadFeatures(self, name):
-        curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedFeatures/sub-{self.subject}-par-{self.paradigmName}"
-        path = glob.glob(curSavePath + f"/{name}*")
+        svpath = f"F:/PythonProjects/NietoExcercise-1/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
+        path = glob.glob(svpath + f"/{name}*")
         if len(path) > 0:
             savedFeatures = np.load(path[0], allow_pickle=True)
             return savedFeatures
@@ -65,6 +71,7 @@ class featureEClass:
     def saveAnovaMask(self, featurename, maskname, array):
         name = f"{featurename}{maskname}"
         import os
+
         saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
@@ -218,6 +225,28 @@ class featureEClass:
 
         return data_train, data_test, labels_train, labels_test, name, gdData
 
+    def loadData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
+        # Load the Nieto datasets if those are the ones tested. If not, data and labels loaded
+        # from some other dataset needs to be
+        # In the same shape they are for the rest of the function.
+        nr_of_datasets = 1
+        specificSubject = self.subject
+        self.data, self.labels, self.labelsAux = dl.load_multiple_datasets(
+            nr_of_datasets=nr_of_datasets,
+            sampling_rate=sampling_rate,
+            t_min=t_min,
+            t_max=t_max,
+            specificSubject=specificSubject,
+            twoDLabels=twoDLabels,
+            paradigms=paradigms,
+        )
+        # print(labelsAux)
+        # print(labelsAux[:, 1])  # Class
+        # print(labelsAux[:, 2])  # Cond
+        # print(labelsAux[:, 3])  # Session
+
+        return self.data, self.labels
+
     def getFeatures(
         self,
         subject,
@@ -255,8 +284,6 @@ class featureEClass:
             ],
         ],
     ):
-
-        # featurearray = [0,1,1,1,1] Not added yet
         """
         Takes in subject nr and array of features: 1 for include 0 for not,
         True for each one that should be recieved in return array.
@@ -272,35 +299,38 @@ class featureEClass:
         WCV = Welch Covariance
         TBadded Frequency bands, power bands
         """
-
+        if self.data is None:  # Really should load this separately
+            print("Using load here")
+            self.data, self.labels = self.loadData(
+                t_min, t_max, sampling_rate, twoDLabels, paradigms
+            )
         # Load the Nieto datasets if those are the ones tested. If not, data and labels loaded
         # from some other dataset needs to be
         # In the same shape they are for the rest of the function.
-        nr_of_datasets = 1
-        specificSubject = subject
-        data, self.labels = dl.load_multiple_datasets(
-            nr_of_datasets=nr_of_datasets,
-            sampling_rate=sampling_rate,
-            t_min=t_min,
-            t_max=t_max,
-            specificSubject=specificSubject,
-            twoDLabels=twoDLabels,
-            paradigms=paradigms,
-        )
-
-        tempData = np.copy(data)
+        # nr_of_datasets = 1
+        # specificSubject = subject
+        # data, self.labels = dl.load_multiple_datasets(
+        #     nr_of_datasets=nr_of_datasets,
+        #     sampling_rate=sampling_rate,
+        #     t_min=t_min,
+        #     t_max=t_max,
+        #     specificSubject=specificSubject,
+        #     twoDLabels=twoDLabels,
+        #     paradigms=paradigms,
+        # )
+        self.createdFeatureList = []
+        tempData = np.copy(self.data)
         for fNr, useFeature in enumerate(featureList, 1):
 
             del tempData
             tempData = np.copy(
-                data
+                self.data
             )  # To make sure every feature is created from original data
             if useFeature:
                 if fNr == 1:
                     loadedFeature = self.loadFeatures("fftData")
                     if loadedFeature is not None:
                         createdFeature = loadedFeature
-
                     else:
                         createdFeature = [ut.fftData(
                             tempData), "fftData"]  # fftData
@@ -407,8 +437,10 @@ class featureEClass:
                         weights = np.zeros(shape=[20])
                         weights[:3] = 1
                         weights[16:] = 1
-                        createdFeature = [ndimage.correlate1d(
-                            tempData, weights=weights, axis=2), "dataCorr1d"
+                        createdFeature = [
+                            ndimage.correlate1d(
+                                tempData, weights=weights, axis=2),
+                            "dataCorr1d",
                         ]
                         self.saveFeatures("dataCorr1d", createdFeature)
                 if verbose:
@@ -422,6 +454,10 @@ class featureEClass:
     def getFeatureList(self):
         tempFeatureList = dp(self.createdFeatureList)
         return tempFeatureList
+
+    def getLabelsAux(self):
+        tempLabelsAux = dp(self.labelsAux)
+        return tempLabelsAux
 
     def getTrainFeatureList(self):
         tempFeatureList = dp(self.createdFeatureList)
@@ -463,7 +499,8 @@ class featureEClass:
         for feature, mask in zip(self.getFeatureList(), goodFeatures):
 
             self.saveAnovaMask(
-                feature[1], f"sign{self.globalSignificance}", mask)  # Here feature[1] is correct?
+                feature[1], f"sign{self.globalSignificance}", mask
+            )  # Here feature[1] is correct?
 
         self.globalGoodFeatureMask = goodFeatures
 
@@ -472,12 +509,17 @@ class featureEClass:
         goodFeatures = []
         if self.globalGoodFeatureMask is None:
             for feature in self.getFeatureList():
-                if self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}") is None:
+                if (
+                    self.loadAnovaMask(
+                        feature[1], f"sign{self.globalSignificance}")
+                    is None
+                ):
                     return None
 
-                goodFeatures.append(self.loadAnovaMask(
-                    feature[1], f"sign{self.globalSignificance}"))
+                goodFeatures.append(
+                    self.loadAnovaMask(
+                        feature[1], f"sign{self.globalSignificance}")
+                )
 
             self.globalGoodFeatureMask = goodFeatures
 

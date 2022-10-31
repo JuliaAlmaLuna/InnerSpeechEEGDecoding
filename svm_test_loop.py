@@ -5,6 +5,7 @@ This class runs a pipeline testing SVM classification on data
 from copy import deepcopy as dp
 import numpy as np
 import feature_extraction as fclass
+from baselineCorr import baseLineCorrection
 import svmMethods as svmMet
 from sklearn import feature_selection
 from sklearn.preprocessing import StandardScaler
@@ -115,6 +116,7 @@ def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
 def main():
     fClassDict = dict()
     fmetDict = dict()
+    bClassDict = dict()
     testSize = 10
     seedStart = 39  # Arbitrary, could be randomized as well.
 
@@ -128,8 +130,10 @@ def main():
     # and seed in the other two for loops. Save all times in a separate folder
     #
 
-    # It seems like something is wrong since results are barely significant
-    # Maybe just bad!
+    # Loading parameters
+    t_min = 1.8
+    t_max = 3
+    sampling_rate = 256
 
     signAll = True
     signSolo = False
@@ -139,9 +143,9 @@ def main():
     tolerance = 0.001  # Untested
     validationRepetition = True
     repetitionName = "x"
-    repetitionValue = f"{22}{repetitionName}"
+    repetitionValue = f"{23}{repetitionName}"
     maxCombinationAmount = 1  # Depends on features. 3 can help with current
-    subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]   # 2,
+    subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
     quickTest = True  # Runs less hyperparameters
 
     paradigm = paradigmSetting.upDownInner()
@@ -158,7 +162,7 @@ def main():
         True,  # Hilbert Covariance
         True,  # Covariance on smoothed Data
         True,  # Covariance on smoothed Data 2
-        False,  # Correlate1d
+        False,  # Correlate1d # SEEMS BAD
         # More to be added
     ]
 
@@ -166,27 +170,45 @@ def main():
     for sub in subjects:  #
 
         fClassDict[f"{sub}"] = fclass.featureEClass(
-            sub, paradigm[0], globalSignificance=globalSignificanceThreshold)
+            sub, paradigm[0], globalSignificance=globalSignificanceThreshold
+        )
         fmetDict[f"{sub}"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
             signSolo=signSolo,
             verbose=False,
             tol=tolerance,
-            quickTest=quickTest
+            quickTest=quickTest,
         )
         print(f"Creating features for subject:{sub}")
         createdFeatureList, labels = fClassDict[f"{sub}"].getFeatures(
             paradigms=paradigm[1],
             subject=sub,
-            t_min=1.8,
-            t_max=3,
-            sampling_rate=256,
+            t_min=t_min,
+            t_max=t_max,
+            sampling_rate=sampling_rate,
             twoDLabels=False,
             maxCombinationAmount=maxCombinationAmount,
             featureList=featureList,
             verbose=True,
         )
+
+        # Creating baselineData and Features
+        bClassDict[f"{sub}"] = baseLineCorrection(
+            subject=sub, sampling_rate=sampling_rate)
+        bClassDict[f"{sub}"].loadBaselineData()
+        bClassDict[f"{sub}"].getBaselineFeatures(
+            t_min=t_min, t_max=t_max, featureList=featureList)
+        bClassDict[f"{sub}"].baselineCorrect(
+            fClassDict[f"{sub}"].getFeatureList(), fClassDict[f"{sub}"].getLabelsAux())
+        # I only really want to correct some features
+
+        # TODO: Here, get baseline as well and create the same features for them
+        #
+        # Then correct using that baseline to form new features
+        # Bline corrected Features. Name them as such when saving
+        # So two new things per feature to save. Baselines per day/subject
+        # and corrected features
 
     # allSubjFList, allSubjFLabels = combineAllSubjects(fClassDict)
     # goodFeatureList, goodDataList = anovaTest(
@@ -202,7 +224,8 @@ def main():
                     allSubjFList, allSubjFLabels, globalSignificanceThreshold
                 )
                 fClassDict[f"{sub}"].setGlobalGoodFeaturesMask(
-                    goodFeatureMaskList)  # WHY IS THIS WEIRD SHAPE???
+                    goodFeatureMaskList
+                )  # WHY IS THIS WEIRD SHAPE???
             else:
                 goodFeatureMaskList = fClassDict[f"{sub}"].getGlobalGoodFeaturesMask(
                 )
@@ -291,7 +314,7 @@ if __name__ == "__main__":
     main()
     pr.disable()
     s = io.StringIO()
-    ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+    ps = pstats.Stats(pr, stream=s).sort_stats("tottime")
     ps.print_stats()
-    with open('testStats.txt', 'w+') as f:
+    with open("testStats.txt", "w+") as f:
         f.write(s.getvalue())
