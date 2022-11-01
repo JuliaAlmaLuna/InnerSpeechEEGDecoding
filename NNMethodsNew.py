@@ -3,9 +3,6 @@ from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn import feature_selection
-import tensorflow as tf
-from tensorflow.keras import layers  # ,regularizers
-# import tensorflow_hub as hub  # type:ignore
 
 import matplotlib.pyplot as plt
 
@@ -247,81 +244,6 @@ class SvmMets:
 
         coefs = np.reshape(coefs, [128, -1])
         return np.array(allResults, dtype=object)
-
-    def testSuiteNN(
-        self,
-        data_train,
-        data_test,
-        labels_train,
-        labels_test,
-        name,
-        goodData,
-        kernels=["linear", "rbf", "sigmoid"]   # Notneeeded
-    ):
-
-        coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
-
-        scaler = StandardScaler()
-        scaler = scaler.fit(data_train)
-
-        ndata_train = scaler.transform(data_train)
-        ndata_test = scaler.transform(data_test)
-
-        goodData2 = None
-        if self.signSolo:
-            goodData2 = self.anovaSolo(ndata_train, labels_train)
-        if self.onlySign:
-            ndata_train, ndata_test = self.onlySignData(
-                ndata_train=ndata_train,
-                ndata_test=ndata_test,
-                goodData=goodData,
-                goodData2=goodData2,
-                coefs=coefs,
-            )
-
-        allResults = []
-
-        # Below here, do NN stuff instead
-
-        eeg_model = tf.keras.Sequential([
-
-
-            layers.Dense(units=2, activation="softmax"),
-        ]
-        )
-
-        callback = tf.keras.callbacks.EarlyStopping(
-            monitor="val_loss", patience=60, restore_best_weights=True
-        )
-
-        eeg_model.compile(
-            optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
-        )
-        # Training NN
-        outputs = eeg_model.fit(
-            data_train,
-            labels_train,
-            validation_split=0.2,
-            callbacks=[callback],
-            epochs=20,
-            verbose=True,
-        )
-
-        # Printing results
-        print("Results")
-        eeg_model.evaluate(data_test, labels_test)
-        # result = eeg_model.predict(data_test_send)
-
-        # Plotting training and validation results.
-        # val_loss = outputs.history["val_loss"]
-        # loss = outputs.history["loss"]
-        # val_acc = outputs.history["val_accuracy"]
-        acc = outputs.history["accuracy"]
-        allResults.append["julia1", acc, "juliakernel", 2]
-        print()
-        # Need to return a allResults lists with objects that are each [name, res[0], kernel, C] equivalent
-
-        # return np.array(allResults, dtype = object)
 
     # # For ensemble svm model use
     # def testSuite2(self, data_train, data_test, labels_train, labels_test, name):

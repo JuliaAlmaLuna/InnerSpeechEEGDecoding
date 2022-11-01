@@ -142,35 +142,55 @@ def main():
     soloSignificanceThreshold = 0.005
     tolerance = 0.001  # Untested
     validationRepetition = True
-    repetitionName = "udrlBC2"
-    repetitionValue = f"{26}{repetitionName}"
-    maxCombinationAmount = 2  # Depends on features. 3 can help with current
+    repetitionName = "udrlBCNN"
+    repetitionValue = f"{35}{repetitionName}"
+    maxCombinationAmount = 1  # Depends on features. 3 can help with current
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
     quickTest = True  # Runs less hyperparameters
 
-    # paradigm = paradigmSetting.upDownInner()
-    paradigm = paradigmSetting.upDownRightLeftInner()
+    paradigm = paradigmSetting.upDownInner()
+    # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.rightLeftInner()
     featureList = [
-        True,  # FFT 1
-        True,  # Welch 2
-        False,  # Hilbert 3
+        False,  # FFT 1
+        False,  # Welch 2
+        False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
         True,  # FFT Covariance 6
-        True,  # Welch Covariance 7
-        False,  # Hilbert Covariance 8
+        False,  # Welch Covariance 7
+        False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
         False,  # Covariance on smoothed Data 9
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
-        True,  # dataFFTCVBC 12
-        True,  # dataWCVBC 13
-        True,  # dataHRCVBC 14
+        False,  # dataFFTCVBC 12
+        False,  # dataWCVBC 13
+        False,  # dataHRCVBC 14 DataHR seems to not add much if any to FFT and Welch
         True,  # fftDataBC 15
         True,  # welchDataBC 16
-        True   # dataHRBC 17
+        True,   # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
         # More to be added
     ]
+
+    # True,  # FFT 1
+    #     True,  # Welch 2
+    #     False,  # Hilbert 3
+    #     False,  # Powerbands 4
+    #     False,  # FFT frequency buckets 5
+    #     True,  # FFT Covariance 6
+    #     True,  # Welch Covariance 7
+    #     False,  # Hilbert Covariance 8
+    #     False,  # Covariance on smoothed Data 9
+    #     False,  # Covariance on smoothed Data2 10
+    #     False,  # Correlate1d # SEEMS BAD 11
+    #     True,  # dataFFTCVBC 12
+    #     True,  # dataWCVBC 13
+    #     True,  # dataHRCVBC 14
+    #     True,  # fftDataBC 15
+    #     True,  # welchDataBC 16
+    #     True   # dataHRBC 17
+    #     # More to be added
+    # ]
 
     # Creating the features for each subject and putting them in a dict
     for sub in subjects:  #
@@ -273,6 +293,7 @@ def main():
             # For loop of each combination of features
             # Training a SVM using each one and then saving the results
             count = 1
+
             for (
                 data_train,
                 data_test,
@@ -286,6 +307,9 @@ def main():
                 print(
                     f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
                 count += 1
+
+                # Below here can be switch to NN ? Create method? Or just different testSuite
+
                 allResults = fmetDict[f"{sub}"].testSuite(
                     data_train,
                     data_test,
