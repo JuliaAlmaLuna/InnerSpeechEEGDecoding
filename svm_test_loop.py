@@ -143,7 +143,7 @@ def main():
     tolerance = 0.001  # Untested
     validationRepetition = True
     repetitionName = "udrlBC2"
-    repetitionValue = f"{25}{repetitionName}"
+    repetitionValue = f"{26}{repetitionName}"
     maxCombinationAmount = 2  # Depends on features. 3 can help with current
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
     quickTest = True  # Runs less hyperparameters
@@ -152,37 +152,25 @@ def main():
     paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.rightLeftInner()
     featureList = [
-        True,  # FFT
-        True,  # Welch
-        False,  # Hilbert
-        False,  # Powerbands
-        False,  # FFT frequency buckets
-        True,  # FFT Covariance
-        True,  # Welch Covariance
-        False,  # Hilbert Covariance
-        False,  # Covariance on smoothed Data
-        False,  # Covariance on smoothed Data 2
-        False,  # Correlate1d # SEEMS BAD
-        True,  # dataFFTCVBC
-        True,  # dataWCVBC
-        True,  # dataHRCVBC
+        True,  # FFT 1
+        True,  # Welch 2
+        False,  # Hilbert 3
+        False,  # Powerbands 4
+        False,  # FFT frequency buckets 5
+        True,  # FFT Covariance 6
+        True,  # Welch Covariance 7
+        False,  # Hilbert Covariance 8
+        False,  # Covariance on smoothed Data 9
+        False,  # Covariance on smoothed Data2 10
+        False,  # Correlate1d # SEEMS BAD 11
+        True,  # dataFFTCVBC 12
+        True,  # dataWCVBC 13
+        True,  # dataHRCVBC 14
+        True,  # fftDataBC 15
+        True,  # welchDataBC 16
+        True   # dataHRBC 17
         # More to be added
     ]
-
-    # True,  # FFT
-    #     True,  # Welch
-    #     True,  # Hilbert
-    #     False,  # Powerbands
-    #     False,  # FFT frequency buckets
-    #     True,  # FFT Covariance
-    #     True,  # Welch Covariance
-    #     True,  # Hilbert Covariance
-    #     True,  # Covariance on smoothed Data
-    #     True,  # Covariance on smoothed Data 2
-    #     False,  # Correlate1d # SEEMS BAD
-    #     True,  # dataFFTCVBC
-    #     True,  # dataWCVBC
-    #     True,  # dataHRCVBC
 
     # Creating the features for each subject and putting them in a dict
     for sub in subjects:  #
@@ -216,14 +204,7 @@ def main():
         print(correctedExists)
 
         if correctedExists is False:
-            # If loop here, checking if the specific corrected
-            # Features have already been created. If so.
-            # Load them and move on
 
-            # Make it so they are saved at end of if loop if not
-            #
-
-            # Creating baselineData and Features
             bClassDict[f"{sub}"] = baseLineCorrection(
                 subject=sub, sampling_rate=sampling_rate)
 
@@ -237,21 +218,20 @@ def main():
                 ), fClassDict[f"{sub}"].getLabelsAux(),
                 fClassDict[f"{sub}"].paradigmName)
 
-        # fClassDict[f"{sub}"].saved
+            print(f"Creating features for subject:{sub}")
+            createdFeatureList, labels, correctedExists = fClassDict[f"{sub}"].getFeatures(
+                paradigms=paradigm[1],
+                subject=sub,
+                t_min=t_min,
+                t_max=t_max,
+                sampling_rate=sampling_rate,
+                twoDLabels=False,
+                maxCombinationAmount=maxCombinationAmount,
+                featureList=featureList,
+                verbose=True,
+            )
 
-        # I only really want to correct some features
-
-        # TODO: Here, get baseline as well and create the same features for them
-        #
-        # Then correct using that baseline to form new features
-        # Bline corrected Features. Name them as such when saving
-        # So two new things per feature to save. Baselines per day/subject
-        # and corrected features
-
-    # allSubjFList, allSubjFLabels = combineAllSubjects(fClassDict)
-    # goodFeatureList, goodDataList = anovaTest(
-    #     allSubjFList, allSubjFLabels, significanceThreshold
-    # )
+    # if signAll, then create or get globalGoodFeatures mask
     if signAll:
         for sub in subjects:
             if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
@@ -271,6 +251,8 @@ def main():
     # A for loop just running all subjects using different seeds for train/data split
     for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
         testNr += 1
+
+        # Setting random order for test/train split for all subjects for this seed
         for sub in subjects:
             fClassDict[f"{sub}"].setOrder(seed)
 
@@ -278,10 +260,6 @@ def main():
         for sub in subjects:  #
 
             print(f"Starting test of subject:{sub} , seed:{seed}")
-
-            # Set the random order of shuffling for the subject/seed test
-
-            # order = fClassDict[f"{sub}"].getOrder()
 
             mDataList = mixShuffleSplit(
                 fClassDict[f"{sub}"].getFeatureList(),
