@@ -29,6 +29,7 @@ class featureEClass:
         self.data = None
         self.order = None
         self.createdFeatureList = []
+        self.correctedFeatureList = []
         self.globalGoodFeatureMask = None
         self.globalSignificance = globalSignificance
         self.subject = subject
@@ -247,100 +248,8 @@ class featureEClass:
 
         return self.data, self.labels
 
-    def createFeature(self, featureName, tempData):
-        createdFeature = None
-        if featureName == "fftData":
-            createdFeature = [ut.fftData(tempData), featureName]
-        if featureName == "welchData":
-            createdFeature = [ut.welchData(tempData, fs=256, nperseg=256),
-                              featureName]
-        if featureName == "dataHR":
-            dataH = hilbert(tempData, axis=2, N=128)
-            createdFeature = [dataH.real, featureName]  # dataHR
-
-        if featureName == "Powerbands":
-            # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
-            # trialSplit=1).squeeze()
-            # print("Power band data shape: {}".format(data_p.shape))
-            pass
-        if featureName == "Frequency buckets":
-            # #Creating freqBandBuckets
-            # nr_of_buckets = 15
-            # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
-            pass
-        if featureName == "dataFFTCV":
-            fftdata = ut.fftData(tempData)
-            createdFeature = [
-                np.array(ut.fftCovariance(fftdata)),
-                featureName,
-            ]
-        if featureName == "dataWCV":
-            welchdata = ut.welchData(tempData, fs=256, nperseg=256)
-            createdFeature = [
-                np.array(ut.fftCovariance(welchdata)),
-                featureName,
-            ]
-        if featureName == "dataHRCV":
-            dataH = hilbert(tempData, axis=2, N=256)  # dataH
-            dataHR = dataH.real
-            createdFeature = [
-                np.array(ut.fftCovariance(dataHR)),
-                featureName,
-            ]  # dataHRCV
-        if featureName == "dataCV":
-            datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
-            createdFeature = [
-                np.array(ut.fftCovariance(datagauss)),
-                featureName,
-            ]
-        if featureName == "dataCV2":
-            datagauss2 = ndimage.gaussian_filter1d(tempData, 10, axis=2)
-            createdFeature = [
-                np.array(ut.fftCovariance(datagauss2)),
-                featureName,
-            ]
-        if featureName == "dataCorr1d":
-            weights = np.zeros(shape=[20])
-            weights[:3] = 1
-            weights[16:] = 1
-            createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=2),
-                featureName,
-            ]
-        if featureName == "dataFFTCV-BC":
-            loadedCorrectFeature = self.loadFeatures("fftDataBC")
-            if loadedCorrectFeature is not None:
-                fftdata = loadedCorrectFeature[0]
-                createdFeature = [
-                    np.array(ut.fftCovariance(fftdata)),
-                    featureName,
-                ]  # dataFFTCV
-            else:
-                return None
-        if featureName == "dataWCV-BC":
-            loadedCorrectFeature = self.loadFeatures("welchDataBC")
-            if loadedCorrectFeature is not None:
-                welchdata = loadedCorrectFeature[0]
-                createdFeature = [
-                    np.array(ut.fftCovariance(welchdata)),
-                    featureName,
-                ]  # dataWCV
-            else:
-                return None
-        if featureName == "dataHRCV-BC":
-            loadedCorrectFeature = self.loadFeatures("dataHRBC")
-            if loadedCorrectFeature is not None:
-                dataHR = loadedCorrectFeature[0]
-                # dataHR = dataH.real
-                createdFeature = [
-                    np.array(ut.fftCovariance(dataHR)),
-                    featureName,
-                ]  # dataHRCV
-            else:
-                return None
-        self.saveFeatures(featureName, createdFeature)
-        return createdFeature
+    def createFeature():
+        pass
 
     def getFeatures(
         self,
@@ -379,16 +288,44 @@ class featureEClass:
             ],
         ],
     ):
+        """
+        Takes in subject nr and array of features: 1 for include 0 for not,
+        True for each one that should be recieved in return array.
+        maxCombinationAmount = Maximum amount of separate features ( for example WCV, FFT) that are combined to form one
+        dataset to be trained/tested on. If set to Default = 1, the features are not combined at all.
 
+
+        Possible features arranged by order in array:
+        FFTCV = Fourier Covariance,
+        HRCV = Hilbert real part Covariance,
+        HICV = Hilbert imaginary part Covariance
+        CV = Gaussian smootheed EEG covariance
+        WCV = Welch Covariance
+        TBadded Frequency bands, power bands
+        """
         if self.data is None:  # Really should load this separately
             print("Using load here")
             self.data, self.labels = self.loadData(
                 t_min, t_max, sampling_rate, twoDLabels, paradigms
             )
-
+        # Load the Nieto datasets if those are the ones tested. If not, data and labels loaded
+        # from some other dataset needs to be
+        # In the same shape they are for the rest of the function.
+        # nr_of_datasets = 1
+        # specificSubject = subject
+        # data, self.labels = dl.load_multiple_datasets(
+        #     nr_of_datasets=nr_of_datasets,
+        #     sampling_rate=sampling_rate,
+        #     t_min=t_min,
+        #     t_max=t_max,
+        #     specificSubject=specificSubject,
+        #     twoDLabels=twoDLabels,
+        #     paradigms=paradigms,
+        # )
         self.createdFeatureList = []
+        self.correctedFeatureList = []
         tempData = np.copy(self.data)
-        correctedExists = True
+        correctedExists = False
         for fNr, useFeature in enumerate(featureList, 1):
 
             del tempData
@@ -399,73 +336,233 @@ class featureEClass:
                 featureName = None
                 if fNr == 1:
                     featureName = "fftData"
-
-                if fNr == 2:
-                    featureName = "welchData"
-
-                if fNr == 3:
-                    featureName = "dataHR"
-
-                if fNr == 4:
-                    print("Powerbands")
-                    continue
-
-                if fNr == 5:
-                    print("Frequency buckets")
-                    continue
-
-                if fNr == 6:
-                    featureName = "dataFFTCV"
-
-                if fNr == 7:
-                    featureName = "dataWCV"
-
-                if fNr == 8:
-                    featureName = "dataHRCV"
-
-                if fNr == 9:
-                    featureName = "dataCV"
-
-                if fNr == 10:
-                    featureName = "dataCV2"
-
-                if fNr == 11:
-                    featureName = "dataCorr1d"
-
-                if fNr == 12:
-                    featureName = "dataFFTCV-BC"
-
-                if fNr == 13:
-                    featureName = "dataWCV-BC"
-
-                if fNr == 14:
-                    featureName = "dataHRCV-BC"
+                    loadedFeature = self.loadFeatures(featureName)
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        createdFeature = [ut.fftData(                  # Move this to other function, create dict of feature creations.
+                            tempData), featureName]  # fftData
+                        self.saveFeatures(featureName, createdFeature)
 
                 if fNr == 15:
                     featureName = "fftDataBC"
-
-                if fNr == 16:
-                    featureName = "welchDataBC"
-
-                if fNr == 17:
-                    featureName = "dataHRBC"
+                    loadedFeature = self.loadFeatures(featureName)
+                    if loadedFeature is not None:  # Borde inte vara här
+                        createdFeature = loadedFeature
+                        correctedExists = True
+                        # self.createdFeatureList.append(createdCorrectFeature)
+                        # self.correctedFeatureList.append(createdCorrectFeature)
 
                 loadedFeature = self.loadFeatures(featureName)
                 if loadedFeature is not None:
                     createdFeature = loadedFeature
                 else:
                     if "BC" in featureName and "-BC" not in featureName:
-                        correctedExists = False
                         continue
                     else:
-                        createdFeature = self.createFeature(
-                            featureName, tempData=tempData)
+                        self.createFeature(featureName)
 
-                if createdFeature is not None:
-                    if verbose:
-                        print(
-                            f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
-                    self.createdFeatureList.append(createdFeature)
+                if fNr == 2:
+                    loadedFeature = self.loadFeatures("welchData")
+                    loadedCorrectFeature = self.loadFeatures("welchDataBC")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        createdFeature = [
+                            ut.welchData(tempData, fs=256, nperseg=256),
+                            "welchData",
+                        ]  # welchData
+                        self.saveFeatures("welchData", createdFeature)
+                    if loadedCorrectFeature is not None:
+                        createdCorrectFeature = loadedCorrectFeature
+                        correctedExists = True
+                        self.createdFeatureList.append(createdCorrectFeature)
+                        self.correctedFeatureList.append(createdCorrectFeature)
+
+                if fNr == 3:
+                    loadedFeature = self.loadFeatures("dataHR")
+                    loadedCorrectFeature = self.loadFeatures("dataHRBC")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        dataH = hilbert(tempData, axis=2, N=128)
+                        createdFeature = [dataH.real, "dataHR"]  # dataHR
+                        self.saveFeatures("dataHR", createdFeature)
+                    if loadedCorrectFeature is not None:
+                        createdCorrectFeature = loadedCorrectFeature
+                        correctedExists = True
+                        self.createdFeatureList.append(createdCorrectFeature)
+                        self.correctedFeatureList.append(createdCorrectFeature)
+                    # dataHI = dataH.imag
+
+                if fNr == 4:
+                    # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
+                    # trialSplit=1).squeeze()
+                    # print("Power band data shape: {}".format(data_p.shape))
+
+                    print("Powerbands")
+
+                if fNr == 5:
+                    print("Frequency buckets")
+                    # #Creating freqBandBuckets
+                    # nr_of_buckets = 15
+                    # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
+
+                if fNr == 6:
+                    loadedFeature = self.loadFeatures("dataFFTCV")
+
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        fftdata = ut.fftData(tempData)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(fftdata)),
+                            "dataFFTCV",
+                        ]  # dataFFTCV
+                        self.saveFeatures("dataFFTCV", createdFeature)
+                if fNr == 7:
+                    loadedFeature = self.loadFeatures("dataWCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(welchdata)),
+                            "dataWCV",
+                        ]  # dataWCV
+                        self.saveFeatures("dataWCV", createdFeature)
+                if fNr == 8:
+                    loadedFeature = self.loadFeatures("dataHRCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        dataH = hilbert(tempData, axis=2, N=256)  # dataH
+                        dataHR = dataH.real
+                        createdFeature = [
+                            np.array(ut.fftCovariance(dataHR)),
+                            "dataHRCV",
+                        ]  # dataHRCV
+                        self.saveFeatures("dataHRCV", createdFeature)
+                        # dataHICV = np.array(ut.fftCovariance(dataHI))
+
+                if fNr == 9:
+                    loadedFeature = self.loadFeatures("dataCV")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        datagauss = ndimage.gaussian_filter1d(
+                            tempData, 5, axis=2)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(datagauss)),
+                            "dataCV",
+                        ]  # dataCV
+                        self.saveFeatures("dataCV", createdFeature)
+                if fNr == 10:
+                    loadedFeature = self.loadFeatures("dataCV2")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        datagauss2 = ndimage.gaussian_filter1d(
+                            tempData, 10, axis=2)
+                        createdFeature = [
+                            np.array(ut.fftCovariance(datagauss2)),
+                            "dataCV2",
+                        ]  # dataCV2
+                        self.saveFeatures("dataCV2", createdFeature)
+
+                if fNr == 11:
+                    loadedFeature = self.loadFeatures("dataCorr1d")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        weights = np.zeros(shape=[20])
+                        weights[:3] = 1
+                        weights[16:] = 1
+                        createdFeature = [
+                            ndimage.correlate1d(
+                                tempData, weights=weights, axis=2),
+                            "dataCorr1d",
+                        ]
+                        self.saveFeatures("dataCorr1d", createdFeature)
+
+                if fNr == 12:
+                    loadedFeature = self.loadFeatures("dataFFTCV-BC")
+                    loadedCorrectFeature = self.loadFeatures("fftDataBC")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        if loadedCorrectFeature is not None:
+                            fftdata = loadedCorrectFeature[0]
+                            createdFeature = [
+                                np.array(ut.fftCovariance(fftdata)),
+                                "dataFFTCV-BC",
+                            ]  # dataFFTCV
+                            self.saveFeatures("dataFFTCV-BC", createdFeature)
+                        else:
+                            continue
+                    self.correctedFeatureList.append(createdFeature)
+
+                if fNr == 13:
+                    loadedFeature = self.loadFeatures("dataWCV-BC")
+                    loadedCorrectFeature = self.loadFeatures("welchDataBC")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        if loadedCorrectFeature is not None:
+                            welchdata = loadedCorrectFeature[0]
+                            createdFeature = [
+                                np.array(ut.fftCovariance(welchdata)),
+                                "dataWCV-BC",
+                            ]  # dataWCV
+                            self.saveFeatures("dataWCV-BC", createdFeature)
+                        else:
+                            continue
+                    self.correctedFeatureList.append(createdFeature)
+                if fNr == 14:
+                    loadedFeature = self.loadFeatures("dataHRCV-BC")
+                    loadedCorrectFeature = self.loadFeatures("dataHRBC")
+                    if loadedFeature is not None:
+                        createdFeature = loadedFeature
+                    else:
+                        if loadedCorrectFeature is not None:
+                            dataHR = loadedCorrectFeature[0]
+                            # dataHR = dataH.real
+                            createdFeature = [
+                                np.array(ut.fftCovariance(dataHR)),
+                                "dataHRCV-BC",
+                            ]  # dataHRCV
+                            self.saveFeatures("dataHRCV-BC", createdFeature)
+                        else:
+                            continue
+                        # dataHICV = np.array(ut.fftCovariance(dataHI))
+                    self.correctedFeatureList.append(createdFeature)
+                # if fNr == 15:
+                #     loadedFeature = self.loadFeatures("dataCVBC")
+                #     if loadedFeature is not None:
+                #         createdFeature = loadedFeature
+                #     else:
+                #         datagauss = self.loadFeatures("dataHRBC")[0]
+                #         createdFeature = [
+                #             np.array(ut.fftCovariance(datagauss)),
+                #             "dataCVBC",
+                #         ]  # dataCV
+                #         self.saveFeatures("dataCVBC", createdFeature)
+                # if fNr == 16:
+                #     loadedFeature = self.loadFeatures("dataCV2BC")
+                #     if loadedFeature is not None:
+                #         createdFeature = loadedFeature
+                #     else:
+                #         datagauss2 = self.loadFeatures("dataHRBC")[0]
+                #         createdFeature = [
+                #             np.array(ut.fftCovariance(datagauss2)),
+                #             "dataCV2BC",
+                #         ]  # dataCV2
+                #         self.saveFeatures("dataCV2BC", createdFeature)
+                if verbose:
+                    print(
+                        f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
+
+                self.createdFeatureList.append(createdFeature)
 
         return self.createdFeatureList, self.labels, correctedExists
 
@@ -518,7 +615,7 @@ class featureEClass:
 
             self.saveAnovaMask(
                 feature[1], f"sign{self.globalSignificance}", mask
-            )
+            )  # Here feature[1] is correct?
 
         self.globalGoodFeatureMask = goodFeatures
 
@@ -546,6 +643,13 @@ class featureEClass:
 
     def getOrder(self):
         return self.order
+
+    # def setgoodData(self, goodData):
+    #     self.goodData = goodData
+
+    # def getgoodData(self):
+    #     tempgoodData = dp(self.goodData)
+    #     return tempgoodData
 
     # def multiLabels(labels):
     #     mlabels = np.zeros([labels.shape[0], 2])
