@@ -143,7 +143,7 @@ def main():
     tolerance = 0.001  # Untested
     validationRepetition = True
     repetitionName = "udrlBC2"
-    repetitionValue = f"{24}{repetitionName}"
+    repetitionValue = f"{25}{repetitionName}"
     maxCombinationAmount = 2  # Depends on features. 3 can help with current
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
     quickTest = True  # Runs less hyperparameters
@@ -154,20 +154,35 @@ def main():
     featureList = [
         True,  # FFT
         True,  # Welch
-        True,  # Hilbert
+        False,  # Hilbert
         False,  # Powerbands
         False,  # FFT frequency buckets
         True,  # FFT Covariance
         True,  # Welch Covariance
-        True,  # Hilbert Covariance
-        True,  # Covariance on smoothed Data
-        True,  # Covariance on smoothed Data 2
+        False,  # Hilbert Covariance
+        False,  # Covariance on smoothed Data
+        False,  # Covariance on smoothed Data 2
         False,  # Correlate1d # SEEMS BAD
         True,  # dataFFTCVBC
         True,  # dataWCVBC
         True,  # dataHRCVBC
         # More to be added
     ]
+
+    # True,  # FFT
+    #     True,  # Welch
+    #     True,  # Hilbert
+    #     False,  # Powerbands
+    #     False,  # FFT frequency buckets
+    #     True,  # FFT Covariance
+    #     True,  # Welch Covariance
+    #     True,  # Hilbert Covariance
+    #     True,  # Covariance on smoothed Data
+    #     True,  # Covariance on smoothed Data 2
+    #     False,  # Correlate1d # SEEMS BAD
+    #     True,  # dataFFTCVBC
+    #     True,  # dataWCVBC
+    #     True,  # dataHRCVBC
 
     # Creating the features for each subject and putting them in a dict
     for sub in subjects:  #
@@ -199,6 +214,7 @@ def main():
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
         print(correctedExists)
+
         if correctedExists is False:
             # If loop here, checking if the specific corrected
             # Features have already been created. If so.

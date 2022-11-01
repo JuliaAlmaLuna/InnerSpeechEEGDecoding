@@ -52,7 +52,7 @@ class featureEClass:
 
     def loadFeatures(self, name):
         svpath = f"F:/PythonProjects/NietoExcercise-1/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
-        path = glob.glob(svpath + f"/{name}*")
+        path = glob.glob(svpath + f"/{name}.npy")
         if len(path) > 0:
             savedFeatures = np.load(path[0], allow_pickle=True)
             return savedFeatures
@@ -62,7 +62,7 @@ class featureEClass:
     def loadAnovaMask(self, featurename, maskname):
         name = f"{featurename}{maskname}"
         curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
-        path = glob.glob(curSavePath + f"/{name}*")
+        path = glob.glob(curSavePath + f"/{name}.npy")
         if len(path) > 0:
             savedAnovaMask = np.load(path[0], allow_pickle=True)
             return savedAnovaMask
@@ -393,6 +393,7 @@ class featureEClass:
 
                 if fNr == 6:
                     loadedFeature = self.loadFeatures("dataFFTCV")
+
                     if loadedFeature is not None:
                         createdFeature = loadedFeature
                     else:
