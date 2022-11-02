@@ -49,29 +49,172 @@ def anovaTest(featureList, labels, significanceThreshold):
         flatfeature = np.reshape(feature[0], [feature[0].shape[0], -1])
         flatgoodfeature = np.reshape(
             goodfeature[0], [goodfeature[0].shape[0], -1])
-
+        print(flatfeature.shape)
         print(goodfeature[0].shape)
         print(flatgoodfeature.shape)
 
         scaler.fit(flatfeature)
         flatfeature = scaler.transform(flatfeature)
         flatgoodfeature = scaler.transform(flatgoodfeature)
-
+        print("julia")
+        print(flatfeature.shape)
+        print(labels.shape)
+        print(feature[1])
         f_statistic, p_values = feature_selection.f_classif(
             flatfeature, labels)
-
+        print("julia2")
         p_values[
             p_values > significanceThreshold
         ] = 0  # Use sklearn selectpercentile instead?
+        print("julia3")
         p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
+        print("julia4")
         goodData = f_statistic * p_values
+        print("julia5")
         goodFeatureMaskList.append(goodData)
+        print("julia6")
         goodfeature = flatfeature[:, np.where(goodData != 0)[0]]
 
         print(goodfeature.shape)
         print(np.count_nonzero(goodData))
         print(goodData.shape)
     return goodFeatureList, goodFeatureMaskList
+
+
+def createChunkFeatures(chunkAmount):
+    # Fix it so chunkFeatures are not touched by not chunk functions . And checks alone
+
+    # Loading parameters, what part of the trials to load and test
+    t_min = 1.8
+    t_max = 3
+    sampling_rate = 256
+
+    # Parameters for ANOVA test and ANOVA Feature Mask
+    signAll = True
+    globalSignificanceThreshold = 0.1  # 0.1 seems best, 0.05 a little faster
+
+    # All the subjects that are tested, and used to create ANOVA Mask
+    subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
+
+    # What paradigm to test
+
+    # paradigm = paradigmSetting.upDownInner()
+    # paradigm = paradigmSetting.upDownVis()
+    # paradigm = paradigmSetting.upDownVisSpecial()
+    paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
+    # paradigm = paradigmSetting.upDownRightLeftInner()
+    # paradigm = paradigmSetting.upDownRightLeftVis()
+    # paradigm = paradigmSetting.rightLeftInner()
+
+    # What chunk features that are created and tested
+    featureList = [
+        True,  # FFT 1
+        False,  # Welch 2
+        False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
+        False,  # Powerbands 4
+        False,  # FFT frequency buckets 5
+        True,  # FFT Covariance 6
+        False,  # Welch Covariance 7
+        False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
+        False,  # Covariance on smoothed Data 9
+        False,  # Covariance on smoothed Data2 10
+        False,  # Correlate1d # SEEMS BAD 11
+        True,  # dataFFTCVBC 12                 # THIS ONE WEIRD WHEN CHUNK = 6
+        False,  # dataWCVBC 13
+        False,  # dataHRCVBC 14 DataHR seems to not add much if any to FFT and Welch
+        True,  # fftDataBC 15 # THIS ONE WEIRD WHEN CHUNK = 6
+        False,  # welchDataBC 16
+        False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        # More to be added
+    ]
+
+    # Creating the features for each subject and putting them in a dict
+    fClassDict2 = dict()
+    bClassDict2 = dict()
+    for sub in subjects:  #
+
+        fClassDict2[f"{sub}"] = fclass.featureEClass(
+            sub,
+            paradigm[0],
+            globalSignificance=globalSignificanceThreshold,
+            chunk=True,
+            chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+        )
+
+        print(f"Creating chunk features for subject:{sub}")
+        createdFeatureList, labels, correctedExists = fClassDict2[f"{sub}"].getFeatures(
+            paradigms=paradigm[1],
+            subject=sub,
+            t_min=t_min,
+            t_max=t_max,
+            sampling_rate=sampling_rate,
+            twoDLabels=False,
+            maxCombinationAmount=2,
+            featureList=featureList,
+            verbose=True,
+        )
+        print(len(createdFeatureList))
+        for createdFeature in createdFeatureList:
+            print(createdFeature[1])
+        print(f"Corrected Exists = {correctedExists}")
+        # correctedExists = False
+        if correctedExists is False:
+
+            bClassDict2[f"{sub}"] = baseLineCorrection(
+                subject=sub,
+                sampling_rate=sampling_rate,
+                chunk=True,
+                chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+            )
+
+            bClassDict2[f"{sub}"].loadBaselineData()
+
+            bClassDict2[f"{sub}"].getBaselineFeatures(
+                trialSampleAmount=fClassDict2[f"{sub}"].getOrigData().shape[2],
+                featureList=featureList,
+            )
+
+            fClassDict2[f"{sub}"].correctedFeatureList = bClassDict2[
+                f"{sub}"
+            ].baselineCorrect(
+                fClassDict2[f"{sub}"].getFeatureList(),
+                fClassDict2[f"{sub}"].getLabelsAux(),
+                fClassDict2[f"{sub}"].paradigmName,
+            )
+
+            print(f"Creating features for subject:{sub}")
+            createdFeatureList, labels, correctedExists = fClassDict2[
+                f"{sub}"
+            ].getFeatures(
+                paradigms=paradigm[1],
+                subject=sub,
+                t_min=t_min,
+                t_max=t_max,
+                sampling_rate=sampling_rate,
+                twoDLabels=False,
+                maxCombinationAmount=2,
+                featureList=featureList,
+                verbose=True,
+            )
+
+    # if signAll, then create or get globalGoodFeatures mask
+    if signAll:
+        for sub in subjects:
+            if fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask() is None:
+                allSubjFList, allSubjFLabels = combineAllSubjects(
+                    fClassDict2, subjectLeftOut=sub, onlyTrain=False
+                )
+                goodFeatureList, goodFeatureMaskList = anovaTest(
+                    allSubjFList, allSubjFLabels, globalSignificanceThreshold
+                )
+                fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(
+                    goodFeatureMaskList
+                )  # WHY IS THIS WEIRD SHAPE???
+            else:
+                goodFeatureMaskList = fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask(
+                )
+
+    return fClassDict2, bClassDict2
 
 
 def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
@@ -114,14 +257,9 @@ def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
 
 
 def main():
-    fClassDict = dict()
-    fmetDict = dict()
-    bClassDict = dict()
-    testSize = 10
-    seedStart = 39  # Arbitrary, could be randomized as well.
 
-    # Try using ANOVA from all other subjects only. Because then you only need to do it
-    # Once for every subject. Not every seed ( Done?!Yes?)
+    testSize = 10  # Nr of seed iterations
+    seedStart = 39  # Arbitrary, could be randomized as well.
 
     # Here, wrap all in another for loop that tests:
     # signAll, SignSolo, thresholds, paradigms, and saves them all in separateFolders
@@ -130,36 +268,55 @@ def main():
     # and seed in the other two for loops. Save all times in a separate folder
     #
 
-    # Loading parameters
+    # Loading parameters, what part of the trials to load and test
     t_min = 1.8
     t_max = 3
     sampling_rate = 256
 
+    # Parameters for ANOVA test and ANOVA Feature Mask
     signAll = True
     signSolo = False
-    # 0.1 seems best, barely any difference though , 0.05 a little faster
-    globalSignificanceThreshold = 0.1
+    globalSignificanceThreshold = 0.1  # 0.1 seems best, 0.05 a little faster
     soloSignificanceThreshold = 0.005
+
+    # Tolerance for SVM SVC
     tolerance = 0.001  # Untested
+
+    # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlBCNN"
-    repetitionValue = f"{35}{repetitionName}"
-    maxCombinationAmount = 1  # Depends on features. 3 can help with current
+    repetitionName = "udrlBC2special"
+    repetitionValue = f"{42}{repetitionName}"
+
+    # How many features that are maximally combined and tested together
+    maxCombinationAmount = 2  # Depends on features. 3 can help with current
+
+    # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
+
     quickTest = True  # Runs less hyperparameters
 
-    paradigm = paradigmSetting.upDownInner()
+    # What paradigm to test
+
+    # paradigm = paradigmSetting.upDownInner()
+    # paradigm = paradigmSetting.upDownVis()
+    # paradigm = paradigmSetting.upDownVisSpecial()
     # paradigm = paradigmSetting.upDownRightLeftInner()
+    paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
+    # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.rightLeftInner()
+
+    chunkFeatures = True
+    chunkAmount = 6
+    # What features that are created and tested
     featureList = [
-        False,  # FFT 1
-        False,  # Welch 2
-        False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
+        True,  # FFT 1
+        True,  # Welch 2
+        True,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
         True,  # FFT Covariance 6
-        False,  # Welch Covariance 7
-        False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
+        True,  # Welch Covariance 7
+        True,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
         False,  # Covariance on smoothed Data 9
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
@@ -168,35 +325,22 @@ def main():
         False,  # dataHRCVBC 14 DataHR seems to not add much if any to FFT and Welch
         True,  # fftDataBC 15
         True,  # welchDataBC 16
-        True,   # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        True,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
         # More to be added
     ]
 
-    # True,  # FFT 1
-    #     True,  # Welch 2
-    #     False,  # Hilbert 3
-    #     False,  # Powerbands 4
-    #     False,  # FFT frequency buckets 5
-    #     True,  # FFT Covariance 6
-    #     True,  # Welch Covariance 7
-    #     False,  # Hilbert Covariance 8
-    #     False,  # Covariance on smoothed Data 9
-    #     False,  # Covariance on smoothed Data2 10
-    #     False,  # Correlate1d # SEEMS BAD 11
-    #     True,  # dataFFTCVBC 12
-    #     True,  # dataWCVBC 13
-    #     True,  # dataHRCVBC 14
-    #     True,  # fftDataBC 15
-    #     True,  # welchDataBC 16
-    #     True   # dataHRBC 17
-    #     # More to be added
-    # ]
-
     # Creating the features for each subject and putting them in a dict
+    fClassDict = dict()
+    fmetDict = dict()
+    bClassDict = dict()
     for sub in subjects:  #
 
         fClassDict[f"{sub}"] = fclass.featureEClass(
-            sub, paradigm[0], globalSignificance=globalSignificanceThreshold
+            sub,
+            paradigm[0],
+            globalSignificance=globalSignificanceThreshold,
+            chunk=False,
+            chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
         )
         fmetDict[f"{sub}"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
@@ -221,25 +365,36 @@ def main():
         print(len(createdFeatureList))
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
-        print(correctedExists)
-
+        print(f"Corrected Exists = {correctedExists}")
+        # correctedExists = False
         if correctedExists is False:
 
             bClassDict[f"{sub}"] = baseLineCorrection(
-                subject=sub, sampling_rate=sampling_rate)
+                subject=sub,
+                sampling_rate=sampling_rate,
+                chunk=False,
+                chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+            )
 
             bClassDict[f"{sub}"].loadBaselineData()
 
             bClassDict[f"{sub}"].getBaselineFeatures(
-                t_min=t_min, t_max=t_max, featureList=featureList)
+                trialSampleAmount=fClassDict[f"{sub}"].getOrigData().shape[2],
+                featureList=featureList,
+            )
 
-            fClassDict[f"{sub}"].correctedFeatureList = bClassDict[f"{sub}"].baselineCorrect(
-                fClassDict[f"{sub}"].getFeatureList(
-                ), fClassDict[f"{sub}"].getLabelsAux(),
-                fClassDict[f"{sub}"].paradigmName)
+            fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
+                f"{sub}"
+            ].baselineCorrect(
+                fClassDict[f"{sub}"].getFeatureList(),
+                fClassDict[f"{sub}"].getLabelsAux(),
+                fClassDict[f"{sub}"].paradigmName,
+            )
 
             print(f"Creating features for subject:{sub}")
-            createdFeatureList, labels, correctedExists = fClassDict[f"{sub}"].getFeatures(
+            createdFeatureList, labels, correctedExists = fClassDict[
+                f"{sub}"
+            ].getFeatures(
                 paradigms=paradigm[1],
                 subject=sub,
                 t_min=t_min,
@@ -267,7 +422,20 @@ def main():
             else:
                 goodFeatureMaskList = fClassDict[f"{sub}"].getGlobalGoodFeaturesMask(
                 )
+
+    if chunkFeatures:
+        fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount)
+
+        for sub in subjects:
+            fClassDict[f"{sub}"].extendFeatureList(
+                fClassDict2[f"{sub}"].getFeatureList()
+            )
+            fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
+                fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+            )
+
     testNr = 0
+
     # A for loop just running all subjects using different seeds for train/data split
     for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
         testNr += 1
@@ -310,14 +478,23 @@ def main():
 
                 # Below here can be switch to NN ? Create method? Or just different testSuite
 
+                # allResults = fmetDict[f"{sub}"].testSuite(
+                #     data_train,
+                #     data_test,
+                #     labels_train,
+                #     labels_test,
+                #     name,
+                #     gdData,
+                #     kernels=["linear", "sigmoid", "rbf"],  #
+                # )
+
                 allResults = fmetDict[f"{sub}"].testSuite(
                     data_train,
                     data_test,
                     labels_train,
                     labels_test,
                     name,
-                    gdData,
-                    kernels=["linear", "sigmoid", "rbf"],  #
+                    gdData,  #
                 )
 
                 allResultsPerSubject.append(allResults)

@@ -8,17 +8,23 @@ class baseLineCorrection(featureEClass):
     def __init__(
         self,
         subject,
+        chunkAmount,
         session=2,  # Unsure if needed, here that is
         paradigmName="baseline",
         globalSignificance="0.5",  # Doesn't matter
         sampling_rate=256,
         featureFolder="SavedBaselineFeatures",
+        chunk=False,
+
     ):
+        print("The feature Class created next will be a baseline Feature Class")
         super().__init__(
             subject=subject,
             featureFolder=featureFolder,
             paradigmName=paradigmName,
             globalSignificance=globalSignificance,
+            chunk=chunk,
+            chunkAmount=chunkAmount,
         )
         self.session = session
         self.baseLineFeatures = []
@@ -58,8 +64,7 @@ class baseLineCorrection(featureEClass):
 
     def getBaselineFeatures(
         self,
-        t_min,
-        t_max,
+        trialSampleAmount,
         featureList=[
             False,  # FFT
             False,  # Welch
@@ -78,19 +83,19 @@ class baseLineCorrection(featureEClass):
             # each one of these
             # Maybe also make one similar with 10 for each subject
         ],
-
     ):
         if self.baseLineData is None:
             raise Exception("Data for baseline needs to be loaded first")
 
-        trialSampleAmount = round((t_max - t_min) * self.sampling_rate)
-        baselineBatches = self.baseLineData .shape[2] // trialSampleAmount
+        # trialSampleAmount = round((t_max - t_min) * self.sampling_rate)
+        baselineBatches = self.baseLineData.shape[2] // trialSampleAmount
         print(f"Baseline batches : {baselineBatches}")
         baselineFeatureListList = []
         for x in range(baselineBatches):
             self.paradigmName = f"split{x+1}"
-            self.data = self.getBaselineData()[:, :, x *
-                                               trialSampleAmount:(x + 1) * trialSampleAmount]
+            self.data = self.getBaselineData()[
+                :, :, x * trialSampleAmount: (x + 1) * trialSampleAmount
+            ]
             super().getFeatures(self.subject, featureList=featureList)
             baselineFeatureListList.append(self.getFeatureList())
             # print(len(self.getFeatureList())) # 8
@@ -113,7 +118,9 @@ class baseLineCorrection(featureEClass):
             print(avgFeature.shape)
 
         self.avgBaselineFeatureList = self.getFeatureList()
-        for featURE, avgBaselineFeature in zip(avgFEATURESlist, self.avgBaselineFeatureList):
+        for featURE, avgBaselineFeature in zip(
+            avgFEATURESlist, self.avgBaselineFeatureList
+        ):
             avgBaselineFeature[0] = featURE
             print(featURE.shape)
 
@@ -136,6 +143,8 @@ class baseLineCorrection(featureEClass):
         correctedFeatureList = dp(unCorrectedFeatureList)
         for bfeature in bfeatures:
             featureName = bfeature[1]
+            # if self.chunk:
+            #     featureName = f"{featureName}cn{self.chunkAmount}"
             print(featureName)
             for ufeature, cfeature in zip(unCorrectedFeatureList, correctedFeatureList):
                 if ufeature[1] == featureName:
@@ -148,12 +157,16 @@ class baseLineCorrection(featureEClass):
                     # print(cfeature[0][0][0][0])
                     # print("ada")
                     cfeature[0] = corrFeature
+
+                    # if self.chunk:
+                    #     cfeature[1] = f"{cfeature[1]}cn{self.chunkAmount}"
+
                     cfeature[1] = f"{cfeature[1]}BC"
                     # print(cfeature[0][0][0][0])
                     self.featureFolder = "SavedFeatures"
                     self.paradigmName = f"{paradigmName2}"
                     self.saveFeatures(f"{cfeature[1]}", cfeature)
-                    self.featureFolder = "SavedBaselineFeatures",
+                    self.featureFolder = ("SavedBaselineFeatures",)
         self.correctedFeaturesList = correctedFeatureList
 
         return correctedFeatureList

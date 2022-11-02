@@ -1,11 +1,11 @@
-
 import numpy as np
 import dataLoader as dl
 
 
 # from Inner_Speech_Dataset.Plotting.ERPs import
-from Inner_Speech_Dataset.Python_Processing.Data_processing \
-    import Calculate_power_windowed
+from Inner_Speech_Dataset.Python_Processing.Data_processing import (
+    Calculate_power_windowed,
+)
 from Inner_Speech_Dataset.Python_Processing.Utilitys import picks_from_channels
 
 
@@ -49,10 +49,11 @@ def createFreqBuckets(data, nr_of_buckets=5):
     buckets = np.zeros([nr_of_buckets, 2])
     for trial in data:
         for channel in trial:
-            buckets += sepFreqIndexBuckets(abs(rfft(channel))
-                                           [:(channel.shape[0]//2)], nr_of_buckets)
+            buckets += sepFreqIndexBuckets(
+                abs(rfft(channel))[: (channel.shape[0] // 2)], nr_of_buckets
+            )
 
-    buckets = buckets/(data.shape[0]*data.shape[1])
+    buckets = buckets / (data.shape[0] * data.shape[1])
 
     return np.int32(buckets)
 
@@ -63,18 +64,19 @@ def data_into_freq_buckets(data, nr_of_buckets, buckets):
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
             for b in range(nr_of_buckets):
-                ff_c = abs(rfft(channel))*1000
+                ff_c = abs(rfft(channel)) * 1000
                 freqAmps[tr_nr, ch_nr, b] = np.sum(
-                    ff_c[int(buckets[b, 0]):int(buckets[b, 1])])
+                    ff_c[int(buckets[b, 0]) : int(buckets[b, 1])]
+                )
     return freqAmps
 
 
 def data_into_freq_array(data):
 
-    freqarray = np.zeros([data.shape[0], data.shape[1], data.shape[2]//2])
+    freqarray = np.zeros([data.shape[0], data.shape[1], data.shape[2] // 2])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
-            ff_c = abs(rfft(channel))[:(channel.shape[0]//2)]
+            ff_c = abs(rfft(channel))[: (channel.shape[0] // 2)]
             freqarray[tr_nr, ch_nr, :] = ff_c
     return freqarray
 
@@ -91,6 +93,8 @@ def fftCovariance(data):
         channelCV.append(np.cov(trial))
 
     return channelCV
+
+
 # Same results basically
 
 
@@ -113,6 +117,7 @@ def fftCorrelation(data):
     print(np.array(channelCV).shape)
 
     return channelCV
+
 
 # def fftCovarianceRoll(data, roll = 5):
 #     channelXE = np.zeros([data.shape[0], data.shape[1], data.shape[2]])
@@ -142,41 +147,45 @@ def fftCorrelation(data):
 
 
 def fftData(data):
-    fftData = np.zeros([data.shape[0], data.shape[1], data.shape[2]//2])
+    fftData = np.zeros([data.shape[0], data.shape[1], data.shape[2] // 2])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
-            fftData[tr_nr, ch_nr, :] = abs(rfft(channel))[
-                :(channel.shape[0]//2)]
+            fftData[tr_nr, ch_nr, :] = abs(rfft(channel))[: (channel.shape[0] // 2)]
     return fftData
 
 
 def welchData(data, nperseg, fs=256):
     from scipy.signal import welch
+
     if nperseg < fs:
-        arSize = nperseg//2
+        arSize = nperseg // 2
     else:
-        arSize = fs//2
+        arSize = fs // 2
     welchData = np.zeros([data.shape[0], data.shape[1], arSize])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
 
-            welchData[tr_nr, ch_nr, :] = welch(
-                channel, fs=fs, nperseg=nperseg)[1][0:arSize]
+            welchData[tr_nr, ch_nr, :] = welch(channel, fs=fs, nperseg=nperseg)[1][
+                0:arSize
+            ]
     return welchData
 
 
 def welchData2(data, nperseg, fs=256):
     from scipy.signal import welch
+
     if nperseg < fs:
-        arSize = nperseg//2
+        arSize = nperseg // 2
     else:
-        arSize = fs//2
+        arSize = fs // 2
     welchData = np.zeros([data.shape[0], data.shape[1], arSize])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
             welchData[tr_nr, ch_nr, :] = welch(
-                channel, fs=fs, nperseg=nperseg, scaling="spectrum")[1][0:arSize]
+                channel, fs=fs, nperseg=nperseg, scaling="spectrum"
+            )[1][0:arSize]
     return welchData
+
 
 # Channel name array
 
@@ -220,18 +229,23 @@ def get_power_array(split_data, samplingRate, trialSplit=1, t_min=0, t_max=0.99)
 
     # trialSplit = 16
     sR = samplingRate  # samplingRate = 32
-    data_power = np.zeros(
-        [split_data.shape[0], split_data.shape[1], trialSplit, 2])
+    data_power = np.zeros([split_data.shape[0], split_data.shape[1], trialSplit, 2])
     for t, trial in enumerate(split_data, 0):
         for c, channel in enumerate(trial, 0):
             for x in range(trialSplit):
                 data_power[t, c, x, :] = Calculate_power_windowed(
-                    channel, fc=sR, window_len=1/8, window_step=1/8, t_min=t_min*(1 / trialSplit),
-                    t_max=t_max*(1 / trialSplit))
+                    channel,
+                    fc=sR,
+                    window_len=1 / 8,
+                    window_step=1 / 8,
+                    t_min=t_min * (1 / trialSplit),
+                    t_max=t_max * (1 / trialSplit),
+                )
 
     # m_power , std_power
     # print(data_power.shape)
     return data_power
+
 
 # Create Frequency buckets using either,
 # equal amp splits, equal band width splits or manual
@@ -273,10 +287,12 @@ def splitData(data, labels, split, seed=None):
     dataT = temp_data
     labelsT = temp_labels
 
-    data_train, data_test = np.split(dataT, indices_or_sections=[
-                                     int(labelsT.shape[0]*split)], axis=0)
-    labels_train, labels_test = np.split(labelsT, indices_or_sections=[
-                                         int(labelsT.shape[0]*split)], axis=0)
+    data_train, data_test = np.split(
+        dataT, indices_or_sections=[int(labelsT.shape[0] * split)], axis=0
+    )
+    labels_train, labels_test = np.split(
+        labelsT, indices_or_sections=[int(labelsT.shape[0] * split)], axis=0
+    )
     print(labels_train.shape)
     print(data_train.shape)
     print(data_test.shape)

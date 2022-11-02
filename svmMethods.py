@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn import feature_selection
 import tensorflow as tf
 from tensorflow.keras import layers  # ,regularizers
+
 # import tensorflow_hub as hub  # type:ignore
 
 import matplotlib.pyplot as plt
@@ -20,7 +21,7 @@ class SvmMets:
         tol=0.001,
         significanceThreshold=0.1,
         verbose=True,
-        quickTest=False
+        quickTest=False,
     ):
         print("new SvmMets")
         self.signAll = signAll
@@ -65,8 +66,7 @@ class SvmMets:
 
         # vartresh = VarianceThreshold()
         # ndata_train = vartresh.fit_transform(ndata_train)
-        f_statistic, p_values = feature_selection.f_classif(
-            ndata_train, labels_train)
+        f_statistic, p_values = feature_selection.f_classif(ndata_train, labels_train)
         p_values[
             p_values > self.significanceThreshold
         ] = 0  # Use sklearn selectpercentile instead?
@@ -82,10 +82,8 @@ class SvmMets:
         if self.signAll and self.signSolo:
             if ndata_train[:, [goodData != 0][0] + [goodData2 != 0][0]].shape[1] < 3:
                 return 0.25, coefs
-            ndata_train = ndata_train[:, [
-                goodData != 0][0] + [goodData2 != 0][0]]
-            ndata_test = ndata_test[:, [goodData != 0]
-                                    [0] + [goodData2 != 0][0]]
+            ndata_train = ndata_train[:, [goodData != 0][0] + [goodData2 != 0][0]]
+            ndata_test = ndata_test[:, [goodData != 0][0] + [goodData2 != 0][0]]
 
         elif self.signAll:
             if ndata_train[:, np.where(goodData != 0)[0]].shape[1] < 3:
@@ -256,10 +254,7 @@ class SvmMets:
         labels_test,
         name,
         goodData,
-        kernels=["linear", "rbf", "sigmoid"]   # Notneeeded
     ):
-
-        coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
 
         scaler = StandardScaler()
         scaler = scaler.fit(data_train)
@@ -276,49 +271,90 @@ class SvmMets:
                 ndata_test=ndata_test,
                 goodData=goodData,
                 goodData2=goodData2,
-                coefs=coefs,
             )
 
         allResults = []
-
+        ndata_train = np.reshape(
+            ndata_train, [ndata_train.shape[0], ndata_train.shape[1], 1]
+        )
+        ndata_test = np.reshape(
+            ndata_test, [ndata_test.shape[0], ndata_test.shape[1], 1]
+        )
         # Below here, do NN stuff instead
-
-        eeg_model = tf.keras.Sequential([
-
-
-            layers.Dense(units=2, activation="softmax"),
-        ]
+        print(ndata_train.shape)
+        print(ndata_test.shape)
+        print(ndata_train.shape[1])
+        eeg_model = tf.keras.Sequential(
+            [
+                # layers.Flatten(input_shape=(1, ndata_train.shape[1], 1)),
+                layers.Dense(
+                    input_shape=(ndata_train.shape[1], 1),
+                    activation="relu",
+                    units=20,
+                ),
+                layers.Dense(
+                    activation="relu",
+                    units=20,
+                ),
+                layers.Flatten(),
+                layers.Dense(units=1, activation="softmax"),
+            ]
         )
 
         callback = tf.keras.callbacks.EarlyStopping(
-            monitor="val_loss", patience=60, restore_best_weights=True
+            monitor="val_loss", patience=10, restore_best_weights=True
         )
 
+        eeg_model.build()
+        eeg_model.summary()
         eeg_model.compile(
             optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
         )
         # Training NN
         outputs = eeg_model.fit(
-            data_train,
+            ndata_train,
             labels_train,
             validation_split=0.2,
             callbacks=[callback],
-            epochs=20,
+            epochs=100,
             verbose=True,
         )
 
         # Printing results
         print("Results")
-        eeg_model.evaluate(data_test, labels_test)
+        eeg_model.evaluate(ndata_test, labels_test)
         # result = eeg_model.predict(data_test_send)
 
         # Plotting training and validation results.
-        # val_loss = outputs.history["val_loss"]
-        # loss = outputs.history["loss"]
-        # val_acc = outputs.history["val_accuracy"]
+        val_loss = outputs.history["val_loss"]
+        loss = outputs.history["loss"]
+        val_acc = outputs.history["val_accuracy"]
         acc = outputs.history["accuracy"]
-        allResults.append["julia1", acc, "juliakernel", 2]
-        print()
+        allResults.append([name, acc, "juliakernel", 2])
+
+        plt.plot(loss, "r", label="Training loss")
+        plt.plot(val_loss, "b", label="Validation loss")
+        # plt.title(
+        #     "loss {} for reg val {} , dropout val {} ,layersize val {} and act {}".format(
+        #         round(eval[0], 2), reg, drp, lz, act
+        #     )
+        # )
+        plt.legend()
+        plt.figure()
+        plt.pause(0.1)
+
+        val_acc = outputs.history["val_accuracy"]
+        acc = outputs.history["accuracy"]
+        plt.plot(acc, "r", label="Training acc")
+        plt.plot(val_acc, "b", label="Validation acc")
+        # plt.title(
+        #     "acc {}  for reg val {} , dropout val {} , layersize val {} and act {}".format(
+        #         round(eval[1], 2), reg, drp, lz, act
+        #     )
+        # )
+        plt.legend()
+        plt.figure()
+        plt.pause(0.1)
         # Need to return a allResults lists with objects that are each [name, res[0], kernel, C] equivalent
 
         # return np.array(allResults, dtype = object)

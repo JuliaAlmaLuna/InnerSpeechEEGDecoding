@@ -9,12 +9,20 @@ import dataLoader as dl
 import util as ut
 import glob
 
+# Something might have happened at import
 # pylint: disable=C0103
 
 
 class featureEClass:
     def __init__(
-        self, subject, paradigmName, globalSignificance, featureFolder="SavedFeatures"
+        self,
+        subject,
+        paradigmName,
+        globalSignificance,
+        chunkAmount,
+        featureFolder="SavedFeatures",
+        chunk=False,
+
     ):
         """
         File that holds class handling feature extraction
@@ -33,6 +41,8 @@ class featureEClass:
         self.globalSignificance = globalSignificance
         self.subject = subject
         self.featureFolder = featureFolder
+        self.chunk = chunk
+        self.chunkAmount = chunkAmount
 
         print(f"Feature class for subject {self.subject} created")
 
@@ -245,19 +255,45 @@ class featureEClass:
         # print(labelsAux[:, 2])  # Cond
         # print(labelsAux[:, 3])  # Session
 
+        # Make data divisible by chunkAmount
+
+        while True:
+            if self.data.shape[2] % self.chunkAmount != 0:
+                self.data = self.data[:, :, :-1]
+            else:
+                break
+
         return self.data, self.labels
 
     def createFeature(self, featureName, tempData):
+        noReshape = False
         createdFeature = None
+        if self.chunk:
+            featureNameSaved = f"{featureName}cn{self.chunkAmount}"
+        else:
+            featureNameSaved = featureName
+
         if featureName == "fftData":
-            createdFeature = [ut.fftData(tempData), featureName]
+            createdFeature = [ut.fftData(tempData), featureNameSaved]
+
         if featureName == "welchData":
-            createdFeature = [ut.welchData(tempData, fs=256, nperseg=256),
-                              featureName]
+            if self.chunk:
+                createdFeature = [
+                    ut.welchData(
+                        tempData,
+                        fs=int(256 / self.chunkAmount),
+                        nperseg=int(256 / self.chunkAmount),
+                    ),
+                    featureNameSaved,
+                ]
+            else:
+                createdFeature = [
+                    ut.welchData(tempData, fs=256, nperseg=256),
+                    featureNameSaved,
+                ]
         if featureName == "dataHR":
             dataH = hilbert(tempData, axis=2, N=128)
-            createdFeature = [dataH.real, featureName]  # dataHR
-
+            createdFeature = [dataH.real, featureNameSaved]  # dataHR
         if featureName == "Powerbands":
             # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
             # trialSplit=1).squeeze()
@@ -272,74 +308,117 @@ class featureEClass:
             fftdata = ut.fftData(tempData)
             createdFeature = [
                 np.array(ut.fftCovariance(fftdata)),
-                featureName,
+                featureNameSaved,
             ]
         if featureName == "dataWCV":
-            welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+            # welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+            if self.chunk:
+                welchdata = ut.welchData(
+                    tempData,
+                    fs=int(256 / self.chunkAmount),
+                    nperseg=int(256 / self.chunkAmount),
+                )
+            else:
+                welchdata = ut.welchData(tempData, fs=256, nperseg=256)
             createdFeature = [
                 np.array(ut.fftCovariance(welchdata)),
-                featureName,
+                featureNameSaved,
             ]
         if featureName == "dataHRCV":
             dataH = hilbert(tempData, axis=2, N=256)  # dataH
             dataHR = dataH.real
             createdFeature = [
                 np.array(ut.fftCovariance(dataHR)),
-                featureName,
+                featureNameSaved,
             ]  # dataHRCV
         if featureName == "dataCV":
             datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
             createdFeature = [
                 np.array(ut.fftCovariance(datagauss)),
-                featureName,
+                featureNameSaved,
             ]
         if featureName == "dataCV2":
             datagauss2 = ndimage.gaussian_filter1d(tempData, 10, axis=2)
             createdFeature = [
                 np.array(ut.fftCovariance(datagauss2)),
-                featureName,
+                featureNameSaved,
             ]
         if featureName == "dataCorr1d":
             weights = np.zeros(shape=[20])
             weights[:3] = 1
             weights[16:] = 1
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=2),
-                featureName,
+                ndimage.correlate1d(tempData, weights=weights, axis=2),
+                featureNameSaved,
             ]
         if featureName == "dataFFTCV-BC":
-            loadedCorrectFeature = self.loadFeatures("fftDataBC")
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"fftDatacn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("fftDataBC")
             if loadedCorrectFeature is not None:
+                print("Hey")
                 fftdata = loadedCorrectFeature[0]
                 createdFeature = [
                     np.array(ut.fftCovariance(fftdata)),
-                    featureName,
+                    featureNameSaved,
                 ]  # dataFFTCV
             else:
                 return None
         if featureName == "dataWCV-BC":
-            loadedCorrectFeature = self.loadFeatures("welchDataBC")
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"welchDatacn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("welchDataBC")
             if loadedCorrectFeature is not None:
                 welchdata = loadedCorrectFeature[0]
                 createdFeature = [
                     np.array(ut.fftCovariance(welchdata)),
-                    featureName,
+                    featureNameSaved,
                 ]  # dataWCV
             else:
                 return None
         if featureName == "dataHRCV-BC":
-            loadedCorrectFeature = self.loadFeatures("dataHRBC")
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"dataHRcn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("dataHRBC")
             if loadedCorrectFeature is not None:
                 dataHR = loadedCorrectFeature[0]
                 # dataHR = dataH.real
                 createdFeature = [
                     np.array(ut.fftCovariance(dataHR)),
-                    featureName,
+                    featureNameSaved,
                 ]  # dataHRCV
             else:
                 return None
-        self.saveFeatures(featureName, createdFeature)
+
+        if self.chunk:
+            if noReshape is False:
+                # print(f"CHUNKED Data feature has shape: {createdFeature[0].shape}")
+                # print("SHAPING Back chunked data")
+                print("ho")
+                createdFeature[0] = np.reshape(
+                    createdFeature[0],
+                    [
+                        int(createdFeature[0].shape[0] / self.chunkAmount),
+                        createdFeature[0].shape[1],
+                        -1,
+                    ],
+                )
+            # print(f"CHUNKED Data feature has shape: {createdFeature[0].shape}")
+            # featureName = f"{featureName}cn{self.chunkAmount}"
+
+        self.saveFeatures(featureNameSaved, createdFeature)
         return createdFeature
 
     def getFeatures(
@@ -389,12 +468,20 @@ class featureEClass:
         self.createdFeatureList = []
         tempData = np.copy(self.data)
         correctedExists = True
+        # print(self.chunk)
         for fNr, useFeature in enumerate(featureList, 1):
 
             del tempData
-            tempData = np.copy(
-                self.data
-            )  # To make sure every feature is created from original data
+            tempData = np.copy(self.data)
+            # print(tempData.shape)  # made shorter
+            if self.chunk:
+                tempData = np.reshape(
+                    tempData,
+                    (tempData.shape[0] * self.chunkAmount,
+                     tempData.shape[1], -1),
+                )
+            # print(tempData.shape)
+            # To make sure every feature is created from original data
             if useFeature:
                 featureName = None
                 if fNr == 1:
@@ -450,7 +537,18 @@ class featureEClass:
                 if fNr == 17:
                     featureName = "dataHRBC"
 
-                loadedFeature = self.loadFeatures(featureName)
+                # if fNr == 18:
+                #     featureName = "Chunk"
+                if self.chunk:
+                    loadedFeature = self.loadFeatures(
+                        f"{featureName}cn{self.chunkAmount}"
+                    )
+                    # featureName = f"{featureName}cn{self.chunkAmount}"
+                else:
+                    loadedFeature = self.loadFeatures(featureName)
+
+                # featureName = f"{featureName}cn{self.chunkAmount}"
+
                 if loadedFeature is not None:
                     createdFeature = loadedFeature
                 else:
@@ -459,19 +557,35 @@ class featureEClass:
                         continue
                     else:
                         createdFeature = self.createFeature(
-                            featureName, tempData=tempData)
+                            featureName, tempData=tempData
+                        )
 
                 if createdFeature is not None:
                     if verbose:
-                        print(
-                            f"Data feature nr {fNr} has shape: {createdFeature[0].shape}")
+                        if self.chunk:
+                            print(
+                                f"CHUNKED Data feature nr {fNr} has shape: {createdFeature[0].shape}"
+                            )
+                        else:
+                            print(
+                                f"Data feature nr {fNr} has shape: {createdFeature[0].shape}"
+                            )
                     self.createdFeatureList.append(createdFeature)
 
         return self.createdFeatureList, self.labels, correctedExists
 
+    def getOrigData(self):
+        tempData = dp(self.data)
+        return tempData
+
     def getFeatureList(self):
         tempFeatureList = dp(self.createdFeatureList)
         return tempFeatureList
+
+    def extendFeatureList(self, additionList):
+        self.createdFeatureList.extend(additionList)
+        # tempFeatureList = dp(self.createdFeatureList)
+        # return tempFeatureList
 
     def getLabelsAux(self):
         tempLabelsAux = dp(self.labelsAux)
@@ -517,10 +631,13 @@ class featureEClass:
         for feature, mask in zip(self.getFeatureList(), goodFeatures):
 
             self.saveAnovaMask(
-                feature[1], f"sign{self.globalSignificance}", mask
-            )
+                feature[1], f"sign{self.globalSignificance}", mask)
 
         self.globalGoodFeatureMask = goodFeatures
+
+    def extendGlobalGoodFeaturesMaskList(self, additionList):
+        self.globalGoodFeatureMask.extend(additionList)
+        print("Extended global good features mask list")
 
     def getGlobalGoodFeaturesMask(self):
         # Needs to loop through feature mask and get them, using their name which is [0][1] in the list/tuple
