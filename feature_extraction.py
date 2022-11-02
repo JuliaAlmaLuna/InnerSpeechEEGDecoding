@@ -269,7 +269,10 @@ class featureEClass:
         noReshape = False
         createdFeature = None
         if self.chunk:
-            featureNameSaved = f"{featureName}cn{self.chunkAmount}"
+            if f"cn{self.chunkAmount}" in featureName:
+                featureNameSaved = featureName
+            else:
+                featureNameSaved = f"{featureName}cn{self.chunkAmount}"
         else:
             featureNameSaved = featureName
 
@@ -421,6 +424,9 @@ class featureEClass:
         self.saveFeatures(featureNameSaved, createdFeature)
         return createdFeature
 
+    def insert_cn(self, string, index=-2):
+        return string[:index] + f'cn{self.chunkAmount}' + string[index:]
+
     def getFeatures(
         self,
         subject,
@@ -537,17 +543,22 @@ class featureEClass:
                 if fNr == 17:
                     featureName = "dataHRBC"
 
+                if fNr == 18:
+                    featureName = "dataCVBC"
+
                 # if fNr == 18:
                 #     featureName = "Chunk"
                 if self.chunk:
-                    loadedFeature = self.loadFeatures(
-                        f"{featureName}cn{self.chunkAmount}"
-                    )
-                    # featureName = f"{featureName}cn{self.chunkAmount}"
+                    if "BC" in featureName and "-BC" not in featureName:
+                        loadedFeature = self.loadFeatures(
+                            self.insert_cn(featureName))
+
+                    else:
+                        loadedFeature = self.loadFeatures(
+                            f"{featureName}cn{self.chunkAmount}"
+                        )
                 else:
                     loadedFeature = self.loadFeatures(featureName)
-
-                # featureName = f"{featureName}cn{self.chunkAmount}"
 
                 if loadedFeature is not None:
                     createdFeature = loadedFeature

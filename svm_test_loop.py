@@ -91,8 +91,8 @@ def createChunkFeatures(chunkAmount):
 
     # Parameters for ANOVA test and ANOVA Feature Mask
     signAll = True
-    globalSignificanceThreshold = 0.1  # 0.1 seems best, 0.05 a little faster
-
+    # globalSignificanceThreshold = 0.1  # 0.1 seems best, 0.05 a little faster
+    globalSignificanceThreshold = 0.005
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
 
@@ -108,23 +108,24 @@ def createChunkFeatures(chunkAmount):
 
     # What chunk features that are created and tested
     featureList = [
-        True,  # FFT 1
+        False,  # FFT 1
         False,  # Welch 2
         False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
-        True,  # FFT Covariance 6
+        False,  # FFT Covariance 6
         False,  # Welch Covariance 7
         False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
         False,  # Covariance on smoothed Data 9
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
-        True,  # dataFFTCVBC 12                 # THIS ONE WEIRD WHEN CHUNK = 6
-        False,  # dataWCVBC 13
+        False,  # dataFFTCVBC 12                 # THIS ONE WEIRD WHEN CHUNK = 6
+        True,  # dataWCVBC 13
         False,  # dataHRCVBC 14 DataHR seems to not add much if any to FFT and Welch
-        True,  # fftDataBC 15 # THIS ONE WEIRD WHEN CHUNK = 6
-        False,  # welchDataBC 16
+        False,  # fftDataBC 15 # THIS ONE WEIRD WHEN CHUNK = 6
+        True,  # welchDataBC 16
         False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        False,  # dataCVBC 18
         # More to be added
     ]
 
@@ -276,7 +277,7 @@ def main():
     # Parameters for ANOVA test and ANOVA Feature Mask
     signAll = True
     signSolo = False
-    globalSignificanceThreshold = 0.1  # 0.1 seems best, 0.05 a little faster
+    globalSignificanceThreshold = 0.005  # 0.1 seems best, 0.05 a little faster
     soloSignificanceThreshold = 0.005
 
     # Tolerance for SVM SVC
@@ -284,11 +285,11 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlBC2special"
-    repetitionValue = f"{42}{repetitionName}"
+    repetitionName = "udrlBC3special005"
+    repetitionValue = f"{46}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 2  # Depends on features. 3 can help with current
+    maxCombinationAmount = 3  # Depends on features. 3 can help with current
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -310,22 +311,23 @@ def main():
     # What features that are created and tested
     featureList = [
         True,  # FFT 1
-        True,  # Welch 2
-        True,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
+        False,  # Welch 2
+        False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
         True,  # FFT Covariance 6
-        True,  # Welch Covariance 7
-        True,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
+        False,  # Welch Covariance 7
+        False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
         False,  # Covariance on smoothed Data 9
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
-        False,  # dataFFTCVBC 12
+        True,  # dataFFTCVBC 12
         False,  # dataWCVBC 13
         False,  # dataHRCVBC 14 DataHR seems to not add much if any to FFT and Welch
         True,  # fftDataBC 15
-        True,  # welchDataBC 16
-        True,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        False,  # welchDataBC 16
+        False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        True,  # dataCVBC 18
         # More to be added
     ]
 
