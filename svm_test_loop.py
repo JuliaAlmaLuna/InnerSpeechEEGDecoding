@@ -58,13 +58,15 @@ def anovaTest(featureList, labels, significanceThreshold, fClass):
         )
 
         flatfeature = np.reshape(feature[0], [feature[0].shape[0], -1])
-        flatgoodfeature = np.reshape(goodfeature[0], [goodfeature[0].shape[0], -1])
+        flatgoodfeature = np.reshape(
+            goodfeature[0], [goodfeature[0].shape[0], -1])
         # print(flatfeature.shape)
         # print(goodfeature[0].shape)
         # print(flatgoodfeature.shape)
         scaler.fit(flatfeature)
         flatfeature = scaler.transform(flatfeature)
         flatgoodfeature = scaler.transform(flatgoodfeature)
+        print(feature[0].shape)
 
         if loadedMask is None:
             # Standardscale fit.
@@ -74,7 +76,8 @@ def anovaTest(featureList, labels, significanceThreshold, fClass):
             # print(feature[1])
 
             # Running the ANOVA Test
-            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
+            f_statistic, p_values = feature_selection.f_classif(
+                flatfeature, labels)
 
             # Create a mask of features with P values below threshold
             p_values[p_values > significanceThreshold] = 0
@@ -86,19 +89,59 @@ def anovaTest(featureList, labels, significanceThreshold, fClass):
             print(f"Loaded mask {featureName}")
             goodData = loadedMask
 
+        # These goodfeatures need to come with a array of original index
+        # Then. When a feature is deleted. Make it zero on goodDataMask
         goodfeature = flatfeature[:, np.where(goodData != 0)[0]]
         # Append Feature mask to list of Masks
         goodFeatureMaskList.append(goodData)
 
         # Not needed
-        print(type(goodfeature))
+        # np.moveaxis(goodfeature, 1, 0)
+        goodfeature = np.swapaxes(goodfeature, 0, 1)
+
+        while True:
+            # print("hey")
+            # print(goodfeature.shape)
+            for ind, feat in enumerate(goodfeature):
+                deleteIndexes = []
+                # print("hsafdasdasey")
+                for ind2, feat2 in enumerate(goodfeature):
+                    if ind == ind2:
+                        continue
+                    # print(np.correlate(feat, feat2)) Is this faster on a matrix?
+                    # If so, then use it then take each row and delete rows that are too similar.
+                    if np.correlate(feat, feat2)[0] > 700:
+                        # print("oka")
+                        deleteIndexes.append(ind2)
+                if len(deleteIndexes) > 0:
+                    # print("hoooooo")
+                    break
+            if len(deleteIndexes) < 1:
+                break
+            print(goodfeature.shape)
+            goodfeature = np.delete(goodfeature, deleteIndexes, axis=0)
+            print(goodfeature.shape)
+
+        goodfeature = np.swapaxes(goodfeature, 0, 1)
+
+        # covFeats = np.cov(goodfeature, rowvar=False)
         print(goodfeature.shape)
+        # flatCov = np.ndarray.flatten(covFeats)
+        # sflatCov = np.sort(flatCov)
+
+        # plt.figure()
+        # plt.plot(sflatCov)
+
+        # print(type(goodfeature))
+        # print(goodfeature.shape)
         print(f"{np.count_nonzero(goodData)} good Features in {feature[1]}")
 
-        mi = feature_selection.mutual_info_classif(goodfeature, labels)
-        print(mi.shape)
-        # for x in range(4):
-        #     fclass.featureEClass.plotHeatMaps(mi[x])
+        # mi = feature_selection.mutual_info_classif(
+        #     goodfeature, labels, discrete_features=True)
+        # print(mi.shape)
+        # print(mi)
+        # mi = np.reshape(mi, [feature[0].shape[1], -1])
+        # fclass.featureEClass.plotHeatMaps(covFeats)
 
     return goodFeatureList, goodFeatureMaskList
 
@@ -241,9 +284,11 @@ def createChunkFeatures(chunkAmount):
                     globalSignificanceThreshold,
                     fClass=fClassDict2[f"{sub}"],
                 )
-                fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(goodFeatureMaskList)
+                fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(
+                    goodFeatureMaskList)
             else:
-                goodFeatureMaskList = fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                goodFeatureMaskList = fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask(
+                )
     else:
         print("Not using Anova Test, not creating Mask")
     return fClassDict2, bClassDict2
@@ -348,8 +393,8 @@ def main():
         False,  # Covariance on smoothed Data 9 dataGCV
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
-        True,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
-        True,  # dataWCV-BC 13
+        False,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
+        False,  # dataWCV-BC 13
         False,  # dataHRCV-BC 14 DataHR seems to not add much if any to FFT and Welch
         True,  # fftDataBC 15
         True,  # welchDataBC 16
@@ -457,7 +502,8 @@ def main():
                     goodFeatureMaskList
                 )  # WHY IS THIS WEIRD SHAPE???
             else:
-                goodFeatureMaskList = fClassDict[f"{sub}"].getGlobalGoodFeaturesMask()
+                goodFeatureMaskList = fClassDict[f"{sub}"].getGlobalGoodFeaturesMask(
+                )
 
     if chunkFeatures:
         fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount)
@@ -508,7 +554,8 @@ def main():
             ) in mDataList:
 
                 # print(f"\n Running dataset: {name} \n")
-                print(f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
+                print(
+                    f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
                 count += 1
 
                 # Below here can be switch to NN ? Create method? Or just different testSuite
@@ -525,7 +572,8 @@ def main():
 
                 allResultsPerSubject.append(allResults)
 
-            savearray = np.array([seed, sub, allResultsPerSubject], dtype=object)
+            savearray = np.array(
+                [seed, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
