@@ -8,6 +8,7 @@ from scipy.signal import hilbert
 import dataLoader as dl
 import util as ut
 import glob
+import os
 
 # Something might have happened at import
 # pylint: disable=C0103
@@ -22,7 +23,6 @@ class featureEClass:
         chunkAmount,
         featureFolder="SavedFeatures",
         chunk=False,
-
     ):
         """
         File that holds class handling feature extraction
@@ -48,8 +48,6 @@ class featureEClass:
 
     def saveFeatures(self, name, array):
 
-        import os
-
         saveDir = f"F:/PythonProjects/NietoExcercise-1/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
@@ -70,8 +68,8 @@ class featureEClass:
 
     def loadAnovaMask(self, featurename, maskname):
         name = f"{featurename}{maskname}"
-        curSavePath = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
-        path = glob.glob(curSavePath + f"/{name}.npy")
+        saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        path = glob.glob(saveDir + f"/{name}.npy")
         if len(path) > 0:
             savedAnovaMask = np.load(path[0], allow_pickle=True)
             return savedAnovaMask
@@ -80,7 +78,6 @@ class featureEClass:
 
     def saveAnovaMask(self, featurename, maskname, array):
         name = f"{featurename}{maskname}"
-        import os
 
         saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
@@ -119,6 +116,7 @@ class featureEClass:
 
         return trainData, testData
 
+    # Usually use Standarscaler instead
     def standardizeData(trainData, testData):
         # Standardizes train and test data based on trainData avg/std
         # This function does not need to be in this class
@@ -129,6 +127,7 @@ class featureEClass:
 
         return trainData, testData
 
+    # Flattens the features, leaves trials undone
     def flattenAllExceptTrial(self, unflatdata):
         flatData = np.reshape(unflatdata, [unflatdata.shape[0], -1])
         return flatData
@@ -170,8 +169,7 @@ class featureEClass:
         for comb in combos:
 
             nameRow = ""
-            dataRo = self.flattenAllExceptTrial(
-                np.copy(featureList[comb[0]][0]))
+            dataRo = self.flattenAllExceptTrial(np.copy(featureList[comb[0]][0]))
             if self.globalGoodFeatureMask is not None:
                 gddataRo = self.globalGoodFeatureMask[comb[0]]
             labelsRo = np.copy(labels)
@@ -228,13 +226,14 @@ class featureEClass:
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
 
-        data_train = data_s[order[0: int(labels_s.shape[0] * 0.8)]]
-        data_test = data_s[order[int(labels_s.shape[0] * 0.8):]]
-        labels_train = labels_s[order[0: int(labels_s.shape[0] * 0.8)]]
-        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8):]]
+        data_train = data_s[order[0 : int(labels_s.shape[0] * 0.8)]]
+        data_test = data_s[order[int(labels_s.shape[0] * 0.8) :]]
+        labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
+        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
 
         return data_train, data_test, labels_train, labels_test, name, gdData
 
+    # TODO Add a loader for bad data, to use in testing
     def loadData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
         # Load the Nieto datasets if those are the ones tested. If not, data and labels loaded
         # from some other dataset needs to be
@@ -334,18 +333,31 @@ class featureEClass:
                 np.array(ut.fftCovariance(dataHR)),
                 featureNameSaved,
             ]  # dataHRCV
-        if featureName == "dataCV":
+        if featureName == "dataGCV":
             datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
             createdFeature = [
                 np.array(ut.fftCovariance(datagauss)),
                 featureNameSaved,
             ]
-        if featureName == "dataCV2":
-            datagauss2 = ndimage.gaussian_filter1d(tempData, 10, axis=2)
+
+        if featureName == "dataGCV2":
+            datagauss2 = ndimage.gaussian_filter1d(tempData, 5, axis=2)
+
+            if self.chunk:
+                datagauss2 = np.reshape(
+                    datagauss2,
+                    [
+                        datagauss2.shape[0],
+                        -1,
+                        int(datagauss2.shape[2] / self.chunkAmount),
+                    ],
+                )
+
             createdFeature = [
                 np.array(ut.fftCovariance(datagauss2)),
                 featureNameSaved,
             ]
+
         if featureName == "dataCorr1d":
             weights = np.zeros(shape=[20])
             weights[:3] = 1
@@ -363,7 +375,7 @@ class featureEClass:
             else:
                 loadedCorrectFeature = self.loadFeatures("fftDataBC")
             if loadedCorrectFeature is not None:
-                print("Hey")
+
                 fftdata = loadedCorrectFeature[0]
                 createdFeature = [
                     np.array(ut.fftCovariance(fftdata)),
@@ -371,6 +383,35 @@ class featureEClass:
                 ]  # dataFFTCV
             else:
                 return None
+
+        if featureName == "dataFFTCV2-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"fftDatacn{self.chunkAmount}BC"
+                )
+                if loadedCorrectFeature is not None:
+                    loadedCorrectFeature[0] = np.reshape(
+                        loadedCorrectFeature[0],
+                        [
+                            loadedCorrectFeature[0].shape[0],
+                            -1,
+                            int(loadedCorrectFeature[0].shape[2] / self.chunkAmount),
+                        ],
+                    )
+                # Testing this!
+            else:
+                loadedCorrectFeature = self.loadFeatures("fftDataBC")
+            if loadedCorrectFeature is not None:
+
+                fftdata = loadedCorrectFeature[0]
+                createdFeature = [
+                    np.array(ut.fftCovariance(fftdata)),
+                    featureNameSaved,
+                ]  # dataFFTCV
+            else:
+                return None
+
         if featureName == "dataWCV-BC":
             if self.chunk:
                 noReshape = True
@@ -405,11 +446,62 @@ class featureEClass:
             else:
                 return None
 
+        if featureName == "dataGCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"gaussianDatacn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
+            if loadedCorrectFeature is not None:
+
+                gaussiandata = loadedCorrectFeature[0]
+                createdFeature = [
+                    np.array(ut.fftCovariance(gaussiandata)),
+                    featureNameSaved,
+                ]  # dataFFTCV
+            else:
+                return None
+
+        if featureName == "dataGCV2-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"gaussianDatacn{self.chunkAmount}BC"
+                )
+
+                if loadedCorrectFeature is not None:
+                    loadedCorrectFeature[0] = np.reshape(
+                        loadedCorrectFeature[0],
+                        [
+                            loadedCorrectFeature[0].shape[0],
+                            -1,
+                            int(loadedCorrectFeature[0].shape[2] / self.chunkAmount),
+                        ],
+                    )
+            else:
+                loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
+
+            if loadedCorrectFeature is not None:
+
+                gaussiandata = loadedCorrectFeature[0]
+                createdFeature = [
+                    np.array(ut.fftCovariance(gaussiandata)),
+                    featureNameSaved,
+                ]  # dataFFTCV
+            else:
+                return None
+
+        if featureName == "gaussianData":
+            createdFeature = [
+                ndimage.gaussian_filter1d(tempData, 5, axis=2),
+                featureNameSaved,
+            ]
+
         if self.chunk:
             if noReshape is False:
-                # print(f"CHUNKED Data feature has shape: {createdFeature[0].shape}")
-                # print("SHAPING Back chunked data")
-                print("ho")
+                # Reshape chunks into more time
                 createdFeature[0] = np.reshape(
                     createdFeature[0],
                     [
@@ -417,15 +509,21 @@ class featureEClass:
                         createdFeature[0].shape[1],
                         -1,
                     ],
+                    # Reshape chunks into more channels
+                    # createdFeature[0] =np.reshape(
+                    # createdFeature[0],
+                    # [
+                    #     int(createdFeature[0].shape[0] / self.chunkAmount),
+                    #     -1,
+                    #     createdFeature[0].shape[2],
+                    # ],)
                 )
-            # print(f"CHUNKED Data feature has shape: {createdFeature[0].shape}")
-            # featureName = f"{featureName}cn{self.chunkAmount}"
 
         self.saveFeatures(featureNameSaved, createdFeature)
         return createdFeature
 
     def insert_cn(self, string, index=-2):
-        return string[:index] + f'cn{self.chunkAmount}' + string[index:]
+        return string[:index] + f"cn{self.chunkAmount}" + string[index:]
 
     def getFeatures(
         self,
@@ -479,15 +577,15 @@ class featureEClass:
 
             del tempData
             tempData = np.copy(self.data)
-            # print(tempData.shape)  # made shorter
+
+            # Splitting the data in time, into chunkAmount of smaller bits, each creating
+            # A feature separately
             if self.chunk:
                 tempData = np.reshape(
                     tempData,
-                    (tempData.shape[0] * self.chunkAmount,
-                     tempData.shape[1], -1),
+                    (tempData.shape[0] * self.chunkAmount, tempData.shape[1], -1),
                 )
-            # print(tempData.shape)
-            # To make sure every feature is created from original data
+
             if useFeature:
                 featureName = None
                 if fNr == 1:
@@ -517,10 +615,10 @@ class featureEClass:
                     featureName = "dataHRCV"
 
                 if fNr == 9:
-                    featureName = "dataCV"
+                    featureName = "dataGCV"
 
                 if fNr == 10:
-                    featureName = "dataCV2"
+                    featureName = "dataGCV2"
 
                 if fNr == 11:
                     featureName = "dataCorr1d"
@@ -544,14 +642,28 @@ class featureEClass:
                     featureName = "dataHRBC"
 
                 if fNr == 18:
-                    featureName = "dataCVBC"
+                    featureName = "gaussianData"
+
+                if fNr == 19:
+                    featureName = "dataGCVBC"
+
+                if fNr == 20:
+                    featureName = "gaussianDataBC"
+
+                if fNr == 21:
+                    featureName = "dataGCV-BC"
+
+                if fNr == 22:
+                    featureName = "dataFFTCV2-BC"
+
+                if fNr == 23:
+                    featureName = "dataGCV2-BC"
 
                 # if fNr == 18:
                 #     featureName = "Chunk"
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:
-                        loadedFeature = self.loadFeatures(
-                            self.insert_cn(featureName))
+                        loadedFeature = self.loadFeatures(self.insert_cn(featureName))
 
                     else:
                         loadedFeature = self.loadFeatures(
@@ -606,7 +718,7 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[0: int(self.labels.shape[0] * 0.8)]]
+            f[0] = f[0][self.order[0 : int(self.labels.shape[0] * 0.8)]]
 
         return tempFeatureList
 
@@ -614,17 +726,17 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8):]]
+            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8) :]]
 
         return tempFeatureList
 
     def getTrainLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[0: int(self.labels.shape[0] * 0.8)]]
+        return tempLabels[self.order[0 : int(self.labels.shape[0] * 0.8)]]
 
     def getTestLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[int(self.labels.shape[0] * 0.8):]]
+        return tempLabels[self.order[int(self.labels.shape[0] * 0.8) :]]
 
     def getLabels(self):
         tempLabels = dp(self.labels)
@@ -641,8 +753,7 @@ class featureEClass:
 
         for feature, mask in zip(self.getFeatureList(), goodFeatures):
 
-            self.saveAnovaMask(
-                feature[1], f"sign{self.globalSignificance}", mask)
+            self.saveAnovaMask(feature[1], f"sign{self.globalSignificance}", mask)
 
         self.globalGoodFeatureMask = goodFeatures
 
@@ -656,15 +767,13 @@ class featureEClass:
         if self.globalGoodFeatureMask is None:
             for feature in self.getFeatureList():
                 if (
-                    self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
                     is None
                 ):
                     return None
 
                 goodFeatures.append(
-                    self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
                 )
 
             self.globalGoodFeatureMask = goodFeatures
