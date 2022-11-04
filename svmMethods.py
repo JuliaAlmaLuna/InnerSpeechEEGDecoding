@@ -66,7 +66,8 @@ class SvmMets:
 
         # vartresh = VarianceThreshold()
         # ndata_train = vartresh.fit_transform(ndata_train)
-        f_statistic, p_values = feature_selection.f_classif(ndata_train, labels_train)
+        f_statistic, p_values = feature_selection.f_classif(
+            ndata_train, labels_train)
         p_values[
             p_values > self.significanceThreshold
         ] = 0  # Use sklearn selectpercentile instead?
@@ -75,25 +76,28 @@ class SvmMets:
         return goodData2
 
     # @lru_cache(10)
+    # TODO: BEFORE SPLIT
     def onlySignData(
-        self, ndata_train, ndata_test, goodData=None, goodData2=None, coefs=None
+        self, ndata_train, ndata_test, goodData=None, goodData2=None,
     ):
-
+        # coefs=None
         if self.signAll and self.signSolo:
             if ndata_train[:, [goodData != 0][0] + [goodData2 != 0][0]].shape[1] < 3:
-                return 0.25, coefs
-            ndata_train = ndata_train[:, [goodData != 0][0] + [goodData2 != 0][0]]
-            ndata_test = ndata_test[:, [goodData != 0][0] + [goodData2 != 0][0]]
+                return 0.25
+            ndata_train = ndata_train[:, [
+                goodData != 0][0] + [goodData2 != 0][0]]
+            ndata_test = ndata_test[:, [goodData != 0]
+                                    [0] + [goodData2 != 0][0]]
 
         elif self.signAll:
             if ndata_train[:, np.where(goodData != 0)[0]].shape[1] < 3:
-                return 0.25, coefs
+                return 0.25
             ndata_train = ndata_train[:, np.where(goodData != 0)[0]]
             ndata_test = ndata_test[:, np.where(goodData != 0)[0]]
 
         elif self.signSolo:
             if ndata_train[:, np.where(goodData2 != 0)[0]].shape[1] < 3:
-                return 0.25, coefs
+                return 0.25
             ndata_train = ndata_train[:, np.where(goodData2 != 0)[0]]
             ndata_test = ndata_test[:, np.where(goodData2 != 0)[0]]
 
@@ -105,13 +109,15 @@ class SvmMets:
         ndata_test,
         labels_train,
         labels_test,
-        goodData,
+
         kernel="linear",
         degree=3,
         gamma="auto",
         C=1,
-        coefs=None,
+
     ):
+        # coefs=None,
+        # goodData,
         """
         Pipeline using SVM
 
@@ -130,8 +136,8 @@ class SvmMets:
         Returns:
             _type_: _description_
         """
-        if coefs is None:
-            coefs = np.zeros([1, ndata_train.shape[1]])
+        # if coefs is None:
+        #     coefs = np.zeros([1, ndata_train.shape[1]])
 
         # from sklearn import multioutput as multiO, create new class for multiOutput
         clf = make_pipeline(
@@ -156,7 +162,7 @@ class SvmMets:
                 correct[nr] = 1
                 correctamount += 1
 
-        return correctamount / labels_test.shape[0], coefs
+        return correctamount / labels_test.shape[0]  # , coefs
 
     def testSuite(
         self,
@@ -165,11 +171,11 @@ class SvmMets:
         labels_train,
         labels_test,
         name,
-        goodData,
+
         kernels=["linear", "rbf", "sigmoid"],
     ):
-
-        coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
+        # goodData,
+        # coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
 
         scaler = StandardScaler()
         scaler = scaler.fit(data_train)
@@ -177,17 +183,17 @@ class SvmMets:
         ndata_train = scaler.transform(data_train)
         ndata_test = scaler.transform(data_test)
 
-        goodData2 = None
-        if self.signSolo:
-            goodData2 = self.anovaSolo(ndata_train, labels_train)
-        if self.onlySign:
-            ndata_train, ndata_test = self.onlySignData(
-                ndata_train=ndata_train,
-                ndata_test=ndata_test,
-                goodData=goodData,
-                goodData2=goodData2,
-                coefs=coefs,
-            )
+        # goodData2 = None Doing it earlier
+        # if self.signSolo:
+        #     goodData2 = self.anovaSolo(ndata_train, labels_train)
+        # if self.onlySign:
+        #     ndata_train, ndata_test = self.onlySignData(
+        #         ndata_train=ndata_train,
+        #         ndata_test=ndata_test,
+        #         goodData=goodData,
+        #         goodData2=goodData2,
+        #         coefs=coefs,
+        #     )
 
         allResults = []
         if self.quickTest:
@@ -200,16 +206,16 @@ class SvmMets:
                 for C in [0.5]:
 
                     for degree in range(1, 2):
-                        res, coefs = self.svmPipeline(
+                        res = self.svmPipeline(
                             ndata_train,
                             ndata_test,
                             labels_train,
                             labels_test,
-                            goodData=goodData,
+                            # goodData=goodData,
                             degree=degree,
                             kernel=kernel,
                             C=C,
-                            coefs=coefs,
+                            # coefs=coefs,
                         )
                         if self.verbose:
                             print(
@@ -229,7 +235,7 @@ class SvmMets:
                             ndata_test,
                             labels_train,
                             labels_test,
-                            goodData=goodData,
+                            # goodData=goodData,
                             degree=degree,
                             kernel=kernel,
                             gamma=gamma,
@@ -241,9 +247,9 @@ class SvmMets:
                                     gamma, kernel, (C * 100 // 10) / 10, res[0]
                                 )
                             )
-                        allResults.append([name, res[0], kernel, C])
+                        allResults.append([name, res, kernel, C])
 
-        coefs = np.reshape(coefs, [128, -1])
+        # coefs = np.reshape(coefs, [128, -1])
         return np.array(allResults, dtype=object)
 
     def testSuiteNN(
@@ -253,9 +259,9 @@ class SvmMets:
         labels_train,
         labels_test,
         name,
-        goodData,
-    ):
 
+    ):
+        # goodData,
         scaler = StandardScaler()
         scaler = scaler.fit(data_train)
 
@@ -269,10 +275,10 @@ class SvmMets:
             ndata_train, ndata_test = self.onlySignData(
                 ndata_train=ndata_train,
                 ndata_test=ndata_test,
-                goodData=goodData,
+
                 goodData2=goodData2,
             )
-
+        # goodData=goodData,
         allResults = []
         ndata_train = np.reshape(
             ndata_train, [ndata_train.shape[0], ndata_train.shape[1], 1]

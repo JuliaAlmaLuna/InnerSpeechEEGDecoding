@@ -21,8 +21,12 @@ class featureEClass:
         paradigmName,
         globalSignificance,
         chunkAmount,
+        signAll=True,
+        signSolo=False,
+        uniqueThresh=0.8,
         featureFolder="SavedFeatures",
         chunk=False,
+        onlyUniqueFeatures=False
     ):
         """
         File that holds class handling feature extraction
@@ -37,14 +41,65 @@ class featureEClass:
         self.data = None
         self.order = None
         self.createdFeatureList = []
+        self.maskedFeatureList = []
         self.globalGoodFeatureMask = None
         self.globalSignificance = globalSignificance
         self.subject = subject
         self.featureFolder = featureFolder
         self.chunk = chunk
         self.chunkAmount = chunkAmount
+        self.onlyUniqueFeatures = onlyUniqueFeatures
+        self.uniqueThresh = uniqueThresh
+        self.signAll = signAll
+        self.signSolo = signSolo
+
+        if self.signAll or self.signSolo:
+            self.onlySign = True
+        else:
+            self.onlySign = False
 
         print(f"Feature class for subject {self.subject} created")
+
+    def createMaskedFeatureList(self):
+        featureList = self.getFeatureList()
+        goodDataMaskList = self.getGlobalGoodFeaturesMask()
+        maskedFeatureList = dp(featureList)
+
+        for feature, mask, maskedFeature in zip(featureList, goodDataMaskList, maskedFeatureList):
+            maskedFeature[0] = self.onlySignData(
+                feature=feature[0], goodData=mask)
+
+        self.maskedFeatureList = maskedFeatureList
+
+    def getMaskedFeatureList(self):
+        tempMaskedFeatureList = dp(self.maskedFeatureList)
+        return tempMaskedFeatureList
+
+    def onlySignData(
+        self, feature, goodData=None, goodData2=None
+    ):
+        # One feature at a time. Only feature part.
+        flatFdata = self.flattenAllExceptTrial(feature)
+
+        if self.signAll and self.signSolo:
+            if flatFdata[:, [goodData != 0][0] + [goodData2 != 0][0]].shape[1] < 2:
+                return 0.25
+            onlySignificantFeatures = flatFdata[:, [
+                goodData != 0][0] + [goodData2 != 0][0]]
+
+        elif self.signAll:
+            if flatFdata[:, np.where(goodData != 0)[0]].shape[1] < 2:
+                raise Exception("Useful feature dim too small")
+            onlySignificantFeatures = flatFdata[:, np.where(goodData != 0)[0]]
+            # ndata_test = ndata_test[:, np.where(goodData != 0)[0]]
+
+        elif self.signSolo:
+            if flatFdata[:, np.where(goodData2 != 0)[0]].shape[1] < 3:
+                return 0.25
+            onlySignificantFeatures = flatFdata[:, np.where(goodData2 != 0)[0]]
+            # ndata_test = ndata_test[:, np.where(goodData2 != 0)[0]]
+
+        return onlySignificantFeatures
 
     def saveFeatures(self, name, array):
 
@@ -68,6 +123,9 @@ class featureEClass:
 
     def loadAnovaMask(self, featurename, maskname):
         name = f"{featurename}{maskname}"
+        if self.onlyUniqueFeatures:
+            name = f"{name}u{self.uniqueThresh}"
+
         saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         path = glob.glob(saveDir + f"/{name}.npy")
         if len(path) > 0:
@@ -78,6 +136,9 @@ class featureEClass:
 
     def saveAnovaMask(self, featurename, maskname, array):
         name = f"{featurename}{maskname}"
+
+        if self.onlyUniqueFeatures:
+            name = f"{name}u{self.uniqueThresh}"
 
         saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
@@ -151,7 +212,7 @@ class featureEClass:
 
         print("Mixing Data")
         dataList = []
-        gddataList = []
+        # gddataList = [] # All data is good now
         nameList = []
         labelsList = []
         dataNrs = np.arange(len(featureList))
@@ -169,27 +230,30 @@ class featureEClass:
         for comb in combos:
 
             nameRow = ""
-            dataRo = self.flattenAllExceptTrial(np.copy(featureList[comb[0]][0]))
-            if self.globalGoodFeatureMask is not None:
-                gddataRo = self.globalGoodFeatureMask[comb[0]]
+            dataRo = np.copy(featureList[comb[0]][0])
+            # dataRo = self.flattenAllExceptTrial( ALREADY FLATTENED
+            #     np.copy(featureList[comb[0]][0]))
+            # if self.globalGoodFeatureMask is not None:
+            #     gddataRo = self.globalGoodFeatureMask[comb[0]]
             labelsRo = np.copy(labels)
             nameRow = nameRow + "-" + featureList[comb[0]][1]
 
             for nr in comb[1:]:
 
-                data = self.flattenAllExceptTrial(np.copy(featureList[nr][0]))
-                if self.globalGoodFeatureMask is not None:
-                    gddata = self.globalGoodFeatureMask[nr]
+                data = np.copy(featureList[nr][0])
+                # data = self.flattenAllExceptTrial(np.copy(featureList[nr][0])) ALREADY FLATTENED
+                # if self.globalGoodFeatureMask is not None:
+                #     gddata = self.globalGoodFeatureMask[nr]
                 dataRo = np.concatenate([dataRo, data], axis=1)
-                if self.globalGoodFeatureMask is not None:
-                    gddataRo = np.concatenate([gddataRo, gddata], axis=0)
+                # if self.globalGoodFeatureMask is not None:
+                #     gddataRo = np.concatenate([gddataRo, gddata], axis=0)
                 nameRow = featureList[nr][1] + "-" + nameRow
 
             dataList.append(dataRo)
-            if self.globalGoodFeatureMask is not None:
-                gddataList.append(gddataRo)
-            else:
-                gddataList.append(None)
+            # if self.globalGoodFeatureMask is not None:
+            #     gddataList.append(gddataRo)
+            # else:
+            #     gddataList.append(None)
             nameList.append(nameRow)
             labelsList.append(labelsRo)
 
@@ -205,7 +269,8 @@ class featureEClass:
             nDataRow = nData
             sDataRow = np.array(
                 self.shuffleSplitData(
-                    nDataRow, lData, nameList[x], order=order, gdData=gddataList[x]
+                    # gdData=gddataList[x]
+                    nDataRow, lData, nameList[x], order=order,
                 ),
                 dtype=object,
             )
@@ -221,17 +286,17 @@ class featureEClass:
 
         return normShuffledDataList
 
-    def shuffleSplitData(self, data_t, labels_t, name, order, gdData):
+    def shuffleSplitData(self, data_t, labels_t, name, order):
 
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
 
-        data_train = data_s[order[0 : int(labels_s.shape[0] * 0.8)]]
-        data_test = data_s[order[int(labels_s.shape[0] * 0.8) :]]
-        labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
-        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
+        data_train = data_s[order[0: int(labels_s.shape[0] * 0.8)]]
+        data_test = data_s[order[int(labels_s.shape[0] * 0.8):]]
+        labels_train = labels_s[order[0: int(labels_s.shape[0] * 0.8)]]
+        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8):]]
 
-        return data_train, data_test, labels_train, labels_test, name, gdData
+        return data_train, data_test, labels_train, labels_test, name  # , gdData
 
     # TODO Add a loader for bad data, to use in testing
     def loadData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
@@ -396,7 +461,8 @@ class featureEClass:
                         [
                             loadedCorrectFeature[0].shape[0],
                             -1,
-                            int(loadedCorrectFeature[0].shape[2] / self.chunkAmount),
+                            int(loadedCorrectFeature[0].shape[2] /
+                                self.chunkAmount),
                         ],
                     )
                 # Testing this!
@@ -477,7 +543,8 @@ class featureEClass:
                         [
                             loadedCorrectFeature[0].shape[0],
                             -1,
-                            int(loadedCorrectFeature[0].shape[2] / self.chunkAmount),
+                            int(loadedCorrectFeature[0].shape[2] /
+                                self.chunkAmount),
                         ],
                     )
             else:
@@ -583,7 +650,8 @@ class featureEClass:
             if self.chunk:
                 tempData = np.reshape(
                     tempData,
-                    (tempData.shape[0] * self.chunkAmount, tempData.shape[1], -1),
+                    (tempData.shape[0] * self.chunkAmount,
+                     tempData.shape[1], -1),
                 )
 
             if useFeature:
@@ -663,7 +731,8 @@ class featureEClass:
                 #     featureName = "Chunk"
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:
-                        loadedFeature = self.loadFeatures(self.insert_cn(featureName))
+                        loadedFeature = self.loadFeatures(
+                            self.insert_cn(featureName))
 
                     else:
                         loadedFeature = self.loadFeatures(
@@ -718,7 +787,7 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[0 : int(self.labels.shape[0] * 0.8)]]
+            f[0] = f[0][self.order[0: int(self.labels.shape[0] * 0.8)]]
 
         return tempFeatureList
 
@@ -726,17 +795,17 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8) :]]
+            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8):]]
 
         return tempFeatureList
 
     def getTrainLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[0 : int(self.labels.shape[0] * 0.8)]]
+        return tempLabels[self.order[0: int(self.labels.shape[0] * 0.8)]]
 
     def getTestLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[int(self.labels.shape[0] * 0.8) :]]
+        return tempLabels[self.order[int(self.labels.shape[0] * 0.8):]]
 
     def getLabels(self):
         tempLabels = dp(self.labels)
@@ -753,7 +822,8 @@ class featureEClass:
 
         for feature, mask in zip(self.getFeatureList(), goodFeatures):
 
-            self.saveAnovaMask(feature[1], f"sign{self.globalSignificance}", mask)
+            self.saveAnovaMask(
+                feature[1], f"sign{self.globalSignificance}", mask)
 
         self.globalGoodFeatureMask = goodFeatures
 
@@ -767,13 +837,15 @@ class featureEClass:
         if self.globalGoodFeatureMask is None:
             for feature in self.getFeatureList():
                 if (
-                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(
+                        feature[1], f"sign{self.globalSignificance}")
                     is None
                 ):
                     return None
 
                 goodFeatures.append(
-                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(
+                        feature[1], f"sign{self.globalSignificance}")
                 )
 
             self.globalGoodFeatureMask = goodFeatures

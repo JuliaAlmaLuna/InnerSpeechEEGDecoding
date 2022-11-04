@@ -13,6 +13,7 @@ import paradigmSetting
 import cProfile
 import pstats
 import io
+import time
 
 
 def mixShuffleSplit(
@@ -32,7 +33,7 @@ def mixShuffleSplit(
     return mDataList
 
 
-def anovaTest(featureList, labels, significanceThreshold, fClass):
+def anovaTest(featureList, labels, significanceThreshold, fClass, onlyUniqueFeatures, uniqueThresh):
     print(
         f"Running anova Test and masking using sign threshold: {significanceThreshold}"
     )
@@ -60,20 +61,12 @@ def anovaTest(featureList, labels, significanceThreshold, fClass):
         flatfeature = np.reshape(feature[0], [feature[0].shape[0], -1])
         flatgoodfeature = np.reshape(
             goodfeature[0], [goodfeature[0].shape[0], -1])
-        # print(flatfeature.shape)
-        # print(goodfeature[0].shape)
-        # print(flatgoodfeature.shape)
+
         scaler.fit(flatfeature)
         flatfeature = scaler.transform(flatfeature)
         flatgoodfeature = scaler.transform(flatgoodfeature)
-        print(feature[0].shape)
 
         if loadedMask is None:
-            # Standardscale fit.
-
-            # print(flatfeature.shape)
-            # print(labels.shape)
-            # print(feature[1])
 
             # Running the ANOVA Test
             f_statistic, p_values = feature_selection.f_classif(
@@ -85,68 +78,51 @@ def anovaTest(featureList, labels, significanceThreshold, fClass):
 
             goodData = f_statistic * p_values
 
+            # TODO:
+            # This part seems to be possibly to heavily multiThread
+            if onlyUniqueFeatures:
+                # These goodfeatures need to come with a array of original index
+                # Then. When a feature is deleted. Make it zero on goodDataMask
+                goodfeature = flatfeature[:, np.where(goodData != 0)[0]]
+                indexList = np.where(goodData != 0)[0]
+
+                goodfeature = np.swapaxes(goodfeature, 0, 1)
+
+                print(time.clock())
+                corrMat = np.corrcoef(goodfeature)
+                print(time.clock())
+
+                print(corrMat.shape)
+
+                deleteIndexes = []
+                for ind, feat in enumerate(corrMat):
+                    if ind in deleteIndexes:
+                        continue
+                    # SHOULD PROBABLY BE 0.8-0.9, maybe upper limit 0.9, lower limit 0.7
+                    # Check what limit would  give 10 percent left, and then use limits
+                    deleteIndexes.extend(np.where(feat > uniqueThresh)[0][1:])
+
+                print(
+                    f"{np.count_nonzero(goodData)} good Features before covRemoval:{uniqueThresh}in {feature[1]}")
+                goodData[indexList[deleteIndexes]] = 0
+                print(
+                    f"{np.count_nonzero(goodData)} good Features after covRemoval:{uniqueThresh} in {feature[1]}")
+
         else:
             print(f"Loaded mask {featureName}")
             goodData = loadedMask
 
-        # These goodfeatures need to come with a array of original index
-        # Then. When a feature is deleted. Make it zero on goodDataMask
-        goodfeature = flatfeature[:, np.where(goodData != 0)[0]]
-        # Append Feature mask to list of Masks
-        goodFeatureMaskList.append(goodData)
-
-        # Not needed
-        # np.moveaxis(goodfeature, 1, 0)
-        goodfeature = np.swapaxes(goodfeature, 0, 1)
-
-        while True:
-            # print("hey")
-            # print(goodfeature.shape)
-            for ind, feat in enumerate(goodfeature):
-                deleteIndexes = []
-                # print("hsafdasdasey")
-                for ind2, feat2 in enumerate(goodfeature):
-                    if ind == ind2:
-                        continue
-                    # print(np.correlate(feat, feat2)) Is this faster on a matrix?
-                    # If so, then use it then take each row and delete rows that are too similar.
-                    if np.correlate(feat, feat2)[0] > 700:
-                        # print("oka")
-                        deleteIndexes.append(ind2)
-                if len(deleteIndexes) > 0:
-                    # print("hoooooo")
-                    break
-            if len(deleteIndexes) < 1:
-                break
-            print(goodfeature.shape)
-            goodfeature = np.delete(goodfeature, deleteIndexes, axis=0)
-            print(goodfeature.shape)
-
-        goodfeature = np.swapaxes(goodfeature, 0, 1)
-
-        # covFeats = np.cov(goodfeature, rowvar=False)
-        print(goodfeature.shape)
-        # flatCov = np.ndarray.flatten(covFeats)
-        # sflatCov = np.sort(flatCov)
-
-        # plt.figure()
-        # plt.plot(sflatCov)
-
-        # print(type(goodfeature))
-        # print(goodfeature.shape)
         print(f"{np.count_nonzero(goodData)} good Features in {feature[1]}")
-
-        # mi = feature_selection.mutual_info_classif(
-        #     goodfeature, labels, discrete_features=True)
-        # print(mi.shape)
-        # print(mi)
-        # mi = np.reshape(mi, [feature[0].shape[1], -1])
-        # fclass.featureEClass.plotHeatMaps(covFeats)
+        goodFeatureMaskList.append(goodData)
 
     return goodFeatureList, goodFeatureMaskList
 
 
-def createChunkFeatures(chunkAmount):
+def createChunkFeatures(chunkAmount, signAll,
+                        signSolo, onlyUniqueFeatures,
+                        globalSignificanceThreshold,
+                        uniqueThresh,
+                        paradigm):
     # Fix it so chunkFeatures are not touched by not chunk functions . And checks alone
 
     # Loading parameters, what part of the trials to load and test
@@ -155,8 +131,9 @@ def createChunkFeatures(chunkAmount):
     sampling_rate = 256
 
     # Parameters for ANOVA test and ANOVA Feature Mask
-    signAll = True
-    globalSignificanceThreshold = 0.05
+    # signAll = True
+    # globalSignificanceThreshold = 0.05
+    # onlyUniqueFeatures = True
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
 
@@ -165,7 +142,7 @@ def createChunkFeatures(chunkAmount):
     # paradigm = paradigmSetting.upDownInner()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownVisSpecial()
-    paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
+    # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
     # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.rightLeftInner()
@@ -208,7 +185,9 @@ def createChunkFeatures(chunkAmount):
             paradigm[0],
             globalSignificance=globalSignificanceThreshold,
             chunk=True,
-            chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+            chunkAmount=chunkAmount,
+            onlyUniqueFeatures=onlyUniqueFeatures,  # Doesn't matter if chunk = False
+            uniqueThresh=uniqueThresh
         )
 
         print(f"Creating chunk features for subject:{sub}")
@@ -270,6 +249,13 @@ def createChunkFeatures(chunkAmount):
     # if signAll, then create or get globalGoodFeatures mask
 
     if signAll:
+
+        # TODO One process/thread per subject
+        # Create list of procesess. One per subject
+        # Assign each one to check/create/get globalGoodFeatureMask
+
+        # After all joined back. Continue
+
         for sub in subjects:
             if fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask() is None:
                 print(
@@ -283,6 +269,8 @@ def createChunkFeatures(chunkAmount):
                     allSubjFLabels,
                     globalSignificanceThreshold,
                     fClass=fClassDict2[f"{sub}"],
+                    onlyUniqueFeatures=onlyUniqueFeatures,
+                    uniqueThresh=uniqueThresh
                 )
                 fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(
                     goodFeatureMaskList)
@@ -347,21 +335,25 @@ def main():
     # Parameters for ANOVA test and ANOVA Feature Mask
     # Does ANOVA on all subjects except the one tested and uses as mask
     signAll = True
-    globalSignificanceThreshold = 0.05  # 0.1 seems best, 0.05 a little faster
+    # 0.1 seems best, 0.05 a little faster
+    globalSignificanceThreshold = 0.05
     # Does ANOVA on training set of each subject by itself and uses as mask
     signSolo = False
     soloSignificanceThreshold = 0.005
+
+    onlyUniqueFeatures = True
+    uniqueThresh = 0.8
 
     # Tolerance for SVM SVC
     tolerance = 0.001  # Untested
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlBC2CVTest"
+    repetitionName = "udrlBC3CVTest"
     repetitionValue = f"{2}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 2
+    maxCombinationAmount = 3
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -382,13 +374,13 @@ def main():
     chunkAmount = 3
     # What features that are created and tested
     featureList = [
-        False,  # FFT 1
-        False,  # Welch 2
+        True,  # FFT 1
+        True,  # Welch 2
         False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
-        False,  # FFT Covariance 6
-        False,  # Welch Covariance 7
+        True,  # FFT Covariance 6
+        True,  # Welch Covariance 7
         False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
         False,  # Covariance on smoothed Data 9 dataGCV
         False,  # Covariance on smoothed Data2 10
@@ -420,6 +412,8 @@ def main():
             globalSignificance=globalSignificanceThreshold,
             chunk=False,
             chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+            onlyUniqueFeatures=onlyUniqueFeatures,
+            uniqueThresh=0.8
         )
         fmetDict[f"{sub}"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
@@ -486,6 +480,15 @@ def main():
             )
 
     # if signAll, then create or get globalGoodFeatures mask
+
+    # TODO One process/thread per subject
+    # Create list of procesess. One per subject
+    # Assign each one to check/create/get globalGoodFeatureMask
+
+    # After all joined back. Continue
+    # Use Sentinel
+    # Or waitfor Multiple Objects OS Handle
+
     if signAll:
         for sub in subjects:
             if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
@@ -497,6 +500,8 @@ def main():
                     allSubjFLabels,
                     globalSignificanceThreshold,
                     fClass=fClassDict[f"{sub}"],
+                    onlyUniqueFeatures=onlyUniqueFeatures,
+                    uniqueThresh=uniqueThresh
                 )
                 fClassDict[f"{sub}"].setGlobalGoodFeaturesMask(
                     goodFeatureMaskList
@@ -506,7 +511,11 @@ def main():
                 )
 
     if chunkFeatures:
-        fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount)
+        fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount, signAll=signAll,
+                                                       signSolo=signSolo, onlyUniqueFeatures=onlyUniqueFeatures,
+                                                       globalSignificanceThreshold=globalSignificanceThreshold,
+                                                       paradigm=paradigm,
+                                                       uniqueThresh=uniqueThresh)
 
         for sub in subjects:
             fClassDict[f"{sub}"].extendFeatureList(
@@ -530,14 +539,28 @@ def main():
         for sub in subjects:  #
 
             print(f"Starting test of subject:{sub} , seed:{seed}")
+            # TODO: Only send in good Features, since they are so much smaller!
+
+            # Creating masked feature List using ANOVA/cov Mask
+            fClassDict[f"{sub}"].createMaskedFeatureList()
 
             mDataList = mixShuffleSplit(
-                fClassDict[f"{sub}"].getFeatureList(),
+                fClassDict[f"{sub}"].getMaskedFeatureList(),
                 labels=fClassDict[f"{sub}"].getLabels(),
                 order=fClassDict[f"{sub}"].getOrder(),
                 featureClass=fClassDict[f"{sub}"],
                 maxCombinationAmount=maxCombinationAmount,
             )
+
+            # # Create a new list in Features, called Masked Features.
+            # # Which are all features except only the good data left after mask
+            # mDataList = mixShuffleSplit(
+            #     fClassDict[f"{sub}"].getFeatureList(),
+            #     labels=fClassDict[f"{sub}"].getLabels(),
+            #     order=fClassDict[f"{sub}"].getOrder(),
+            #     featureClass=fClassDict[f"{sub}"],
+            #     maxCombinationAmount=maxCombinationAmount,
+            # )
 
             allResultsPerSubject = []
             # For loop of each combination of features
@@ -550,7 +573,7 @@ def main():
                 labels_train,
                 labels_test,
                 name,
-                gdData,
+                # gdData,
             ) in mDataList:
 
                 # print(f"\n Running dataset: {name} \n")
@@ -566,7 +589,7 @@ def main():
                     labels_train,
                     labels_test,
                     name,
-                    gdData,
+                    # gdData,
                     kernels=["linear", "sigmoid", "rbf"],  #
                 )
 
