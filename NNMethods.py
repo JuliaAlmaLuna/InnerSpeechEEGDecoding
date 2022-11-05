@@ -163,10 +163,12 @@ def trainTestModel2(
 
     # Reshaping data to fit with neural net.
     data_train_send = np.reshape(
-        data_train, [data_train.shape[0], data_train.shape[1], data_train.shape[2], 1]
+        data_train, [data_train.shape[0],
+                     data_train.shape[1], data_train.shape[2], 1]
     )
     data_test_send = np.reshape(
-        data_test, [data_test.shape[0], data_test.shape[1], data_test.shape[2], 1]
+        data_test, [data_test.shape[0],
+                    data_test.shape[1], data_test.shape[2], 1]
     )
     print(data_train_send.shape)
 
@@ -238,10 +240,12 @@ def trainTestModel(
 
     # Reshaping data to fit with neural net.
     data_train_send = np.reshape(
-        data_train, [data_train.shape[0], data_train.shape[1], data_train.shape[2], 1]
+        data_train, [data_train.shape[0],
+                     data_train.shape[1], data_train.shape[2], 1]
     )
     data_test_send = np.reshape(
-        data_test, [data_test.shape[0], data_test.shape[1], data_test.shape[2], 1]
+        data_test, [data_test.shape[0],
+                    data_test.shape[1], data_test.shape[2], 1]
     )
     print(data_train_send.shape)
 

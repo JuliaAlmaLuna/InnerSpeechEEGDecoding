@@ -170,12 +170,17 @@ def load_multiple_datasets(
     data = datax
     labels1d = labelsx
     if twoDLabels is True:
-        labels = np.zeros([labels1d.shape[0], 2])
+        # len(np.unique(labels1d))
+        labels = np.zeros([labels1d.shape[0], len(np.unique(labels1d))])
         for row, label in enumerate(labels1d, 0):
             if label == 0:
                 labels[row, 0] = 1
             if label == 1:
                 labels[row, 1] = 1
+            if label == 2:
+                labels[row, 2] = 1
+            if label == 3:
+                labels[row, 3] = 1
     else:
         labels = labels1d
     return data, labels, labelsAux
