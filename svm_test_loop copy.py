@@ -476,11 +476,11 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlBC4CVTest"
-    repetitionValue = f"{6}{repetitionName}"
+    repetitionName = "udrlBC3CVTest"
+    repetitionValue = f"{8}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 4
+    maxCombinationAmount = 1
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -490,14 +490,14 @@ def main():
     # What paradigm to test
 
     # paradigm = paradigmSetting.upDownInner()
-    paradigm = paradigmSetting.upDownVis()
+    # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownVisSpecial()
-    # paradigm = paradigmSetting.upDownRightLeftInner()
+    paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
     # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.rightLeftInner()
 
-    chunkFeatures = False
+    chunkFeatures = True
     chunkAmount = 3
     # What features that are created and tested
     featureList = [
@@ -524,11 +524,13 @@ def main():
         True,  # dataGCV-BC       21      - BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         False,  # dataGCV2-BC 23 With more channels. Only useful for chunks
+        # Corr1dBC
         # More to be added
     ]
-
+    badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 22, 23]
     onlyCreateFeatures = True
-    nrFCOT = 6  # nrOfFeaturesToCreateAtOneTime
+    useAllFeatures = True
+    nrFCOT = 5  # nrOfFeaturesToCreateAtOneTime
     featIndex = 0
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
@@ -570,6 +572,11 @@ def main():
             featIndex = featIndex + 1
             # print(feature)
 
+    if useAllFeatures:
+        for featureI in featureListIndex:
+            if featureI in badFeatures:
+                continue
+            featureList[featureI] = True
     # Creating the features for each subject and putting them in a dict
     fClassDict = dict()
     fmetDict = dict()
@@ -930,7 +937,7 @@ def onlyCreateFeaturesFunction(subjects,
             sub,
             paradigm[0],
             globalSignificance=globalSignificanceThreshold,
-            chunk=False,
+            chunk=chunkFeatures,
             chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
             onlyUniqueFeatures=onlyUniqueFeatures,
             uniqueThresh=0.8
@@ -966,7 +973,7 @@ def onlyCreateFeaturesFunction(subjects,
             bClassDict[f"{sub}"] = baseLineCorrection(
                 subject=sub,
                 sampling_rate=sampling_rate,
-                chunk=False,
+                chunk=chunkFeatures,
                 chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
             )
 
@@ -1145,19 +1152,19 @@ def onlyCreateFeaturesFunction(subjects,
         #         goodFeatureMaskList
         #     )  # WHY IS THIS WEIRD SHAPE???
 
-    if chunkFeatures:
-        fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount, signAll=signAll,
-                                                       signSolo=signSolo, onlyUniqueFeatures=onlyUniqueFeatures,
-                                                       globalSignificanceThreshold=globalSignificanceThreshold,
-                                                       paradigm=paradigm,
-                                                       uniqueThresh=uniqueThresh)
+    # if chunkFeatures:
+    #     fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount, signAll=signAll,
+    #                                                    signSolo=signSolo, onlyUniqueFeatures=onlyUniqueFeatures,
+    #                                                    globalSignificanceThreshold=globalSignificanceThreshold,
+    #                                                    paradigm=paradigm,
+    #                                                    uniqueThresh=uniqueThresh)
 
-        for sub in subjects:
-            fClassDict[f"{sub}"].extendFeatureList(
-                fClassDict2[f"{sub}"].getFeatureList()
-            )
-            fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-                fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask())
+    #     for sub in subjects:
+    #         fClassDict[f"{sub}"].extendFeatureList(
+    #             fClassDict2[f"{sub}"].getFeatureList()
+    #         )
+    #         fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
+    #             fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask())
 
 
 if __name__ == "__main__":

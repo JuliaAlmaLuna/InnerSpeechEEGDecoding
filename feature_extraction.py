@@ -64,12 +64,18 @@ class featureEClass:
         featureList = self.getFeatureList()
         goodDataMaskList = self.getGlobalGoodFeaturesMask()
         maskedFeatureList = dp(featureList)
-
+        # print(len(goodDataMaskList))
+        # print(len(featureList))
+        cleanMaskedFeatureList = []
         for feature, mask, maskedFeature in zip(featureList, goodDataMaskList, maskedFeatureList):
+            # print(feature[1])
+            # print(feature[0].shape)
             maskedFeature[0] = self.onlySignData(
                 feature=feature[0], goodData=mask)
+            if maskedFeature[0] is not None:
+                cleanMaskedFeatureList.append(maskedFeature)
 
-        self.maskedFeatureList = maskedFeatureList
+        self.maskedFeatureList = cleanMaskedFeatureList
 
     def getMaskedFeatureList(self):
         tempMaskedFeatureList = dp(self.maskedFeatureList)
@@ -80,7 +86,9 @@ class featureEClass:
     ):
         # One feature at a time. Only feature part.
         flatFdata = self.flattenAllExceptTrial(feature)
+        # print(goodData.shape)
 
+        # flatFdata = feature
         if self.signAll and self.signSolo:
             if flatFdata[:, [goodData != 0][0] + [goodData2 != 0][0]].shape[1] < 2:
                 return 0.25
@@ -89,7 +97,7 @@ class featureEClass:
 
         elif self.signAll:
             if flatFdata[:, np.where(goodData != 0)[0]].shape[1] < 2:
-                raise Exception("Useful feature dim too small")
+                return None
             onlySignificantFeatures = flatFdata[:, np.where(goodData != 0)[0]]
             # ndata_test = ndata_test[:, np.where(goodData != 0)[0]]
 
@@ -846,6 +854,7 @@ class featureEClass:
                         feature[1], f"sign{self.globalSignificance}")
                     is None
                 ):
+                    print(feature[1])
                     return None
 
                 goodFeatures.append(

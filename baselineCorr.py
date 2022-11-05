@@ -33,6 +33,7 @@ class baseLineCorrection(featureEClass):
         self.baseLineLabels = None
         self.sampling_rate = sampling_rate
         self.correctedFeaturesList = None
+        self.chunk = chunk
 
     def loadBaselineData(self):
 
@@ -110,10 +111,19 @@ class baseLineCorrection(featureEClass):
                 justFeatureArraysList[featNr].append(feat[0])
 
         avgFEATURESlist = []
-        for featURE in justFeatureArraysList:
+        for featURE, unAvgFeature in zip(justFeatureArraysList, self.getFeatureList()):
             tempArray = np.asarray(featURE)
             print(tempArray.shape)
             avgFeature = np.mean(tempArray, axis=0)
+            # Here, if chunked And one of the features not CV, then avg all chunks as well
+            if self.chunk:
+                if "CV" not in unAvgFeature[1]:
+                    avgFeature2 = np.reshape(
+                        avgFeature, [self.chunkAmount, avgFeature.shape[0], avgFeature.shape[1], -1])
+                    avgFeature3 = np.mean(avgFeature2, axis=0)
+                    avgFeature = np.concatenate(
+                        [avgFeature3, avgFeature3, avgFeature3], axis=2)
+
             avgFEATURESlist.append(avgFeature)
             print(avgFeature.shape)
 

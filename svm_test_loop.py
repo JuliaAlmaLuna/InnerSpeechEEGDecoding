@@ -459,7 +459,7 @@ def main():
     repetitionValue = f"{6}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 4
+    maxCombinationAmount = 3
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -468,10 +468,10 @@ def main():
     onlyCreateFeatures = True
     # What paradigm to test
 
-    paradigm = paradigmSetting.upDownInner()
+    # paradigm = paradigmSetting.upDownInner()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownVisSpecial()
-    # paradigm = paradigmSetting.upDownRightLeftInner()
+    paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
     # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.rightLeftInner()
