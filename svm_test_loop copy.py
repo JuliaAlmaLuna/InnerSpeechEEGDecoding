@@ -297,6 +297,21 @@ def createChunkFeatures(chunkAmount, signAll,
         # More to be added
     ]
 
+    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 21, 22]
+    badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
+
+    featureListIndex = np.arange(len(featureList))
+    useAllFeatures = True
+
+    for featureI in featureListIndex:
+        featureList[featureI] = False
+
+    if useAllFeatures:
+        for featureI in featureListIndex:
+            if featureI in badFeatures:
+                continue
+            featureList[featureI] = True
+
     # Creating the features for each subject and putting them in a dict
     fClassDict2 = dict()
     bClassDict2 = dict()
@@ -477,10 +492,10 @@ def main():
     # Name for this test, what it is saved as
     validationRepetition = True
     repetitionName = "udrlBC3CVTest"
-    repetitionValue = f"{8}{repetitionName}"
+    repetitionValue = f"{11}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 1
+    maxCombinationAmount = 3
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -523,15 +538,20 @@ def main():
         True,  # gaussianDataBC 20
         True,  # dataGCV-BC       21      - BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
-        False,  # dataGCV2-BC 23 With more channels. Only useful for chunks
+        # dataGCV2-BC 23 With more channels. Only useful for chunks For 3 chunks.
+        False,
+        # Takes up 50 GB apparently. So. no.
         # Corr1dBC
         # More to be added
     ]
-    badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 22, 23]
+    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 22, 23]
+    badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
+    # badFeatures = badFeatures + 1
+
     onlyCreateFeatures = True
     useAllFeatures = True
-    nrFCOT = 5  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 0
+    nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
+    featIndex = 2
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
 
@@ -551,6 +571,9 @@ def main():
 
             featureList[3] = False
             featureList[4] = False
+            featureList[9] = False
+            featureList[21] = False
+            featureList[22] = False
 
             print(featureList)
             onlyCreateFeaturesFunction(subjects,
@@ -572,11 +595,14 @@ def main():
             featIndex = featIndex + 1
             # print(feature)
 
+    for featureI in featureListIndex:
+        featureList[featureI] = False
     if useAllFeatures:
         for featureI in featureListIndex:
             if featureI in badFeatures:
                 continue
             featureList[featureI] = True
+    print(featureList)
     # Creating the features for each subject and putting them in a dict
     fClassDict = dict()
     fmetDict = dict()
