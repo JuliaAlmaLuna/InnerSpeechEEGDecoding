@@ -3,8 +3,8 @@ from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn import feature_selection
-import tensorflow as tf
-from tensorflow.keras import layers  # ,regularizers
+# import tensorflow as tf
+# from tensorflow.keras import layers  # ,regularizers
 
 # import tensorflow_hub as hub  # type:ignore
 
@@ -252,118 +252,118 @@ class SvmMets:
         # coefs = np.reshape(coefs, [128, -1])
         return np.array(allResults, dtype=object)
 
-    def testSuiteNN(
-        self,
-        data_train,
-        data_test,
-        labels_train,
-        labels_test,
-        name,
+    # def testSuiteNN(
+    #     self,
+    #     data_train,
+    #     data_test,
+    #     labels_train,
+    #     labels_test,
+    #     name,
 
-    ):
-        # goodData,
-        scaler = StandardScaler()
-        scaler = scaler.fit(data_train)
+    # ):
+    #     # goodData,
+    #     scaler = StandardScaler()
+    #     scaler = scaler.fit(data_train)
 
-        ndata_train = scaler.transform(data_train)
-        ndata_test = scaler.transform(data_test)
+    #     ndata_train = scaler.transform(data_train)
+    #     ndata_test = scaler.transform(data_test)
 
-        goodData2 = None
-        if self.signSolo:
-            goodData2 = self.anovaSolo(ndata_train, labels_train)
-        if self.onlySign:
-            ndata_train, ndata_test = self.onlySignData(
-                ndata_train=ndata_train,
-                ndata_test=ndata_test,
+    #     goodData2 = None
+    #     if self.signSolo:
+    #         goodData2 = self.anovaSolo(ndata_train, labels_train)
+    #     if self.onlySign:
+    #         ndata_train, ndata_test = self.onlySignData(
+    #             ndata_train=ndata_train,
+    #             ndata_test=ndata_test,
 
-                goodData2=goodData2,
-            )
-        # goodData=goodData,
-        allResults = []
-        ndata_train = np.reshape(
-            ndata_train, [ndata_train.shape[0], ndata_train.shape[1], 1]
-        )
-        ndata_test = np.reshape(
-            ndata_test, [ndata_test.shape[0], ndata_test.shape[1], 1]
-        )
-        # Below here, do NN stuff instead
-        print(ndata_train.shape)
-        print(ndata_test.shape)
-        print(ndata_train.shape[1])
-        eeg_model = tf.keras.Sequential(
-            [
-                # layers.Flatten(input_shape=(1, ndata_train.shape[1], 1)),
-                layers.Dense(
-                    input_shape=(ndata_train.shape[1], 1),
-                    activation="relu",
-                    units=20,
-                ),
-                layers.Dense(
-                    activation="relu",
-                    units=20,
-                ),
-                layers.Flatten(),
-                layers.Dense(units=1, activation="softmax"),
-            ]
-        )
+    #             goodData2=goodData2,
+    #         )
+    #     # goodData=goodData,
+    #     allResults = []
+    #     ndata_train = np.reshape(
+    #         ndata_train, [ndata_train.shape[0], ndata_train.shape[1], 1]
+    #     )
+    #     ndata_test = np.reshape(
+    #         ndata_test, [ndata_test.shape[0], ndata_test.shape[1], 1]
+    #     )
+    #     # Below here, do NN stuff instead
+    #     print(ndata_train.shape)
+    #     print(ndata_test.shape)
+    #     print(ndata_train.shape[1])
+    #     eeg_model = tf.keras.Sequential(
+    #         [
+    #             # layers.Flatten(input_shape=(1, ndata_train.shape[1], 1)),
+    #             layers.Dense(
+    #                 input_shape=(ndata_train.shape[1], 1),
+    #                 activation="relu",
+    #                 units=20,
+    #             ),
+    #             layers.Dense(
+    #                 activation="relu",
+    #                 units=20,
+    #             ),
+    #             layers.Flatten(),
+    #             layers.Dense(units=1, activation="softmax"),
+    #         ]
+    #     )
 
-        callback = tf.keras.callbacks.EarlyStopping(
-            monitor="val_loss", patience=10, restore_best_weights=True
-        )
+    #     callback = tf.keras.callbacks.EarlyStopping(
+    #         monitor="val_loss", patience=10, restore_best_weights=True
+    #     )
 
-        eeg_model.build()
-        eeg_model.summary()
-        eeg_model.compile(
-            optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
-        )
-        # Training NN
-        outputs = eeg_model.fit(
-            ndata_train,
-            labels_train,
-            validation_split=0.2,
-            callbacks=[callback],
-            epochs=100,
-            verbose=True,
-        )
+    #     eeg_model.build()
+    #     eeg_model.summary()
+    #     eeg_model.compile(
+    #         optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"]
+    #     )
+    #     # Training NN
+    #     outputs = eeg_model.fit(
+    #         ndata_train,
+    #         labels_train,
+    #         validation_split=0.2,
+    #         callbacks=[callback],
+    #         epochs=100,
+    #         verbose=True,
+    #     )
 
-        # Printing results
-        print("Results")
-        eeg_model.evaluate(ndata_test, labels_test)
-        # result = eeg_model.predict(data_test_send)
+    #     # Printing results
+    #     print("Results")
+    #     eeg_model.evaluate(ndata_test, labels_test)
+    #     # result = eeg_model.predict(data_test_send)
 
-        # Plotting training and validation results.
-        val_loss = outputs.history["val_loss"]
-        loss = outputs.history["loss"]
-        val_acc = outputs.history["val_accuracy"]
-        acc = outputs.history["accuracy"]
-        allResults.append([name, acc, "juliakernel", 2])
+    #     # Plotting training and validation results.
+    #     val_loss = outputs.history["val_loss"]
+    #     loss = outputs.history["loss"]
+    #     val_acc = outputs.history["val_accuracy"]
+    #     acc = outputs.history["accuracy"]
+    #     allResults.append([name, acc, "juliakernel", 2])
 
-        plt.plot(loss, "r", label="Training loss")
-        plt.plot(val_loss, "b", label="Validation loss")
-        # plt.title(
-        #     "loss {} for reg val {} , dropout val {} ,layersize val {} and act {}".format(
-        #         round(eval[0], 2), reg, drp, lz, act
-        #     )
-        # )
-        plt.legend()
-        plt.figure()
-        plt.pause(0.1)
+    #     plt.plot(loss, "r", label="Training loss")
+    #     plt.plot(val_loss, "b", label="Validation loss")
+    #     # plt.title(
+    #     #     "loss {} for reg val {} , dropout val {} ,layersize val {} and act {}".format(
+    #     #         round(eval[0], 2), reg, drp, lz, act
+    #     #     )
+    #     # )
+    #     plt.legend()
+    #     plt.figure()
+    #     plt.pause(0.1)
 
-        val_acc = outputs.history["val_accuracy"]
-        acc = outputs.history["accuracy"]
-        plt.plot(acc, "r", label="Training acc")
-        plt.plot(val_acc, "b", label="Validation acc")
-        # plt.title(
-        #     "acc {}  for reg val {} , dropout val {} , layersize val {} and act {}".format(
-        #         round(eval[1], 2), reg, drp, lz, act
-        #     )
-        # )
-        plt.legend()
-        plt.figure()
-        plt.pause(0.1)
-        # Need to return a allResults lists with objects that are each [name, res[0], kernel, C] equivalent
+    #     val_acc = outputs.history["val_accuracy"]
+    #     acc = outputs.history["accuracy"]
+    #     plt.plot(acc, "r", label="Training acc")
+    #     plt.plot(val_acc, "b", label="Validation acc")
+    #     # plt.title(
+    #     #     "acc {}  for reg val {} , dropout val {} , layersize val {} and act {}".format(
+    #     #         round(eval[1], 2), reg, drp, lz, act
+    #     #     )
+    #     # )
+    #     plt.legend()
+    #     plt.figure()
+    #     plt.pause(0.1)
+    #     # Need to return a allResults lists with objects that are each [name, res[0], kernel, C] equivalent
 
-        # return np.array(allResults, dtype = object)
+    #     # return np.array(allResults, dtype = object)
 
     # # For ensemble svm model use
     # def testSuite2(self, data_train, data_test, labels_train, labels_test, name):
