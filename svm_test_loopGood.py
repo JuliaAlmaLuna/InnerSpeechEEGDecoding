@@ -406,6 +406,7 @@ def createChunkFeatures(chunkAmount, signAll,
                 print(
                     f"Anova Mask for sub:{sub}, sign:{globalSignificanceThreshold} was not complete, creating new"
                 )
+
                 allSubjFList, allSubjFLabels = combineAllSubjects(
                     fClassDict2, subjectLeftOut=sub, onlyTrain=False
                 )
@@ -427,6 +428,12 @@ def createChunkFeatures(chunkAmount, signAll,
     return fClassDict2, bClassDict2
 
 
+def fSelectUsingSepSubjects():
+    pass
+
+
+# TODO: # Here! Try, not combining them. Just creating featureMask for each subject. Then adding together each mask
+# If it is nonzero in at least 1 spot. Allow it. Basically add them together. Nonzero stay nonzero
 def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
     print(f"Combining all subjects except {subjectLeftOut} into one array ")
     first = True
@@ -499,11 +506,11 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlBC3CVTest"
-    repetitionValue = f"{18}{repetitionName}"
+    repetitionName = "udrlBC4CVTest"
+    repetitionValue = f"{19}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 3
+    maxCombinationAmount = 4
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -546,8 +553,9 @@ def main():
         True,  # gaussianDataBC 20
         True,  # dataGCV-BC       21      - BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
-        # dataGCV2-BC 23 With more channels. Only useful for chunks For 3 chunks.
-        False,
+        False,  # dataGCV2-BC 23
+        # With more channels. Only useful for chunks For 3 chunks.
+        True,  # 24 Correlate1dBC
         # True,  # FFT BC IFFT 24
         # Takes up 50 GB apparently. So. no.
         # Corr1dBC
@@ -557,9 +565,9 @@ def main():
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
     # badFeatures = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 22, 23]
     badFeatures = [4, 5, 6, 7, 8, 9, 10, 22, 23]
-    bestFeatures = [["welchDataBC", "fftDataBC"],
-                    ["fftDatacn3BC", "fftDataBC"],
-                    ["fftDatacn3BC", "welchDataBC"]]
+    bestFeatures = [["fftDatacn3BC", "fftDataBC", "gaussianDatacn3BC"],
+                    ["fftDatacn3BC", "fftDataBC", "dataGCV-BCcn3"],
+                    ["fftDatacn3BC", "fftDataBC", "dataCorr1dcn3BC"]]
     goodFeatures = []
 
     for ind, fea in enumerate(badFeatures):
@@ -574,7 +582,7 @@ def main():
     onlyCreateFeatures = False
     useAllFeatures = True
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 0
+    featIndex = 5
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
 
@@ -1094,6 +1102,13 @@ def onlyCreateFeaturesFunction(subjects,
 
             if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
 
+                # Instead, just loop through all subjects, doing Anova on each one.
+                # Saving it as something not used in testing
+                # then for each subject, take all of the other subjects saved ones and add them together.
+                # Tomorrow. Stop work now!
+                # fSelectUsingSepSubjects()
+
+                # fClass.getFeatureList() for all other subjects into
                 allSubjFList, allSubjFLabels = combineAllSubjects(
                     fClassDict, subjectLeftOut=sub, onlyTrain=False
                 )

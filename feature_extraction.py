@@ -804,7 +804,9 @@ class featureEClass:
                     featureName = "dataGCV2-BC"
 
                 if fNr == 24:
-                    featureName = "FFT-BC-IFFT"
+                    featureName = "dataCorr1dBC"
+                # if fNr == 24:
+                    # featureName = "FFT-BC-IFFT"
 
                 # if fNr == 18:
                 #     featureName = "Chunk"
