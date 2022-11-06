@@ -205,7 +205,7 @@ class featureEClass:
         return flatData
 
     def createListOfDataMixes(
-        self, featureList, labels, order, maxCombinationAmount
+        self, featureList, labels, order, maxCombinationAmount, bestFeatures
     ):  #
         """
         Mixes the features that are sent in into combinations
@@ -237,8 +237,30 @@ class featureEClass:
 
         print(f"Nr of combinations = {len(combos)}")
         combos = np.array(combos, dtype=object)
+        import re
 
         for comb in combos:
+            doCombo = False
+            fNameList = []
+            for nr in comb:
+                fNameList.append(featureList[nr][1])
+            # if re.search(featUre[1], fName) is not None:
+
+            # matchedOne = False
+            for bfeat in bestFeatures:  # list of features that need to match at least one
+                notThisGoodFeatureCombo = False
+                if type(bfeat) == list and len(bfeat) > 1:
+                    for bfeat2 in bfeat:
+                        bNameExists = False
+                        for nameInCombo in fNameList:  # List of features in combo
+                            if re.search(bfeat2, nameInCombo) is not None:
+                                bNameExists = True
+                        if bNameExists is not True:
+                            notThisGoodFeatureCombo = True
+                if notThisGoodFeatureCombo is not True:
+                    doCombo = True
+            if doCombo is not True:
+                continue
 
             nameRow = ""
             dataRo = np.copy(featureList[comb[0]][0])
@@ -267,9 +289,27 @@ class featureEClass:
             #     gddataList.append(None)
             nameList.append(nameRow)
             labelsList.append(labelsRo)
-
+        import re
         normShuffledDataList = []
         for x, dataR in enumerate(dataList):  # Should be zip
+            # continueFlag = True
+            # for bfeat in bestFeatures:
+            #     if type(bfeat) == list and len(bfeat) > 1:
+            #         allIn = True
+            #         for bfeat2 in bfeat:
+            #             # print(bfeat2)
+            #             # print(nameList[x])
+            #             # print(re.search(bfeat2, nameList[x]))
+            #             if re.search(bfeat2, nameList[x]) is not None:
+            #                 allIn = False
+            #         if allIn:
+            #             continueFlag = False
+            #     else:
+            #         if re.search(bfeat, nameList[x]) is not None:
+            #             continueFlag = False
+            # # continueFlag = False
+            # if continueFlag:
+            #     continue
 
             # Copying to be sure no information is kept between rows, subjects, seeds when running pipeline
             # Probably not needed
@@ -577,6 +617,31 @@ class featureEClass:
                 featureNameSaved,
             ]
 
+        if featureName == "FFT-BC-IFFT":
+            if self.chunk:
+                pass
+
+                # TODO, fix this in Util
+                # noReshape = True
+                # loadedCorrectFeature = self.loadFeatures(
+                #     f"gaussianDatacn{self.chunkAmount}BC"
+                # )
+
+                # if loadedCorrectFeature is not None:
+                #     loadedCorrectFeature[0] = np.reshape(
+                #         loadedCorrectFeature[0],
+                #         [
+                #             loadedCorrectFeature[0].shape[0],
+                #             -1,
+                #             int(loadedCorrectFeature[0].shape[2] /
+                #                 self.chunkAmount),
+                #         ],
+                #     )
+            else:
+                loadedFFTBC = self.loadFeatures("fftDataBC")
+                loadedOrigData = tempData
+                ut.ifftData(loadedFFTBC, loadedOrigData)
+
         if self.chunk:
             if noReshape is False:
                 # Reshape chunks into more time
@@ -738,12 +803,15 @@ class featureEClass:
                 if fNr == 23:
                     featureName = "dataGCV2-BC"
 
+                if fNr == 24:
+                    featureName = "FFT-BC-IFFT"
+
                 # if fNr == 18:
                 #     featureName = "Chunk"
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:
                         loadedFeature = self.loadFeatures(
-                            self.insert_cn(featureName))
+                            f"{featureName[0:-2]}cn{self.chunkAmount}BC")
 
                     else:
                         loadedFeature = self.loadFeatures(
@@ -756,6 +824,11 @@ class featureEClass:
                     createdFeature = loadedFeature
                 else:
                     if "BC" in featureName and "-BC" not in featureName:
+                        if self.chunk:
+                            print(f"{featureName[0:-2]}cn{self.chunkAmount}BC")
+                        else:
+                            print(
+                                f"FeatureNameCorrectedNotExist {featureName}")
                         correctedExists = False
                         continue
                     else:

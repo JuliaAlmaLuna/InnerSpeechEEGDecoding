@@ -829,7 +829,7 @@ def main():
 
                 # Below here can be switch to NN ? Create method? Or just different testSuite
 
-                allResults = fmetDict[f"{sub}"].testSuite(
+                allResults = fmetDict[f"{sub}"].testSuiteAda(
                     data_train,
                     data_test,
                     labels_train,

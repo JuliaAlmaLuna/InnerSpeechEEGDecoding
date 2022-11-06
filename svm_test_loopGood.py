@@ -21,7 +21,7 @@ import dask
 
 
 def mixShuffleSplit(
-    createdFeatureList, labels, order, featureClass, maxCombinationAmount
+    createdFeatureList, labels, order, featureClass, maxCombinationAmount, bestFeatures
 ):
 
     # Copy labels and features list to avoid changes to originals. Probly not needed
@@ -33,6 +33,7 @@ def mixShuffleSplit(
         labels=tempLabels,
         order=order,
         maxCombinationAmount=maxCombinationAmount,
+        bestFeatures=bestFeatures,
     )
     return mDataList
 
@@ -282,14 +283,14 @@ def createChunkFeatures(chunkAmount, signAll,
         False,  # Covariance on smoothed Data 9 dataGCV
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
-        True,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
-        True,  # dataWCV-BC 13
-        True,  # dataHRCV-BC 14 DataHR seems to not add much if any to FFT and Welch
+        False,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
+        False,  # dataWCV-BC 13
+        False,  # dataHRCV-BC 14 DataHR seems to not add much if any to FFT and Welch
         True,  # fftDataBC 15
-        True,  # welchDataBC 16
-        True,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        False,  # welchDataBC 16
+        False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
         False,  # gaussianData 18
-        True,  # dataGCVBC 19
+        False,  # dataGCVBC 19
         True,  # gaussianDataBC 20
         True,  # dataGCV-BC       21      - BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
@@ -298,15 +299,22 @@ def createChunkFeatures(chunkAmount, signAll,
     ]
 
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 21, 22]
-    badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
+    # badFeatures = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 22, 23]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 14, 19, 22, 23]
+    # goodFeatures = []
 
+    for ind, fea in enumerate(badFeatures):
+        badFeatures[ind] = fea - 1
+
+    # for ind, fea in enumerate(goodFeatures):
+    #     goodFeatures[ind] = fea - 1
     featureListIndex = np.arange(len(featureList))
     useAllFeatures = True
 
-    for featureI in featureListIndex:
-        featureList[featureI] = False
-
     if useAllFeatures:
+        for featureI in featureListIndex:
+            featureList[featureI] = False
+
         for featureI in featureListIndex:
             if featureI in badFeatures:
                 continue
@@ -394,7 +402,7 @@ def createChunkFeatures(chunkAmount, signAll,
         # After all joined back. Continue
 
         for sub in subjects:
-            if fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask() is None:
+            if fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask() is None and useAllFeatures is not True:
                 print(
                     f"Anova Mask for sub:{sub}, sign:{globalSignificanceThreshold} was not complete, creating new"
                 )
@@ -492,7 +500,7 @@ def main():
     # Name for this test, what it is saved as
     validationRepetition = True
     repetitionName = "udrlBC3CVTest"
-    repetitionValue = f"{11}{repetitionName}"
+    repetitionValue = f"{18}{repetitionName}"
 
     # How many features that are maximally combined and tested together
     maxCombinationAmount = 3
@@ -517,7 +525,7 @@ def main():
     # What features that are created and tested
     featureList = [
         False,  # FFT 1
-        False,  # Welch 2
+        True,  # Welch 2
         False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
@@ -527,31 +535,46 @@ def main():
         False,  # Covariance on smoothed Data 9 dataGCV
         False,  # Covariance on smoothed Data2 10
         False,  # Correlate1d # SEEMS BAD 11
-        True,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
-        True,  # dataWCV-BC 13
+        False,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
+        False,  # dataWCV-BC 13
         True,  # dataHRCV-BC 14 DataHR seems to not add much if any to FFT and Welch
         True,  # fftDataBC 15
-        True,  # welchDataBC 16
-        True,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
-        True,  # gaussianData 18
+        False,  # welchDataBC 16
+        False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
+        False,  # gaussianData 18
         True,  # dataGCVBC 19
         True,  # gaussianDataBC 20
         True,  # dataGCV-BC       21      - BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         # dataGCV2-BC 23 With more channels. Only useful for chunks For 3 chunks.
         False,
+        # True,  # FFT BC IFFT 24
         # Takes up 50 GB apparently. So. no.
         # Corr1dBC
         # More to be added
     ]
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 22, 23]
-    badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
-    # badFeatures = badFeatures + 1
+    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
+    # badFeatures = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 22, 23]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 22, 23]
+    bestFeatures = [["welchDataBC", "fftDataBC"],
+                    ["fftDatacn3BC", "fftDataBC"],
+                    ["fftDatacn3BC", "welchDataBC"]]
+    goodFeatures = []
 
-    onlyCreateFeatures = True
+    for ind, fea in enumerate(badFeatures):
+        badFeatures[ind] = fea - 1
+
+    for ind, fea in enumerate(goodFeatures):
+        goodFeatures[ind] = fea - 1
+
+    print(badFeatures)
+    # badFeatures = badFeatures - 1
+
+    onlyCreateFeatures = False
     useAllFeatures = True
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 2
+    featIndex = 0
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
 
@@ -595,13 +618,15 @@ def main():
             featIndex = featIndex + 1
             # print(feature)
 
-    for featureI in featureListIndex:
-        featureList[featureI] = False
     if useAllFeatures:
+        for featureI in featureListIndex:
+            featureList[featureI] = False
+
         for featureI in featureListIndex:
             if featureI in badFeatures:
                 continue
             featureList[featureI] = True
+
     print(featureList)
     # Creating the features for each subject and putting them in a dict
     fClassDict = dict()
@@ -846,7 +871,6 @@ def main():
 
         # Setting random order for test/train split for all subjects for this seed
 
-        # TODO Use DASK for this!
         for sub in subjects:
             fClassDict[f"{sub}"].setOrder(seed)
             fClassDict[f"{sub}"].createMaskedFeatureList()
@@ -859,12 +883,16 @@ def main():
 
             # Creating masked feature List using ANOVA/cov Mask
 
+            # TODO, send in a list of the 1-3 best combos.
+            # Then only create new combos containing that best combos + 1 or 2 more features
+
             mDataList = mixShuffleSplit(
                 fClassDict[f"{sub}"].getMaskedFeatureList(),
                 labels=fClassDict[f"{sub}"].getLabels(),
                 order=fClassDict[f"{sub}"].getOrder(),
                 featureClass=fClassDict[f"{sub}"],
                 maxCombinationAmount=maxCombinationAmount,
+                bestFeatures=bestFeatures,
             )
 
             # # Create a new list in Features, called Masked Features.
@@ -896,9 +924,9 @@ def main():
                     f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
                 count += 1
 
-                # Below here can be switch to NN ? Create method? Or just different testSuite
+                # Below here can be switch to NN ? Create method? Or just different testSuite. Right now using Adaboost.
 
-                allResults = fmetDict[f"{sub}"].testSuite(
+                allResults = fmetDict[f"{sub}"].testSuiteAda(
                     data_train,
                     data_test,
                     labels_train,
@@ -907,6 +935,16 @@ def main():
                     # gdData,
                     kernels=["linear", "sigmoid", "rbf"],  #
                 )
+
+                #  allResults = fmetDict[f"{sub}"].testSuiteAda(
+                #     data_train,
+                #     data_test,
+                #     labels_train,
+                #     labels_test,
+                #     name,
+                #     # gdData,
+                #     kernels=["linear", "sigmoid", "rbf"],  #
+                # )
 
                 allResultsPerSubject.append(allResults)
 

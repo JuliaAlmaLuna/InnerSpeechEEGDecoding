@@ -103,6 +103,178 @@ class SvmMets:
 
         return ndata_train, ndata_test
 
+    def svmPipelineAda(
+        self,
+        ndata_train,
+        ndata_test,
+        labels_train,
+        labels_test,
+
+        kernel="linear",
+        degree=3,
+        gamma="auto",
+        C=1,
+
+    ):
+        # coefs=None,
+        # goodData,
+        """
+        Pipeline using SVM
+
+        Args:
+            data_train (np.array): Training data for SVM pipeline
+            data_test (np.array): Test data for SVM pipeline
+            labels_train (np.array): Training labels for SVM pipeline
+            labels_test (np.array): Test labels for SVM pipeline
+            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
+            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
+            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
+            . Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        # if coefs is None:
+        #     coefs = np.zeros([1, ndata_train.shape[1]])
+
+        # from sklearn import multioutput as multiO, create new class for multiOutput
+
+        from sklearn.ensemble import AdaBoostClassifier
+
+        ada = AdaBoostClassifier(SVC(  # anova_filter/#,
+            gamma=gamma,
+            kernel=kernel,
+            degree=degree,
+            verbose=False,
+            C=C,
+            cache_size=1800,
+            tol=self.tol,
+            probability=True
+        ), n_estimators=20, learning_rate=1.0)
+
+        # clf = make_pipeline(
+        #     SVC(  # anova_filter/#,
+        #         gamma=gamma,
+        #         kernel=kernel,
+        #         degree=degree,
+        #         verbose=False,
+        #         C=C,
+        #         cache_size=1800,
+        #         tol=self.tol,
+        #     ),
+        # )
+
+        ada.fit(ndata_train, labels_train)
+        predictions = ada.predict(ndata_test)
+
+        correct = np.zeros(labels_test.shape)
+        correctamount = 0
+        for nr, pred in enumerate(predictions, 0):
+            if pred == labels_test[nr]:
+                correct[nr] = 1
+                correctamount += 1
+
+        return correctamount / labels_test.shape[0]  # , coefs
+
+    # actually nn
+
+    def svmPipelineStack(
+        self,
+        ndata_train,
+        ndata_test,
+        labels_train,
+        labels_test,
+
+        kernel="linear",
+        degree=3,
+        gamma="auto",
+        C=1,
+
+    ):
+        # coefs=None,
+        # goodData,
+        """
+        Pipeline using SVM
+
+        Args:
+            data_train (np.array): Training data for SVM pipeline
+            data_test (np.array): Test data for SVM pipeline
+            labels_train (np.array): Training labels for SVM pipeline
+            labels_test (np.array): Test labels for SVM pipeline
+            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
+            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
+            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
+            . Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        # if coefs is None:
+        #     coefs = np.zeros([1, ndata_train.shape[1]])
+
+        # from sklearn import multioutput as multiO, create new class for multiOutput
+
+        # from sklearn.ensemble import AdaBoostClassifier
+        # from sklearn.ensemble import StackingClassifier
+        from sklearn.neural_network import MLPClassifier
+        # If “prefit” is passed then all classifiers are pretrained.
+
+        # TODO!, probably new function or class to do this!
+        # I want! to send train a classifier on each individual feature.
+        # Then use a stacking way to train after that.
+        # Tensorflow probably better then.
+        # So get features by themselves.
+        # Train classifier on each ( probably usign tensorflow )
+        # get result from each one.
+        # Actually no NN is needed. Just save classifier for each feature
+        # have all of them predict, creating a vector of predictions for each trial
+        # then have a classifier that uses that as features.
+        # listOfSVC = []
+        # for x in range(10):
+        #     listOfSVC.append(SVC(  # anova_filter/#,
+        #         gamma=gamma,
+        #         kernel=kernel,
+        #         degree=degree,
+        #         verbose=False,
+        #         C=C,
+        #         cache_size=1800,
+        #         tol=self.tol,
+        #         probability=True
+        #     ))
+
+        # ada = StackingClassifier(listOfSVC, n_jobs=-4, learning_rate=1.0)
+
+        nn = MLPClassifier(hidden_layer_sizes=(
+            10, 10), activation="relu", solver="adam", early_stopping=True)  # learning_rate="adaptive"
+
+        # clf = make_pipeline(
+        #     SVC(  # anova_filter/#,
+        #         gamma=gamma,
+        #         kernel=kernel,
+        #         degree=degree,
+        #         verbose=False,
+        #         C=C,
+        #         cache_size=1800,
+        #         tol=self.tol,
+        #     ),
+        # )
+
+        nn.fit(ndata_train, labels_train)
+        predictions = nn.predict(ndata_test)
+
+        correct = np.zeros(labels_test.shape)
+        correctamount = 0
+        for nr, pred in enumerate(predictions, 0):
+            if pred == labels_test[nr]:
+                correct[nr] = 1
+                correctamount += 1
+
+        return correctamount / labels_test.shape[0]  # , coefs
+
     def svmPipeline(
         self,
         ndata_train,
@@ -248,6 +420,183 @@ class SvmMets:
                                 )
                             )
                         allResults.append([name, res, kernel, C])
+
+        # coefs = np.reshape(coefs, [128, -1])
+        return np.array(allResults, dtype=object)
+
+    def testSuiteAda(
+        self,
+        data_train,
+        data_test,
+        labels_train,
+        labels_test,
+        name,
+
+        kernels=["linear", "rbf", "sigmoid"],
+    ):
+        # goodData,
+        # coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
+
+        scaler = StandardScaler()
+        scaler = scaler.fit(data_train)
+
+        ndata_train = scaler.transform(data_train)
+        ndata_test = scaler.transform(data_test)
+
+        # goodData2 = None Doing it earlier
+        # if self.signSolo:
+        #     goodData2 = self.anovaSolo(ndata_train, labels_train)
+        # if self.onlySign:
+        #     ndata_train, ndata_test = self.onlySignData(
+        #         ndata_train=ndata_train,
+        #         ndata_test=ndata_test,
+        #         goodData=goodData,
+        #         goodData2=goodData2,
+        #         coefs=coefs,
+        #     )
+
+        allResults = []
+        if self.quickTest:
+            clist = [2.5]
+        else:
+            clist = np.linspace(0.5, 5, 5)
+        # testing using different kernels, C and degrees.
+        for kernel in kernels:
+            if kernel == "linear":
+                for C in [0.5]:
+
+                    for degree in range(1, 2):
+                        res = self.svmPipelineAda(
+                            ndata_train,
+                            ndata_test,
+                            labels_train,
+                            labels_test,
+                            # goodData=goodData,
+                            degree=degree,
+                            kernel=kernel,
+                            C=C,
+                            # coefs=coefs,
+                        )
+                        if self.verbose:
+                            print(
+                                "Result for degree {}, kernel {}, C = {}: {}".format(
+                                    degree, kernel, (C * 100 // 10) / 10, res
+                                )
+                            )
+                        allResults.append([name, res, kernel, C])
+
+            else:
+                for C in clist:
+
+                    for gamma in ["auto"]:
+
+                        res = self.svmPipeline(
+                            ndata_train,
+                            ndata_test,
+                            labels_train,
+                            labels_test,
+                            # goodData=goodData,
+                            degree=degree,
+                            kernel=kernel,
+                            gamma=gamma,
+                            C=C,
+                        )
+                        if self.verbose:
+                            print(
+                                "Result for gamma {}, kernel {}, C = {}: {}".format(
+                                    gamma, kernel, (C * 100 // 10) / 10, res[0]
+                                )
+                            )
+                        allResults.append([name, res, kernel, C])
+
+        # coefs = np.reshape(coefs, [128, -1])
+        return np.array(allResults, dtype=object)
+
+    def testSuiteStack(
+        self,
+        data_train,
+        data_test,
+        labels_train,
+        labels_test,
+        name,
+
+        kernels=["linear", "rbf", "sigmoid"],
+    ):
+        # goodData,
+        # coefs = np.zeros([1, data_train.shape[1]])  # * data_train.shape[2]
+
+        scaler = StandardScaler()
+        scaler = scaler.fit(data_train)
+
+        ndata_train = scaler.transform(data_train)
+        ndata_test = scaler.transform(data_test)
+
+        # goodData2 = None Doing it earlier
+        # if self.signSolo:
+        #     goodData2 = self.anovaSolo(ndata_train, labels_train)
+        # if self.onlySign:
+        #     ndata_train, ndata_test = self.onlySignData(
+        #         ndata_train=ndata_train,
+        #         ndata_test=ndata_test,
+        #         goodData=goodData,
+        #         goodData2=goodData2,
+        #         coefs=coefs,
+        #     )
+
+        allResults = []
+
+        # if self.quickTest:
+        #     clist = [2.5]
+        # else:
+        #     clist = np.linspace(0.5, 5, 5)
+        # testing using different kernels, C and degrees.
+        for kernel in kernels:
+            if kernel == "linear":
+                for C in [0.5]:
+
+                    for degree in range(1, 3):
+                        res = self.svmPipelineStack(
+                            ndata_train,
+                            ndata_test,
+                            labels_train,
+                            labels_test,
+                            # goodData=goodData,
+                            degree=degree,
+                            kernel=kernel,
+                            C=C,
+                            # coefs=coefs,
+                        )
+                        if self.verbose:
+                            print(
+                                "Result for degree {}, kernel {}, C = {}: {}".format(
+                                    degree, kernel, (C * 100 // 10) / 10, res
+                                )
+                            )
+                        allResults.append([name, res, kernel, C])
+
+            # else:
+            #     for C in clist:
+
+            #         for gamma in ["auto"]:
+
+            #             res = self.svmPipeline(
+            #                 ndata_train,
+            #                 ndata_test,
+            #                 labels_train,
+            #                 labels_test,
+            #                 # goodData=goodData,
+            #                 degree=degree,
+            #                 kernel=kernel,
+            #                 gamma=gamma,
+            #                 C=C,
+            #             )
+            #             if self.verbose:
+            #                 print(
+            #                     "Result for gamma {}, kernel {}, C = {}: {}".format(
+            #                         gamma, kernel, (C * 100 // 10) / 10, res[0]
+            #                     )
+            #                 )
+            #             allResults.append([name, res, kernel, C])
 
         # coefs = np.reshape(coefs, [128, -1])
         return np.array(allResults, dtype=object)
