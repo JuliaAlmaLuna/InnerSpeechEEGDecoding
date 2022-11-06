@@ -9,7 +9,7 @@ import dataLoader as dl
 import util as ut
 import glob
 import os
-
+import re
 # Something might have happened at import
 # pylint: disable=C0103
 
@@ -26,7 +26,8 @@ class featureEClass:
         uniqueThresh=0.8,
         featureFolder="SavedFeatures",
         chunk=False,
-        onlyUniqueFeatures=False
+        onlyUniqueFeatures=False,
+        useSepSubjFS=False,
     ):
         """
         File that holds class handling feature extraction
@@ -52,6 +53,7 @@ class featureEClass:
         self.uniqueThresh = uniqueThresh
         self.signAll = signAll
         self.signSolo = signSolo
+        self.useSepSubjFS = useSepSubjFS
 
         if self.signAll or self.signSolo:
             self.onlySign = True
@@ -205,7 +207,7 @@ class featureEClass:
         return flatData
 
     def createListOfDataMixes(
-        self, featureList, labels, order, maxCombinationAmount, bestFeatures
+        self, featureList, labels, order, maxCombinationAmount, bestFeatures, useBestFeaturesTest
     ):  #
         """
         Mixes the features that are sent in into combinations
@@ -237,30 +239,32 @@ class featureEClass:
 
         print(f"Nr of combinations = {len(combos)}")
         combos = np.array(combos, dtype=object)
-        import re
+        # import re
 
         for comb in combos:
-            doCombo = False
-            fNameList = []
-            for nr in comb:
-                fNameList.append(featureList[nr][1])
-            # if re.search(featUre[1], fName) is not None:
 
-            # matchedOne = False
-            for bfeat in bestFeatures:  # list of features that need to match at least one
-                notThisGoodFeatureCombo = False
-                if type(bfeat) == list and len(bfeat) > 1:
-                    for bfeat2 in bfeat:
-                        bNameExists = False
-                        for nameInCombo in fNameList:  # List of features in combo
-                            if re.search(bfeat2, nameInCombo) is not None:
-                                bNameExists = True
-                        if bNameExists is not True:
-                            notThisGoodFeatureCombo = True
-                if notThisGoodFeatureCombo is not True:
-                    doCombo = True
-            if doCombo is not True:
-                continue
+            if useBestFeaturesTest:
+                doCombo = False
+                fNameList = []
+                for nr in comb:
+                    fNameList.append(featureList[nr][1])
+                # if re.search(featUre[1], fName) is not None:
+
+                # matchedOne = False
+                for bfeat in bestFeatures:  # list of features that need to match at least one
+                    notThisGoodFeatureCombo = False
+                    if type(bfeat) == list and len(bfeat) > 1:
+                        for bfeat2 in bfeat:
+                            bNameExists = False
+                            for nameInCombo in fNameList:  # List of features in combo
+                                if re.search(bfeat2, nameInCombo) is not None:
+                                    bNameExists = True
+                            if bNameExists is not True:
+                                notThisGoodFeatureCombo = True
+                    if notThisGoodFeatureCombo is not True:
+                        doCombo = True
+                if doCombo is not True:
+                    continue
 
             nameRow = ""
             dataRo = np.copy(featureList[comb[0]][0])
@@ -289,7 +293,7 @@ class featureEClass:
             #     gddataList.append(None)
             nameList.append(nameRow)
             labelsList.append(labelsRo)
-        import re
+        # import re
         normShuffledDataList = []
         for x, dataR in enumerate(dataList):  # Should be zip
             # continueFlag = True
@@ -921,6 +925,10 @@ class featureEClass:
         # Needs to loop through feature mask and get them, using their name which is [0][1] in the list/tuple
         goodFeatures = []
         # print(self.globalGoodFeatureMask)
+        oldparadigmName = self.paradigmName
+        if self.useSepSubjFS:
+            self.paradigmName = f"{self.paradigmName}usingSoloFSubs"
+
         if self.globalGoodFeatureMask is None:
             # print("hola")
             for feature in self.getFeatureList():
@@ -940,6 +948,9 @@ class featureEClass:
             self.globalGoodFeatureMask = goodFeatures
 
         tempFeatureMask = dp(self.globalGoodFeatureMask)
+        if self.useSepSubjFS:
+            self.paradigmName = oldparadigmName
+
         return tempFeatureMask
 
     def getOrder(self):
