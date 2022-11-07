@@ -375,7 +375,7 @@ class SvmMets:
         # testing using different kernels, C and degrees.
         for kernel in kernels:
             if kernel == "linear":
-                for C in [0.5]:
+                for C in [2.5]:
 
                     for degree in range(1, 2):
                         res = self.svmPipeline(

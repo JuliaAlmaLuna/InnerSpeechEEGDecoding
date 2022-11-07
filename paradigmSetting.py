@@ -98,6 +98,36 @@ def upDownVis():
     )
 
 
+def upDownVisInner():
+    return (
+        "vviiud",
+        [
+            [["Visualized"], ["Visualized"], ["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownVisInnersep():
+    return (
+        "vviiudsep",
+        [
+            [["Visualized"], ["Visualized"], ["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
 def upDownVisSpecial():
     return (
         "vvudspec",

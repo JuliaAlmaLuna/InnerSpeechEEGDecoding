@@ -10,6 +10,7 @@ import util as ut
 import glob
 import os
 import re
+
 # Something might have happened at import
 # pylint: disable=C0103
 
@@ -69,7 +70,9 @@ class featureEClass:
         # print(len(goodDataMaskList))
         # print(len(featureList))
         cleanMaskedFeatureList = []
-        for feature, mask, maskedFeature in zip(featureList, goodDataMaskList, maskedFeatureList):
+        for feature, mask, maskedFeature in zip(
+            featureList, goodDataMaskList, maskedFeatureList
+        ):
             # print(feature[1])
             # print(feature[0].shape)
             maskedFeature[0] = self.onlySignData(
@@ -83,9 +86,7 @@ class featureEClass:
         tempMaskedFeatureList = dp(self.maskedFeatureList)
         return tempMaskedFeatureList
 
-    def onlySignData(
-        self, feature, goodData=None, goodData2=None
-    ):
+    def onlySignData(self, feature, goodData=None, goodData2=None):
         # One feature at a time. Only feature part.
         flatFdata = self.flattenAllExceptTrial(feature)
         # print(goodData.shape)
@@ -94,8 +95,9 @@ class featureEClass:
         if self.signAll and self.signSolo:
             if flatFdata[:, [goodData != 0][0] + [goodData2 != 0][0]].shape[1] < 2:
                 return 0.25
-            onlySignificantFeatures = flatFdata[:, [
-                goodData != 0][0] + [goodData2 != 0][0]]
+            onlySignificantFeatures = flatFdata[
+                :, [goodData != 0][0] + [goodData2 != 0][0]
+            ]
 
         elif self.signAll:
             if flatFdata[:, np.where(goodData != 0)[0]].shape[1] < 2:
@@ -207,7 +209,13 @@ class featureEClass:
         return flatData
 
     def createListOfDataMixes(
-        self, featureList, labels, order, maxCombinationAmount, bestFeatures, useBestFeaturesTest
+        self,
+        featureList,
+        labels,
+        order,
+        maxCombinationAmount,
+        bestFeatures,
+        useBestFeaturesTest,
     ):  #
         """
         Mixes the features that are sent in into combinations
@@ -251,9 +259,11 @@ class featureEClass:
                 # if re.search(featUre[1], fName) is not None:
 
                 # matchedOne = False
-                for bfeat in bestFeatures:  # list of features that need to match at least one
+                for (
+                    bfeat
+                ) in bestFeatures:  # list of features that need to match at least one
                     notThisGoodFeatureCombo = False
-                    if type(bfeat) == list and len(bfeat) > 1:
+                    if type(bfeat) == list and len(bfeat) > 0:
                         for bfeat2 in bfeat:
                             bNameExists = False
                             for nameInCombo in fNameList:  # List of features in combo
@@ -261,6 +271,15 @@ class featureEClass:
                                     bNameExists = True
                             if bNameExists is not True:
                                 notThisGoodFeatureCombo = True
+                    # else:
+                    #     bfeat2 = bfeat
+                    #     bNameExists = False
+                    #     for nameInCombo in fNameList:  # List of features in combo
+                    #         if re.search(bfeat2, nameInCombo) is not None:
+                    #             bNameExists = True
+                    #     if bNameExists is not True:
+                    #         notThisGoodFeatureCombo = True
+
                     if notThisGoodFeatureCombo is not True:
                         doCombo = True
                 if doCombo is not True:
@@ -325,7 +344,10 @@ class featureEClass:
             sDataRow = np.array(
                 self.shuffleSplitData(
                     # gdData=gddataList[x]
-                    nDataRow, lData, nameList[x], order=order,
+                    nDataRow,
+                    lData,
+                    nameList[x],
+                    order=order,
                 ),
                 dtype=object,
             )
@@ -369,6 +391,22 @@ class featureEClass:
             twoDLabels=twoDLabels,
             paradigms=paradigms,
         )
+
+        if self.paradigmName == "vviiudsep":
+            # print(self.paradigmName)
+            # print(self.labels)
+            self.labels[self.labels > 1] = self.labels[self.labels > 1] - 2
+            # print(self.labels)
+
+        # if self.paradigmName == "vviirl":
+        #     # print(self.paradigmName)
+        #     # print(self.labels)
+        #     self.labels[self.labels > 1] = self.labels[self.labels > 1] - 2
+        #     # for labe in self.labels:
+        #     if labe > 1
+        # self.labels = newLabels
+
+        # print(self.labels)
         # print(labelsAux)
         # print(labelsAux[:, 1])  # Class
         # print(labelsAux[:, 2])  # Cond
@@ -810,14 +848,15 @@ class featureEClass:
                 if fNr == 24:
                     featureName = "dataCorr1dBC"
                 # if fNr == 24:
-                    # featureName = "FFT-BC-IFFT"
+                # featureName = "FFT-BC-IFFT"
 
                 # if fNr == 18:
                 #     featureName = "Chunk"
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:
                         loadedFeature = self.loadFeatures(
-                            f"{featureName[0:-2]}cn{self.chunkAmount}BC")
+                            f"{featureName[0:-2]}cn{self.chunkAmount}BC"
+                        )
 
                     else:
                         loadedFeature = self.loadFeatures(
@@ -938,6 +977,9 @@ class featureEClass:
                     is None
                 ):
                     print(feature[1])
+                    if self.useSepSubjFS:
+                        self.paradigmName = oldparadigmName
+
                     return None
 
                 goodFeatures.append(

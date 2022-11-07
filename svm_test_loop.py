@@ -471,7 +471,7 @@ def main():
     # paradigm = paradigmSetting.upDownInner()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownVisSpecial()
-    paradigm = paradigmSetting.upDownRightLeftInner()
+    # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
     # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.rightLeftInner()
@@ -489,7 +489,7 @@ def main():
         False,  # Welch Covariance 7
         False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
         False,  # Covariance on smoothed Data 9 dataGCV
-        False,  # Covariance on smoothed Data2 10
+        False,  # Covariance on smoothed Data2 10 "dataGCV2"
         False,  # Correlate1d # SEEMS BAD 11
         False,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
         False,  # dataWCV-BC 13
