@@ -9,9 +9,8 @@ import dataLoader as dl
 import util as ut
 import glob
 import os
-import re
 
-# Something might have happened at import
+# import re
 # pylint: disable=C0103
 
 
@@ -253,7 +252,7 @@ class featureEClass:
 
             if useBestFeaturesTest:
                 doCombo = False
-                fNameList = []
+                fNameList = list()
                 for nr in comb:
                     fNameList.append(featureList[nr][1])
                 # if re.search(featUre[1], fName) is not None:
@@ -267,7 +266,8 @@ class featureEClass:
                         for bfeat2 in bfeat:
                             bNameExists = False
                             for nameInCombo in fNameList:  # List of features in combo
-                                if re.search(bfeat2, nameInCombo) is not None:
+                                if bfeat2 == nameInCombo:
+                                    # if re.search(bfeat2, nameInCombo) is not None:
                                     bNameExists = True
                             if bNameExists is not True:
                                 notThisGoodFeatureCombo = True
@@ -275,10 +275,13 @@ class featureEClass:
                     #     bfeat2 = bfeat
                     #     bNameExists = False
                     #     for nameInCombo in fNameList:  # List of features in combo
-                    #         if re.search(bfeat2, nameInCombo) is not None:
-                    #             bNameExists = True
-                    #     if bNameExists is not True:
-                    #         notThisGoodFeatureCombo = True
+                    #         bNameExists = False
+                    #         for nameInCombo in fNameList:  # List of features in combo
+                    #             if bfeat2 == nameInCombo:
+                    #                 # if re.search(bfeat2, nameInCombo) is not None:
+                    #                 bNameExists = True
+                    #         if bNameExists is not True:
+                    #             notThisGoodFeatureCombo = True
 
                     if notThisGoodFeatureCombo is not True:
                         doCombo = True
