@@ -1,7 +1,7 @@
 """
 This class runs a pipeline testing SVM classification on data
 """
-# from joblib import Parallel, delayed
+from joblib import Parallel, delayed
 from copy import deepcopy as dp
 import numpy as np
 import feature_extraction as fclass
@@ -20,50 +20,50 @@ import os
 import dask
 
 
-# def testLoop(data_train,
-#              data_test,
-#              labels_train,
-#              labels_test,
-#              name,
-#              testNr,
-#              testSize,
-#              count,
-#              lengthDataList,
-#              useAda,
-#              fmetDict,
-#              sub
-#              ):
-#     # print(f"\n Running dataset: {name} \n")
-#     print(
-#         f" Test {testNr}/{testSize} - Progress {count}/{lengthDataList}")
-#     count = count + 1
+def testLoop(data_train,
+             data_test,
+             labels_train,
+             labels_test,
+             name,
+             testNr,
+             testSize,
+             count,
+             lengthDataList,
+             useAda,
+             fmetDict,
+             sub
+             ):
+    # print(f"\n Running dataset: {name} \n")
+    # print(
+    #     f" Test {testNr}/{testSize} - Progress {count}/{lengthDataList}")
+    # count = count + 1
 
-#     # Below here can be switch to NN ? Create method? Or just different testSuite. Right now using Adaboost.
-#     # TODO, use joblib parallel to spread this over as many cpu as possible
-#     # Would say 4 or 5 is reasonable.
-#     if useAda:
+    # Below here can be switch to NN ? Create method? Or just different testSuite. Right now using Adaboost.
+    # TODO, use joblib parallel to spread this over as many cpu as possible
+    # Would say 4 or 5 is reasonable.
+    if useAda:
 
-#         allResults = fmetDict[f"{sub}"].testSuiteAda(
-#             data_train,
-#             data_test,
-#             labels_train,
-#             labels_test,
-#             name,
-#             # gdData,
-#             kernels=["linear", "sigmoid", "rbf"],  #
-#         )
-#     else:
-#         allResults = fmetDict[f"{sub}"].testSuite(
-#             data_train,
-#             data_test,
-#             labels_train,
-#             labels_test,
-#             name,
-#             # gdData,
-#             kernels=["linear", "sigmoid", "rbf"],  #
-#         )
+        allResults = fmetDict[f"{sub}"].testSuiteAda(
+            data_train,
+            data_test,
+            labels_train,
+            labels_test,
+            name,
+            # gdData,
+            kernels=["linear", "sigmoid", "rbf"],  #
+        )
+    else:
+        allResults = fmetDict[f"{sub}"].testSuite(
+            data_train,
+            data_test,
+            labels_train,
+            labels_test,
+            name,
+            # gdData,
+            kernels=["linear", "sigmoid", "rbf"],  #
+        )
 
-#     return allResults
+    return allResults
 
 # This function seems quite unecessary!
 
@@ -632,7 +632,7 @@ def main():
     repetitionValue = f"{52}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 4
+    maxCombinationAmount = 2
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -692,7 +692,7 @@ def main():
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
-    useBestFeaturesTest = True
+    useBestFeaturesTest = False
     bestFeatures = [
         ["welchDatacn3", "welchDataBC", "dataGCVBC"],
         ["welchDataBC", "dataHRCV-BCcn3", "dataWCV-BCcn3"],
@@ -1003,57 +1003,64 @@ def main():
         # for x in range(10000):
         #     h = 4 + x
 
-            # Parallel(n_jobs=-5, verbose=10)(delayed(testLoop)(data_train,
-            #                                                   data_test,
-            #                                                   labels_train,
-            #                                                   labels_test,
-            #                                                   name)
-            #                                 for data_train,
-            #                                 data_test,
-            #                                 labels_train,
-            #                                 labels_test,
-            #                                 name, in mDataList)
+            allResultsPerSubject = Parallel(n_jobs=-5, verbose=10, batch_size=1)(delayed(testLoop)(data_train,
+                                                                                                   data_test,
+                                                                                                   labels_train,
+                                                                                                   labels_test,
+                                                                                                   name,
+                                                                                                   testNr,
+                                                                                                   testSize,
+                                                                                                   count,
+                                                                                                   len(
+                                                                                                       mDataList),
+                                                                                                   useAda,
+                                                                                                   fmetDict,
+                                                                                                   sub
+                                                                                                   ) for data_train, data_test,
+                                                                                 labels_train, labels_test,
+                                                                                 name in mDataList)
 
-            for (
-                data_train,
-                data_test,
-                labels_train,
-                labels_test,
-                name,
-                # gdData,
-            ) in mDataList:
+            # for (
+            #     data_train,
+            #     data_test,
+            #     labels_train,
+            #     labels_test,
+            #     name,
+            #     # gdData,
+            # ) in mDataList:
 
-                # print(f"\n Running dataset: {name} \n")
-                print(
-                    f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
-                count += 1
+            #     # print(f"\n Running dataset: {name} \n")
+            #     print(
+            #         f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
+            #     count += 1
 
-                # Below here can be switch to NN ? Create method? Or just different testSuite. Right now using Adaboost.
-                # TODO, use joblib parallel to spread this over as many cpu as possible
-                # Would say 4 or 5 is reasonable.
-                if useAda:
+            #     # Below here can be switch to NN ? Create method? Or just different testSuite.
+            #     # Right now using Adaboost.
+            #     # TODO, use joblib parallel to spread this over as many cpu as possible
+            #     # Would say 4 or 5 is reasonable.
+            #     if useAda:
 
-                    allResults = fmetDict[f"{sub}"].testSuiteAda(
-                        data_train,
-                        data_test,
-                        labels_train,
-                        labels_test,
-                        name,
-                        # gdData,
-                        kernels=["linear", "sigmoid", "rbf"],  #
-                    )
-                else:
-                    allResults = fmetDict[f"{sub}"].testSuite(
-                        data_train,
-                        data_test,
-                        labels_train,
-                        labels_test,
-                        name,
-                        # gdData,
-                        kernels=["linear", "sigmoid", "rbf"],  #
-                    )
+            #         allResults = fmetDict[f"{sub}"].testSuiteAda(
+            #             data_train,
+            #             data_test,
+            #             labels_train,
+            #             labels_test,
+            #             name,
+            #             # gdData,
+            #             kernels=["linear", "sigmoid", "rbf"],  #
+            #         )
+            #     else:
+            #         allResults = fmetDict[f"{sub}"].testSuite(
+            #             data_train,
+            #             data_test,
+            #             labels_train,
+            #             labels_test,
+            #             name,
+            #             # gdData,
+            #             kernels=["linear", "sigmoid", "rbf"],  #
+            #         )
 
-                allResultsPerSubject.append(allResults)
+            #     allResultsPerSubject.append(allResults)
 
             savearray = np.array(
                 [seed, sub, allResultsPerSubject], dtype=object)
