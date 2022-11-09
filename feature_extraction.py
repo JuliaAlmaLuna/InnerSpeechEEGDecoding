@@ -238,55 +238,125 @@ class featureEClass:
         dataNrs = np.arange(len(featureList))
         combos = []
 
+        namesAndIndex = np.array([len(featureList), 2], dtype=object)
+        namesAndIndexBestFeatures = np.zeros(
+            np.array(bestFeatures, dtype=object).shape)
+        bestFeatures = np.array(bestFeatures, dtype=object)
+        # print(bestFeatures.shape)
+        for index, feature in enumerate(featureList, 0):
+            # print(feature[1])
+            # print(np.where(bestFeatures == feature[1]))
+            namesAndIndex[0] = feature[1]
+            namesAndIndex[1] = index
+            if np.where(bestFeatures == feature[1])[0].shape[0] > 0:
+                row = np.where(bestFeatures == feature[1])[0]
+                column = np.where(bestFeatures == feature[1])[1]
+                namesAndIndexBestFeatures[row, column] = index
+
+        # create All combinations of bestFeatures, dvs bara dem
+        # Sen ta all combinations, of them and all other values
+
+        if useBestFeaturesTest:
+            maxCombinationAmount = maxCombinationAmount - len(bestFeatures[0])
+
+        # print(maxCombinationAmount)
         if maxCombinationAmount > len(dataNrs):
             maxCombinationAmount = len(dataNrs)
         for L in range(1, maxCombinationAmount + 1):
             for subsetNr in itertools.combinations(dataNrs, L):
-                combos.append(cp(subsetNr))
+                if useBestFeaturesTest:
+                    for row in namesAndIndexBestFeatures:
+                        print(np.array(np.concatenate(
+                            [np.array(row), cp(subsetNr)], axis=0), dtype=int))
+                        combos.append(np.array(np.concatenate(
+                            [np.array(row), cp(subsetNr)], axis=0), dtype=int))
+                else:
+                    combos.append(cp(subsetNr))
 
         print(f"Nr of combinations = {len(combos)}")
         combos = np.array(combos, dtype=object)
         # import re
+        # print(combos)
+        # print("oka")
+        for comb in combos:  # 10000
 
-        for comb in combos:
+            # if useBestFeaturesTest:
+            #     if len(comb) < maxCombinationAmount - 1:
+            #         continue
+            #     for row in namesAndIndexBestFeatures:
+            #         nrOfBad = 0
+            #         for val in comb:
+            #             if val not in row:
+            #                 nrOfBad = nrOfBad + 1
+            #         if nrOfBad < 2:
+            #             break
+            #     if nrOfBad > 1:
+            #         continue
 
-            if useBestFeaturesTest:
-                doCombo = False
-                fNameList = list()
-                for nr in comb:
-                    fNameList.append(featureList[nr][1])
-                # if re.search(featUre[1], fName) is not None:
+            # for row in namesAndIndexBestFeatures:
+            #     nrOfBad = 0
+            #     if val not in namesAndIndexBestFeatures:
+            #         nrOfBad = nrOfBad + 1
+            #     if nrOfBad == 2:
+            #         break
+            # if nrOfBad < 2:
+            #     break
 
-                # matchedOne = False
-                for (
-                    bfeat
-                ) in bestFeatures:  # list of features that need to match at least one
-                    notThisGoodFeatureCombo = False
-                    if type(bfeat) == list and len(bfeat) > 0:
-                        for bfeat2 in bfeat:
-                            bNameExists = False
-                            for nameInCombo in fNameList:  # List of features in combo
-                                if bfeat2 == nameInCombo:
-                                    # if re.search(bfeat2, nameInCombo) is not None:
-                                    bNameExists = True
-                            if bNameExists is not True:
-                                notThisGoodFeatureCombo = True
-                    # else:
-                    #     bfeat2 = bfeat
-                    #     bNameExists = False
-                    #     for nameInCombo in fNameList:  # List of features in combo
-                    #         bNameExists = False
-                    #         for nameInCombo in fNameList:  # List of features in combo
-                    #             if bfeat2 == nameInCombo:
-                    #                 # if re.search(bfeat2, nameInCombo) is not None:
-                    #                 bNameExists = True
-                    #         if bNameExists is not True:
-                    #             notThisGoodFeatureCombo = True
+            # # print(comb)
+            # if useBestFeaturesTest:
 
-                    if notThisGoodFeatureCombo is not True:
-                        doCombo = True
-                if doCombo is not True:
-                    continue
+            #     oneGoodRow = False
+            #     for row in namesAndIndexBestFeatures:  # 9
+            #         notGoodColumns = False
+            #         for column in row:  # 4
+            #             atleastOne = False
+            #             for val in comb:  # at least one
+            #                 if column == val:
+            #                     atleastOne = True
+            #             if atleastOne is False:
+            #                 # if column not in comb:
+            #                 notGoodColumns = True
+            #                 break
+            #         if notGoodColumns is False:
+            #             oneGoodRow = True
+            #     if oneGoodRow is False:
+            #         continue
+            #     doCombo = False
+            #     fNameList = list()
+            #     for nr in comb:
+            #         fNameList.append(featureList[nr][1])
+            #     # if re.search(featUre[1], fName) is not None:
+
+            #     # matchedOne = False
+            #     for (
+            #         bfeat
+            #     ) in bestFeatures:  # list of features that need to match at least one
+            #         notThisGoodFeatureCombo = False
+            #         if type(bfeat) == list and len(bfeat) > 0:
+            #             for bfeat2 in bfeat:
+            #                 bNameExists = False
+            #                 for nameInCombo in fNameList:  # List of features in combo
+            #                     if bfeat2 == nameInCombo:
+            #                         # if re.search(bfeat2, nameInCombo) is not None:
+            #                         bNameExists = True
+            #                 if bNameExists is not True:
+            #                     notThisGoodFeatureCombo = True
+            #         # else:
+            #         #     bfeat2 = bfeat
+            #         #     bNameExists = False
+            #         #     for nameInCombo in fNameList:  # List of features in combo
+            #         #         bNameExists = False
+            #         #         for nameInCombo in fNameList:  # List of features in combo
+            #         #             if bfeat2 == nameInCombo:
+            #         #                 # if re.search(bfeat2, nameInCombo) is not None:
+            #         #                 bNameExists = True
+            #         #         if bNameExists is not True:
+            #         #             notThisGoodFeatureCombo = True
+
+            #         if notThisGoodFeatureCombo is not True:
+            #             doCombo = True
+            #     if doCombo is not True:
+            #         continue
 
             nameRow = ""
             dataRo = np.copy(featureList[comb[0]][0])

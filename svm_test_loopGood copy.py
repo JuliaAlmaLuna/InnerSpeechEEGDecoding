@@ -628,11 +628,11 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrliplotnoAda4asdasd"  # "udrliplotnoAda1hyperparams"
+    repetitionName = "udrliplotnoAda5"  # "udrliplotnoAda1hyperparams"
     repetitionValue = f"{52}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 2
+    maxCombinationAmount = 5
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -692,17 +692,17 @@ def main():
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
-    useBestFeaturesTest = False
+    useBestFeaturesTest = True
     bestFeatures = [
-        ["welchDatacn3", "welchDataBC", "dataGCVBC"],
-        ["welchDataBC", "dataHRCV-BCcn3", "dataWCV-BCcn3"],
-        ["welchDatacn3BC", "fftDatacn3BC", "welchData"],
-        ["fftDatacn3BC", "dataCorr1d", "dataHRCV-BCcn3"],
-        ["dataHRCV-BCcn3", "welchDataBC", "welchData"],
-        ["fftDatacn3BC", "dataHRcn3", "dataCorr1d"],
-        ["dataCorr1dcn3BC", "fftDataBC", "fftDatacn3"],
-        ["gaussianDatacn3BC", "fftDataBC", "dataCorr1d"],
-        ["welchDatacn3BC", "welchDataBC", "dataHRcn3"],
+        ["welchDatacn3", "welchDataBC", "dataGCVBC", "dataWCV-BC"],
+        ["welchDataBC", "dataHRCV-BCcn3", "dataWCV-BCcn3", "dataGCVBC"],
+        ["welchDatacn3BC", "fftDatacn3BC", "welchData", "dataWCV-BC"],
+        ["fftDatacn3BC", "dataCorr1d", "dataHRCV-BCcn3", "fftDatacn3"],
+        ["dataHRCV-BCcn3", "welchDataBC", "welchData", "fftData"],
+        ["fftDatacn3BC", "dataHRcn3", "dataCorr1d", "welchDataBC"],
+        ["dataCorr1dcn3BC", "fftDataBC", "fftDatacn3", "dataFFTCV-BC"],
+        ["gaussianDatacn3BC", "fftDataBC", "dataCorr1d", "dataFFTCV-BC"],
+        ["welchDatacn3BC", "welchDataBC", "dataHRcn3", "fftDatacn3"],
     ]
 
     # bestFeatures = [
@@ -1016,7 +1016,8 @@ def main():
                                                                                                    useAda,
                                                                                                    fmetDict,
                                                                                                    sub
-                                                                                                   ) for data_train, data_test,
+                                                                                                   ) for data_train,
+                                                                                 data_test,
                                                                                  labels_train, labels_test,
                                                                                  name in mDataList)
 
