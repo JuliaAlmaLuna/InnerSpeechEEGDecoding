@@ -631,8 +631,8 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "testingud3isoldBaseline11"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{17}{repetitionName}"
+    repetitionName = "testingHopefullycorrectudrli3feat"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{21}{repetitionName}"
 
     # How many features that are maximally combined and tested together
     maxCombinationAmount = 3
@@ -647,7 +647,7 @@ def main():
     # What paradigm to test
     # paradigm = paradigmSetting.upDownInnerSpecial11()
     # paradigm = paradigmSetting.upDownInnerSpecial12()
-    paradigm = paradigmSetting.upDownInnerSpecial13()
+    # paradigm = paradigmSetting.upDownInnerSpecial13()
     # paradigm = paradigmSetting.upDownInner()
     # paradigm = paradigmSetting.upDownInnerSpecial4()
     # paradigm = paradigmSetting.upDownVis()
@@ -655,6 +655,7 @@ def main():
     # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownVisInner()
     # paradigm = paradigmSetting.upDownVisInnersep()
+    paradigm = paradigmSetting.upDownRightLeftInnerSpecial2()
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
     # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.rightLeftInner()
@@ -698,8 +699,8 @@ def main():
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
-    useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top1udrlv.npy"
+    useBestFeaturesTest = True
+    bestFeaturesSaveFile = "top2udrli.npy"
     bestFeatures = np.load(bestFeaturesSaveFile, allow_pickle=True)
 
     goodFeatures = []
@@ -712,12 +713,12 @@ def main():
 
     print(badFeatures)
     # badFeatures = badFeatures - 1
-    chunkFeatures = False
+    chunkFeatures = True
     chunkAmount = 3
     onlyCreateFeatures = False
     useAllFeatures = True
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 0
+    featIndex = 5
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
 
@@ -742,8 +743,8 @@ def main():
             featureList[9] = False  # 10
             featureList[21] = False  # 23
             featureList[22] = False  # 22
-            # featureList[20] = False  # 21 Not okay for chunks
-            # featureList[18] = False  # 19 Not okay for chunks
+            featureList[20] = False  # 21 Not okay for chunks
+            featureList[18] = False  # 19 Not okay for chunks
 
             print(featureList)
             onlyCreateFeaturesFunction(

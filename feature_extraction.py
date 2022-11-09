@@ -250,8 +250,11 @@ class featureEClass:
             namesAndIndex[1] = index
             if np.where(bestFeatures == feature[1])[0].shape[0] > 0:
                 row = np.where(bestFeatures == feature[1])[0]
-                column = np.where(bestFeatures == feature[1])[1]
-                namesAndIndexBestFeatures[row, column] = index
+                if maxCombinationAmount > 2:
+                    column = np.where(bestFeatures == feature[1])[1]
+                    namesAndIndexBestFeatures[row, column] = index
+                else:
+                    namesAndIndexBestFeatures[row] = index
 
         # create All combinations of bestFeatures, dvs bara dem
         # Sen ta all combinations, of them and all other values
@@ -266,13 +269,13 @@ class featureEClass:
             for subsetNr in itertools.combinations(dataNrs, L):
                 if useBestFeaturesTest:
                     for row in namesAndIndexBestFeatures:
-                        print(
-                            np.array(
-                                np.concatenate(
-                                    [np.array(row), cp(subsetNr)], axis=0),
-                                dtype=int,
-                            )
-                        )
+                        # print(
+                        #     np.array(
+                        #         np.concatenate(
+                        #             [np.array(row), cp(subsetNr)], axis=0),
+                        #         dtype=int,
+                        #     )
+                        # )
                         combos.append(
                             np.array(
                                 np.concatenate(
@@ -836,7 +839,7 @@ class featureEClass:
             self.data, self.labels = self.loadData(
                 t_min, t_max, sampling_rate, twoDLabels, paradigms
             )
-        
+
         self.createdFeatureList = []
         tempData = np.copy(self.data)
         correctedExists = True

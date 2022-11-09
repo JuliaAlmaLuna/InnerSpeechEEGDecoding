@@ -28,6 +28,21 @@ def upDownRightLeftInnerSpecial():
     )
 
 
+def upDownRightLeftInnerSpecial2():
+    return (
+        "iiiiudrlspec2",
+        [
+            [["Inner"], ["Inner"], ["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+                ["Right"],
+                ["Left"],
+            ],
+        ],
+    )
+
+
 # Try combiningWitInner?
 def upDownRightLeftVis():
     return (
