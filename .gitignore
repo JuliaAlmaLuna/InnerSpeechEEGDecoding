@@ -12,6 +12,11 @@ SavedBaseLineFeatures**
 SavedAnovaMask**
 temp**
 processOutputs**
+oldBas**
+newconcatBaselineFeatures**
+newhstackBaselineFeatures**
+newnewBaselineFeatures**
+newtestingHstackBaselineFeatures**
 
 eeg-imagined-speech-nieto/derivatives/sub-01/ses-01/sub-01_ses-01_baseline-epo.fif
 eeg-imagined-speech-nieto/derivatives/sub-01/ses-01/sub-01_ses-01_eeg-epo.fif
@@ -261,3 +266,4 @@ saved_model/my_modelgood4/keras_metadata.pb
 saved_model/my_modelgood4/saved_model.pb
 saved_model/my_modelgood4/variables/variables.data-00000-of-00001
 saved_model/my_modelgood4/variables/variables.index
+makeTables.ipynb

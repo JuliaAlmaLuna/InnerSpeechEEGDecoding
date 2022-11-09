@@ -266,10 +266,20 @@ class featureEClass:
             for subsetNr in itertools.combinations(dataNrs, L):
                 if useBestFeaturesTest:
                     for row in namesAndIndexBestFeatures:
-                        print(np.array(np.concatenate(
-                            [np.array(row), cp(subsetNr)], axis=0), dtype=int))
-                        combos.append(np.array(np.concatenate(
-                            [np.array(row), cp(subsetNr)], axis=0), dtype=int))
+                        print(
+                            np.array(
+                                np.concatenate(
+                                    [np.array(row), cp(subsetNr)], axis=0),
+                                dtype=int,
+                            )
+                        )
+                        combos.append(
+                            np.array(
+                                np.concatenate(
+                                    [np.array(row), cp(subsetNr)], axis=0),
+                                dtype=int,
+                            )
+                        )
                 else:
                     combos.append(cp(subsetNr))
 
@@ -826,7 +836,7 @@ class featureEClass:
             self.data, self.labels = self.loadData(
                 t_min, t_max, sampling_rate, twoDLabels, paradigms
             )
-
+        
         self.createdFeatureList = []
         tempData = np.copy(self.data)
         correctedExists = True
@@ -943,10 +953,14 @@ class featureEClass:
                 else:
                     if "BC" in featureName and "-BC" not in featureName:
                         if self.chunk:
-                            print(f"{featureName[0:-2]}cn{self.chunkAmount}BC")
+                            if "split" not in self.paradigmName:
+                                print(
+                                    f"{featureName[0:-2]}cn{self.chunkAmount}BC not exists"
+                                )
                         else:
-                            print(
-                                f"FeatureNameCorrectedNotExist {featureName}")
+                            if "split" not in self.paradigmName:
+                                print(
+                                    f"FeatureNameCorrectedNotExist {featureName}")
                         correctedExists = False
                         continue
                     else:
@@ -1036,12 +1050,13 @@ class featureEClass:
     def getGlobalGoodFeaturesMask(self):
         # Needs to loop through feature mask and get them, using their name which is [0][1] in the list/tuple
         goodFeatures = []
-        # print(self.globalGoodFeatureMask)
+
         oldparadigmName = self.paradigmName
         if self.useSepSubjFS:
             self.paradigmName = f"{self.paradigmName}usingSoloFSubs"
 
         if self.globalGoodFeatureMask is None:
+            print("InGlobalGoodFeatures")
             # print("hola")
             for feature in self.getFeatureList():
                 if (

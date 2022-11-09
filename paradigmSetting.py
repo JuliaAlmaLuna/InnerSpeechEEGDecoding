@@ -85,6 +85,123 @@ def upDownInner():
     )
 
 
+def upDownInnerSpecial():
+    return (
+        "iiudspec",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial2():
+    return (
+        "iiudspec2",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial11():
+    return (
+        "iiudspec11",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial12():
+    return (
+        "iiudspec12",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial13():
+    return (
+        "iiudspec13",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial7():
+    return (
+        "iiudspec7",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial9():
+    return (
+        "iiudspec9",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial5():
+    return (
+        "iiudspec5",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecial4():
+    return (
+        "iiudspec4",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
 def upDownVis():
     return (
         "vvud",

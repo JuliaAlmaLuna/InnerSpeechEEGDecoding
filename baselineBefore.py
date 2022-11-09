@@ -13,10 +13,12 @@ class baseLineCorrection(featureEClass):
         paradigmName="baseline",
         globalSignificance="0.5",  # Doesn't matter
         sampling_rate=256,
-        featureFolder="SavedBaselineFeatures",
+        featureFolder="newtestingHstackBaselineFeatures",
         chunk=False,
     ):
-        print("The feature Class created next will be a baseline Feature Class")
+        print(
+            "The feature Class created next will be a baseline STACK OLD Feature Class"
+        )
         super().__init__(
             subject=subject,
             featureFolder=featureFolder,
@@ -95,7 +97,7 @@ class baseLineCorrection(featureEClass):
         for x in range(baselineBatches):
             self.paradigmName = f"split{x+1}"
             self.data = self.getBaselineData()[
-                :, :, x * trialSampleAmount : (x + 1) * trialSampleAmount
+                :, :, x * trialSampleAmount: (x + 1) * trialSampleAmount
             ]
             super().getFeatures(self.subject, featureList=featureList)
             baselineFeatureListList.append(self.getFeatureList())
@@ -136,17 +138,11 @@ class baseLineCorrection(featureEClass):
             print(avgFeature.shape)
 
         self.avgBaselineFeatureList = self.getFeatureList()
-        # TODO: WTF
-        for ind, featURE in enumerate(avgFEATURESlist):
-            self.avgBaselineFeatureList[ind][0] = featURE
+        for featURE, avgBaselineFeature in zip(
+            avgFEATURESlist, self.avgBaselineFeatureList
+        ):
+            avgBaselineFeature[0] = featURE
             print(featURE.shape)
-
-        # self.avgBaselineFeatureList = self.getFeatureList()
-        # for featURE, avgBaselineFeature in zip(
-        #     avgFEATURESlist, self.avgBaselineFeatureList
-        # ):
-        #     avgBaselineFeature[0] = featURE
-        #     print(featURE.shape)
 
         # self.avgBaselineFeatureList = avgFEATURESlist
 
@@ -169,7 +165,6 @@ class baseLineCorrection(featureEClass):
             featureName = bfeature[1]
             # if self.chunk:
             #     featureName = f"{featureName}cn{self.chunkAmount}"
-            print("BaselineCorrecting")
             print(featureName)
             for ufeature, cfeature in zip(unCorrectedFeatureList, correctedFeatureList):
                 if ufeature[1] == featureName:
@@ -182,20 +177,20 @@ class baseLineCorrection(featureEClass):
                     # print(cfeature[0][0][0][0])
                     # print("ada")
                     cfeature[0] = corrFeature
-                    fullFeature = np.array(
-                        [corrFeature, f"{cfeature[1]}BC"], dtype=object
-                    )
+
                     # if self.chunk:
                     #     cfeature[1] = f"{cfeature[1]}cn{self.chunkAmount}"
 
-                    # cfeature[1] = f"{cfeature[1]}BC"
+                    cfeature[1] = f"{cfeature[1]}BC"
                     # print(cfeature[0][0][0][0])
+                    print(paradigmName2)
+                    print(self.paradigmName)
+                    print(cfeature[1])
+                    print(f"{cfeature[1]}BC")
                     self.featureFolder = "SavedFeatures"
-                    oldparaName = self.paradigmName
                     self.paradigmName = f"{paradigmName2}"
-                    self.saveFeatures(f"{cfeature[1]}BC", fullFeature)
-                    self.featureFolder = ("SavedBaselineFeatures",)
-                    self.paradigmName = oldparaName
+                    self.saveFeatures(f"{cfeature[1]}", cfeature)
+                    self.featureFolder = ("newtestingHstackBaselineFeatures",)
         self.correctedFeaturesList = correctedFeatureList
 
         return correctedFeatureList

@@ -20,19 +20,20 @@ import os
 import dask
 
 
-def testLoop(data_train,
-             data_test,
-             labels_train,
-             labels_test,
-             name,
-             testNr,
-             testSize,
-             count,
-             lengthDataList,
-             useAda,
-             fmetDict,
-             sub
-             ):
+def testLoop(
+    data_train,
+    data_test,
+    labels_train,
+    labels_test,
+    name,
+    testNr,
+    testSize,
+    count,
+    lengthDataList,
+    useAda,
+    fmetDict,
+    sub,
+):
     # print(f"\n Running dataset: {name} \n")
     # print(
     #     f" Test {testNr}/{testSize} - Progress {count}/{lengthDataList}")
@@ -64,6 +65,7 @@ def testLoop(data_train,
         )
 
     return allResults
+
 
 # This function seems quite unecessary!
 
@@ -538,6 +540,7 @@ def createChunkFeatures(
                 featureList=featureList,
                 verbose=True,
             )
+            print("But I dont care about BC not existing here for some reason")
 
     # if signAll, then create or get globalGoodFeatures mask
     needsFix = True
@@ -628,11 +631,11 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrliplotnoAda5"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{52}{repetitionName}"
+    repetitionName = "testingudis3"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{12}{repetitionName}"
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 5
+    maxCombinationAmount = 2
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -644,9 +647,10 @@ def main():
     # What paradigm to test
 
     # paradigm = paradigmSetting.upDownInner()
+    paradigm = paradigmSetting.upDownInnerSpecial9()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownVisSpecial()
-    paradigm = paradigmSetting.upDownRightLeftInner()
+    # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownVisInner()
     # paradigm = paradigmSetting.upDownVisInnersep()
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
@@ -692,33 +696,10 @@ def main():
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
-    useBestFeaturesTest = True
-    bestFeatures = [
-        ["welchDatacn3", "welchDataBC", "dataGCVBC", "dataWCV-BC"],
-        ["welchDataBC", "dataHRCV-BCcn3", "dataWCV-BCcn3", "dataGCVBC"],
-        ["welchDatacn3BC", "fftDatacn3BC", "welchData", "dataWCV-BC"],
-        ["fftDatacn3BC", "dataCorr1d", "dataHRCV-BCcn3", "fftDatacn3"],
-        ["dataHRCV-BCcn3", "welchDataBC", "welchData", "fftData"],
-        ["fftDatacn3BC", "dataHRcn3", "dataCorr1d", "welchDataBC"],
-        ["dataCorr1dcn3BC", "fftDataBC", "fftDatacn3", "dataFFTCV-BC"],
-        ["gaussianDatacn3BC", "fftDataBC", "dataCorr1d", "dataFFTCV-BC"],
-        ["welchDatacn3BC", "welchDataBC", "dataHRcn3", "fftDatacn3"],
-    ]
+    useBestFeaturesTest = False
+    bestFeaturesSaveFile = "top1udrlv.npy"
+    bestFeatures = np.load(bestFeaturesSaveFile, allow_pickle=True)
 
-    # bestFeatures = [
-    #     ["welchDatacn3BC", "dataWCV-BC", "dataFFTCV-BC"],
-    #     ["welchDatacn3BC", "dataHRCV-BC", "dataWCV-BC"],
-    #     ["dataHRCV-BC", "dataWCV-BC", "dataFFTCV-BC"],
-    #     ["welchDatacn3BC", "dataWCV-BC", "dataFFTCV-BC"],
-    #     # ["dataWCV-BC"],
-    #     # ["dataWCV-BC"],
-    #     # ["dataWCV-BC"],
-    # ]
-
-    # bestFeatures = [["dataFFTCV-BC", "dataHRCV-BCcn3"], ["dataWCV-BC", "welchDatacn3BC"],
-    #                 ["dataFFTCV-BC", "welchDatacn3BC"], ["dataFFTCV-BC", "fftDatacn3BC"],
-    #                 ["dataFFTCV-BC", "dataHRCV-BC"]]
-    # " Best so far?"
     goodFeatures = []
 
     for ind, fea in enumerate(badFeatures):
@@ -729,7 +710,7 @@ def main():
 
     print(badFeatures)
     # badFeatures = badFeatures - 1
-    chunkFeatures = True  # Honestly. Just use rbf. only
+    chunkFeatures = False
     chunkAmount = 3
     onlyCreateFeatures = False
     useAllFeatures = True
@@ -759,8 +740,8 @@ def main():
             featureList[9] = False  # 10
             featureList[21] = False  # 23
             featureList[22] = False  # 22
-            featureList[20] = False  # 21 Not okay for chunks
-            featureList[18] = False  # 19 Not okay for chunks
+            # featureList[20] = False  # 21 Not okay for chunks
+            # featureList[18] = False  # 19 Not okay for chunks
 
             print(featureList)
             onlyCreateFeaturesFunction(
@@ -832,11 +813,12 @@ def main():
             verbose=True,
         )
         print(len(createdFeatureList))
+        print(f"Printing features created so far for subject {sub}")
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
 
-        # correctedExists = False
+        correctedExists = False
         if correctedExists is False:
 
             bClassDict[f"{sub}"] = baseLineCorrection(
@@ -861,7 +843,8 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(f"Creating features for subject:{sub}")
+            print(
+                f"Creating features for subject:{sub} after baseline correction")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1000,26 +983,26 @@ def main():
             # Training a SVM using each one and then saving the results
             count = 1
 
-        # for x in range(10000):
-        #     h = 4 + x
+            # for x in range(10000):
+            #     h = 4 + x
 
-            allResultsPerSubject = Parallel(n_jobs=-5, verbose=10, batch_size=1)(delayed(testLoop)(data_train,
-                                                                                                   data_test,
-                                                                                                   labels_train,
-                                                                                                   labels_test,
-                                                                                                   name,
-                                                                                                   testNr,
-                                                                                                   testSize,
-                                                                                                   count,
-                                                                                                   len(
-                                                                                                       mDataList),
-                                                                                                   useAda,
-                                                                                                   fmetDict,
-                                                                                                   sub
-                                                                                                   ) for data_train,
-                                                                                 data_test,
-                                                                                 labels_train, labels_test,
-                                                                                 name in mDataList)
+            allResultsPerSubject = Parallel(n_jobs=-5, verbose=10, batch_size=1)(
+                delayed(testLoop)(
+                    data_train,
+                    data_test,
+                    labels_train,
+                    labels_test,
+                    name,
+                    testNr,
+                    testSize,
+                    count,
+                    len(mDataList),
+                    useAda,
+                    fmetDict,
+                    sub,
+                )
+                for data_train, data_test, labels_train, labels_test, name in mDataList
+            )
 
             # for (
             #     data_train,
@@ -1146,11 +1129,12 @@ def onlyCreateFeaturesFunction(
             verbose=True,
         )
         print(len(createdFeatureList))
+        print(f"Printing features created so far for subject {sub}")
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
 
-        # correctedExists = False
+        correctedExists = False
         if correctedExists is False:
 
             bClassDict[f"{sub}"] = baseLineCorrection(
@@ -1175,7 +1159,8 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(f"Creating features for subject:{sub}")
+            print(
+                f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
