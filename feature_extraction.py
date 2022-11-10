@@ -260,7 +260,9 @@ class featureEClass:
         # Sen ta all combinations, of them and all other values
 
         if useBestFeaturesTest:
-            maxCombinationAmount = maxCombinationAmount - len(bestFeatures[0])
+            maxCombinationAmount = maxCombinationAmount - bestFeatures.shape[1]
+
+        # print(maxCombinationAmount)
 
         # print(maxCombinationAmount)
         if maxCombinationAmount > len(dataNrs):

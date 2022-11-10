@@ -634,17 +634,18 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlv-2feat"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{32}{repetitionName}"
+    repetitionName = "udrlv-3feat"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{36}{repetitionName}"
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
     useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top1udrlv.npy"
+    bestFeaturesSaveFile = "top2udrlv.npy"
     bestFeatures = np.load(bestFeaturesSaveFile, allow_pickle=True)
-
+    print(bestFeatures)
+    print(bestFeatures.shape)
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 1
+    maxCombinationAmount = 3
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
