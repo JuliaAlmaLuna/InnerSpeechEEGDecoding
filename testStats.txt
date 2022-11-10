@@ -1,917 +1,917 @@
-         5084269 function calls (5013787 primitive calls) in 232.017 seconds
+         5084434 function calls (5013952 primitive calls) in 224.158 seconds
 
    Ordered by: internal time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-     8648   68.380    0.008   68.380    0.008 {method 'acquire' of '_thread.lock' objects}
-23499/13419   45.853    0.002   45.967    0.003 {method '__deepcopy__' of 'numpy.ndarray' objects}
-      298   26.674    0.090   26.674    0.090 {built-in method _pickle.load}
-      117   12.557    0.107   12.557    0.107 {built-in method time.sleep}
-     3028   12.319    0.004   12.319    0.004 {method 'read' of '_io.BufferedReader' objects}
-        1    9.202    9.202  232.017  232.017 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:592(main)
-    23238    8.670    0.000    8.670    0.000 {built-in method numpy.array}
-     2430    8.552    0.004    8.682    0.004 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:88(onlySignData)
-       90    7.892    0.088   57.399    0.638 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:65(createMaskedFeatureList)
-     2430    4.708    0.002    5.069    0.002 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:173(normalizeData)
-     7344    3.770    0.001    3.770    0.001 {method 'astype' of 'numpy.ndarray' objects}
-       54    2.683    0.050    8.613    0.160 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:2891(_read_one_epoch_file)
-     2430    2.544    0.001    3.408    0.001 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:449(shuffleSplitData)
-41896/40960    2.370    0.000   11.562    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
-       18    2.022    0.112   65.470    3.637 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:796(getFeatures)
-    88128    1.820    0.000    1.820    0.000 {method 'read' of '_io.BytesIO' objects}
-       54    1.784    0.033    2.096    0.039 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3368(_concatenate_epochs)
-       18    1.745    0.097   30.535    1.696 f:\PythonProjects\NietoExcercise-1\dataLoader.py:23(load_data)
-       72    1.148    0.016    1.148    0.016 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:66(Filter_by_condition)
-       90    1.074    0.012   11.468    0.127 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:210(createListOfDataMixes)
-       54    0.826    0.015   24.547    0.455 <decorator-gen-229>:1(__init__)
-      108    0.713    0.007    3.233    0.030 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1050(getGlobalGoodFeaturesMask)
-       18    0.523    0.029    2.376    0.132 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:93(Transform_for_classificator)
-       90    0.362    0.004   12.729    0.141 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:73(mixShuffleSplit)
-     7346    0.350    0.000    0.350    0.000 {method 'reduce' of 'numpy.ufunc' objects}
-       72    0.246    0.003    0.246    0.003 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:191(Filter_by_class)
-     1118    0.199    0.000    0.199    0.000 {built-in method builtins.print}
-      378    0.174    0.000    0.547    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:720(_check_consistency)
-   435456    0.137    0.000    0.207    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:339(_is_numeric)
-940301/940263    0.119    0.000    0.120    0.000 {built-in method builtins.isinstance}
-      486    0.113    0.000    0.114    0.000 {built-in method numpy.fromfile}
-44388/999    0.101    0.000   46.093    0.046 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:132(deepcopy)
-      949    0.081    0.000    0.081    0.000 {built-in method io.open}
-    21582    0.080    0.000    0.217    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:162(set_log_level)
-      387    0.072    0.000    0.072    0.000 {built-in method nt.listdir}
-     6912    0.069    0.000    0.178    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:339(_read_ch_info_struct)
-       21    0.064    0.003    0.064    0.003 {built-in method _winapi.CreateProcess}
+     8654   72.071    0.008   72.071    0.008 {method 'acquire' of '_thread.lock' objects}
+23499/13419   48.325    0.002   48.445    0.004 {method '__deepcopy__' of 'numpy.ndarray' objects}
+      298   17.156    0.058   17.156    0.058 {built-in method _pickle.load}
+      109   11.801    0.108   11.801    0.108 {built-in method time.sleep}
+        1    9.517    9.517  224.158  224.158 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:595(main)
+    23238    9.071    0.000    9.071    0.000 {built-in method numpy.array}
+     2430    8.917    0.004    9.052    0.004 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:88(onlySignData)
+       90    8.222    0.091   60.298    0.670 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:65(createMaskedFeatureList)
+     2430    4.983    0.002    5.375    0.002 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:173(normalizeData)
+     7344    3.785    0.001    3.785    0.001 {method 'astype' of 'numpy.ndarray' objects}
+     3028    3.308    0.001    3.308    0.001 {method 'read' of '_io.BufferedReader' objects}
+      949    3.007    0.003    3.007    0.003 {built-in method io.open}
+     2430    2.738    0.001    3.636    0.001 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:452(shuffleSplitData)
+       54    2.633    0.049    8.541    0.158 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:2891(_read_one_epoch_file)
+41716/40780    2.408    0.000   12.023    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+       18    2.084    0.116   49.592    2.755 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:799(getFeatures)
+       18    1.836    0.102   21.764    1.209 f:\PythonProjects\NietoExcercise-1\dataLoader.py:23(load_data)
+    88128    1.787    0.000    1.787    0.000 {method 'read' of '_io.BytesIO' objects}
+       54    1.775    0.033    2.083    0.039 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3368(_concatenate_epochs)
+       72    1.222    0.017    1.222    0.017 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:66(Filter_by_condition)
+       90    1.151    0.013   12.139    0.135 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:210(createListOfDataMixes)
+       54    0.813    0.015   15.553    0.288 <decorator-gen-229>:1(__init__)
+      108    0.784    0.007    4.206    0.039 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1053(getGlobalGoodFeaturesMask)
+       18    0.533    0.030    2.514    0.140 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:93(Transform_for_classificator)
+       90    0.388    0.004   13.440    0.149 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:73(mixShuffleSplit)
+     7346    0.382    0.000    0.382    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+       72    0.267    0.004    0.267    0.004 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:191(Filter_by_class)
+     1118    0.194    0.000    0.194    0.000 {built-in method builtins.print}
+      378    0.171    0.000    0.542    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:720(_check_consistency)
+   435456    0.135    0.000    0.206    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:339(_is_numeric)
+940361/940323    0.120    0.000    0.121    0.000 {built-in method builtins.isinstance}
+44388/999    0.104    0.000   48.572    0.049 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:132(deepcopy)
+      486    0.099    0.000    0.100    0.000 {built-in method numpy.fromfile}
+    21582    0.080    0.000    0.214    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:162(set_log_level)
+     6912    0.068    0.000    0.175    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:339(_read_ch_info_struct)
+      822    0.065    0.000    0.065    0.000 {built-in method nt.lstat}
+       21    0.065    0.003    0.065    0.003 {built-in method _winapi.CreateProcess}
+      379    0.064    0.000    0.064    0.000 {built-in method nt.listdir}
    590077    0.062    0.000    0.062    0.000 {method 'get' of 'dict' objects}
     71172    0.057    0.000    0.057    0.000 {built-in method numpy.frombuffer}
-      180    0.054    0.000    0.054    0.000 {method 'write' of '_io.TextIOWrapper' objects}
+      180    0.055    0.000    0.055    0.000 {method 'write' of '_io.TextIOWrapper' objects}
     48384    0.046    0.000    0.091    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:184(_check_ch_keys)
-      822    0.041    0.000    0.041    0.000 {built-in method nt.lstat}
-    16401    0.041    0.000    0.098    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:492(_tokenize)
-        1    0.040    0.040   29.574   29.574 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:387(createChunkFeatures)
+    16401    0.042    0.000    0.101    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:492(_tokenize)
+        1    0.039    0.039   32.225   32.225 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:390(createChunkFeatures)
+    26100    0.036    0.000    0.049    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:252(_keep_alive)
+     2430    0.035    0.000    0.035    0.000 {built-in method _winapi.WriteFile}
     48051    0.034    0.000    0.034    0.000 {built-in method builtins.hasattr}
-    26100    0.034    0.000    0.047    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:252(_keep_alive)
+      553    0.031    0.000    0.031    0.000 {built-in method nt.stat}
       162    0.030    0.000    0.068    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:756(channel_indices_by_type)
     97589    0.029    0.000    0.029    0.000 {built-in method builtins.sorted}
-     2430    0.028    0.000    0.028    0.000 {built-in method _winapi.WriteFile}
-      553    0.028    0.000    0.028    0.000 {built-in method nt.stat}
-    22770    0.025    0.000    0.077    0.000 {built-in method builtins.sum}
-   205792    0.024    0.000    0.024    0.000 {method 'append' of 'list' objects}
+      784    0.025    0.000    0.025    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:283(_exit_wrapper)
+   205792    0.025    0.000    0.025    0.000 {method 'append' of 'list' objects}
+    22770    0.024    0.000    0.075    0.000 {built-in method builtins.sum}
+    14779    0.023    0.000    0.023    0.000 {method 'match' of '_sre.SRE_Pattern' objects}
        90    0.022    0.000    0.022    0.000 {built-in method _pickle.dump}
-      784    0.022    0.000    0.022    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:283(_exit_wrapper)
+273253/273114    0.022    0.000    0.023    0.000 {built-in method builtins.len}
    108882    0.022    0.000    0.029    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:409(<genexpr>)
-       90    0.022    0.000    0.022    0.000 {built-in method nt._isdir}
-    14779    0.022    0.000    0.022    0.000 {method 'match' of '_sre.SRE_Pattern' objects}
-273149/273010    0.021    0.000    0.022    0.000 {built-in method builtins.len}
     16956    0.021    0.000    0.021    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:37(__init__)
-   324/54    0.020    0.000    0.028    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tree.py:46(make_dir_tree)
-    22068    0.019    0.000    0.072    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:383(_validate_type)
+   324/54    0.021    0.000    0.028    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tree.py:46(make_dir_tree)
+      730    0.019    0.000    0.019    0.000 {built-in method builtins.compile}
+     2433    0.019    0.000    0.019    0.000 {method 'GetOverlappedResult' of '_winapi.Overlapped' objects}
       820    0.018    0.000    0.029    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:243(untokenize)
+    22068    0.018    0.000    0.070    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:383(_validate_type)
+       90    0.018    0.000    0.018    0.000 {built-in method nt._isdir}
     96768    0.018    0.000    0.018    0.000 {method 'difference' of 'set' objects}
-      730    0.018    0.000    0.018    0.000 {built-in method builtins.compile}
-      108    0.018    0.000    0.256    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1315(_get_data)
+      108    0.017    0.000    0.253    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1315(_get_data)
     86008    0.017    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:575(<genexpr>)
-   106168    0.017    0.000    0.022    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:570(<genexpr>)
     62939    0.017    0.000    0.017    0.000 {built-in method builtins.getattr}
-    10080    0.016    0.000    0.235    0.000 <decorator-gen-215>:1(_is_good_epoch)
-    44336    0.016    0.000    0.023    0.000 <frozen importlib._bootstrap>:416(parent)
-       90    0.016    0.000    0.108    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\npyio.py:457(save)
-   106168    0.015    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:574(<genexpr>)
+   106168    0.016    0.000    0.021    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:570(<genexpr>)
+       90    0.016    0.000    0.096    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\npyio.py:457(save)
+      820    0.016    0.000    0.153    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:523(_filter_header)
+    10080    0.016    0.000    0.231    0.000 <decorator-gen-215>:1(_is_good_epoch)
+    44336    0.015    0.000    0.022    0.000 <frozen importlib._bootstrap>:416(parent)
     16956    0.015    0.000    0.043    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:149(_read_tag_header)
-      820    0.015    0.000    0.148    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:523(_filter_header)
-      162    0.015    0.000    0.058    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:685(__deepcopy__)
-     5698    0.013    0.000    0.358    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:70(_wrapreduction)
-     1575    0.013    0.000   46.030    0.029 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:210(_deepcopy_list)
+   106168    0.015    0.000    0.022    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:574(<genexpr>)
+      162    0.014    0.000    0.058    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:685(__deepcopy__)
+     5698    0.014    0.000    0.391    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:70(_wrapreduction)
     85168    0.013    0.000    0.013    0.000 {built-in method builtins.id}
-      784    0.012    0.000   27.217    0.035 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\npyio.py:283(load)
-     2988    0.012    0.000    0.012    0.000 {method 'reshape' of 'numpy.ndarray' objects}
-    20952    0.012    0.000    0.012    0.000 {method 'copy' of 'numpy.ndarray' objects}
+     2988    0.013    0.000    0.013    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+     1575    0.013    0.000   48.509    0.031 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:210(_deepcopy_list)
+      784    0.013    0.000   20.521    0.026 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\npyio.py:283(load)
       270    0.012    0.000    0.029    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:206(pick_channels)
-     8370    0.012    0.000    2.038    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:434(read_tag)
-    15030    0.012    0.000    8.657    0.001 <__array_function__ internals>:2(copy)
-       90    0.011    0.000    0.011    0.000 {built-in method nt.rmdir}
+     8370    0.012    0.000    2.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:434(read_tag)
+    15030    0.012    0.000    9.058    0.001 <__array_function__ internals>:2(copy)
+    20952    0.012    0.000    0.012    0.000 {method 'copy' of 'numpy.ndarray' objects}
+     2430    0.012    0.000   72.094    0.030 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:405(result)
      1134    0.011    0.000    0.021    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:309(_unique1d)
+       90    0.011    0.000    0.011    0.000 {built-in method nt.rmdir}
+     7290    0.011    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:334(notify)
+       90    0.011    0.000   72.111    0.801 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:920(retrieve)
+     2520    0.011    0.000    0.377    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:798(dispatch_one_batch)
+     2430    0.011    0.000    0.273    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1112(submit)
        54    0.011    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\json\decoder.py:345(raw_decode)
-     2520    0.011    0.000    0.351    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:798(dispatch_one_batch)
-     2430    0.011    0.000   68.401    0.028 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:405(result)
-       90    0.011    0.000   68.417    0.760 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:920(retrieve)
-      108    0.011    0.000    0.736    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:371(__init__)
-      324    0.011    0.000    0.056    0.000 {built-in method builtins.all}
-     2433    0.010    0.000    0.010    0.000 {method 'GetOverlappedResult' of '_winapi.Overlapped' objects}
-3240/1188    0.010    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tree.py:15(dir_tree_find)
-    19280    0.010    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\collections\__init__.py:877(__getitem__)
-       54    0.010    0.000    0.316    0.006 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:985(read_meas_info)
-     6912    0.010    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:363(_update_ch_info_named)
-  4900/40    0.010    0.000    0.048    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:467(save)
+      108    0.011    0.000    0.731    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:371(__init__)
+    19280    0.011    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\collections\__init__.py:877(__getitem__)
+3240/1188    0.011    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tree.py:15(dir_tree_find)
+      324    0.010    0.000    0.056    0.000 {built-in method builtins.all}
+       54    0.010    0.000    0.311    0.006 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:985(read_meas_info)
     53084    0.010    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:2967(<genexpr>)
-     2430    0.010    0.000    0.247    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1112(submit)
-     2430    0.010    0.000    0.271    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:529(apply_async)
-      162    0.010    0.000    0.079    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:710(_reject_setup)
-     7290    0.009    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:334(notify)
+  4900/40    0.010    0.000    0.049    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:467(save)
+     6912    0.010    0.000    0.014    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:363(_update_ch_info_named)
+      162    0.009    0.000    0.079    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:710(_reject_setup)
     45410    0.009    0.000    0.041    0.000 <frozen importlib._bootstrap>:997(_handle_fromlist)
-       54    0.009    0.000   23.719    0.439 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3100(__init__)
+      730    0.009    0.000    0.206    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:558(_read_array_header)
+       54    0.009    0.000   14.737    0.273 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3100(__init__)
+     2705    0.009    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:215(__init__)
+     4860    0.009    0.000    0.026    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:115(put)
        40    0.009    0.000    0.023    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\reduction.py:194(__init__)
-    10080    0.009    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:782(_is_good_epoch)
-     4860    0.009    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:115(put)
+     2430    0.009    0.000    0.035    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:206(flattenAllExceptTrial)
     20846    0.008    0.000    0.008    0.000 {method 'copy' of 'dict' objects}
+    10080    0.008    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:782(_is_good_epoch)
+ 5841/730    0.008    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:51(_convert)
     20736    0.008    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:172(channel_type)
-      730    0.008    0.000    0.194    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:558(_read_array_header)
-       54    0.008    0.000   12.247    0.227 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:132(_fiff_open)
-     2430    0.008    0.000    0.032    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:206(flattenAllExceptTrial)
-     8136    0.008    0.000    0.105    0.000 <__array_function__ internals>:2(where)
+       54    0.008    0.000    3.355    0.062 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:132(_fiff_open)
+     7956    0.008    0.000    0.107    0.000 <__array_function__ internals>:2(where)
+     2430    0.008    0.000    0.306    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:761(_dispatch)
     14761    0.008    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:230(add_whitespace)
-     2430    0.008    0.000    0.283    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:761(_dispatch)
- 5841/730    0.007    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:51(_convert)
+     2430    0.007    0.000    0.066    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:181(send_bytes)
     44610    0.007    0.000    0.007    0.000 {method 'rpartition' of 'str' objects}
-     2705    0.007    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:215(__init__)
-     2430    0.007    0.000    0.050    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:181(send_bytes)
-     2430    0.007    0.000    0.254    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:175(submit)
-     2520    0.007    0.000    0.022    0.000 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:995(<genexpr>)
-    14779    0.007    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\re.py:286(_compile)
-     2459    0.007    0.000    0.007    0.000 {built-in method nt.write}
-     3179    0.007    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:122(splitdrive)
-     6912    0.006    0.000    0.006    0.000 {method 'argmax' of 'numpy.ndarray' objects}
-       18    0.006    0.000   26.375    1.465 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_extractions.py:26(Extract_data_from_subject)
-25190/25170    0.006    0.000    0.006    0.000 {built-in method builtins.issubclass}
+     2430    0.007    0.000    0.294    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:529(apply_async)
+     2520    0.007    0.000    0.022    0.000 f:/PythonProjects/NietoExcercise-1/svm_test_loopGoodBefore.py:1053(<genexpr>)
+25190/25170    0.007    0.000    0.007    0.000 {built-in method builtins.issubclass}
+     2499    0.007    0.000    0.007    0.000 {built-in method nt.write}
+     3219    0.007    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:122(splitdrive)
+    14779    0.006    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\re.py:286(_compile)
+     2430    0.006    0.000    0.279    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:175(submit)
        90    0.006    0.000    0.006    0.000 {built-in method builtins.eval}
-     9738    0.006    0.000    0.028    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:52(_wrapfunc)
+       18    0.006    0.000   17.376    0.965 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_extractions.py:26(Extract_data_from_subject)
+       90    0.006    0.000   84.549    0.939 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:960(__call__)
+     6912    0.006    0.000    0.006    0.000 {method 'argmax' of 'numpy.ndarray' objects}
      2430    0.006    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\functools.py:44(update_wrapper)
-       90    0.006    0.000   81.594    0.907 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:960(__call__)
-    15030    0.005    0.000    8.634    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:714(copy)
-    14671    0.005    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:152(_compile)
-     2700    0.005    0.000    0.014    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:147(get)
-     2430    0.005    0.000    0.216    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2714(amin)
-    10782    0.005    0.000    0.123    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:154(__enter__)
-    15906    0.005    0.000    0.005    0.000 {built-in method __new__ of type object at 0x0000000056302A00}
-    10782    0.005    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:149(__init__)
+     9738    0.006    0.000    0.028    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:52(_wrapfunc)
+    14671    0.006    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:152(_compile)
+    15030    0.006    0.000    9.034    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:714(copy)
+     2700    0.006    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:147(get)
+     2430    0.005    0.000    0.234    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2714(amin)
+    15906    0.005    0.000    0.005    0.000 {built-in method __new__ of type object at 0x0000000056152A00}
+    10782    0.005    0.000    0.121    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:154(__enter__)
+    12421    0.005    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:239(__enter__)
       730    0.005    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:200(split)
-    12421    0.005    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:239(__enter__)
-      730    0.005    0.000   26.994    0.037 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:683(read_array)
-      270    0.005    0.000    0.045    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:1004(_picks_to_idx)
+     2664    0.005    0.000    0.022    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:199(reshape)
+     2664    0.005    0.000    0.030    0.000 <__array_function__ internals>:2(reshape)
+      270    0.005    0.000    0.046    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:1004(_picks_to_idx)
+      730    0.005    0.000   17.474    0.024 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:683(read_array)
+      680    0.005    0.000   72.078    0.106 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:263(wait)
+     2430    0.005    0.000    0.162    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1104(_ensure_executor_running)
     48762    0.005    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:737(<genexpr>)
-     2664    0.005    0.000    0.028    0.000 <__array_function__ internals>:2(reshape)
-    10782    0.005    0.000    0.103    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:157(__exit__)
-     2430    0.005    0.000    0.157    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1104(_ensure_executor_running)
-      677    0.005    0.000   68.387    0.101 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:263(wait)
+    10782    0.005    0.000    0.102    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:157(__exit__)
+    10782    0.005    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\_logging.py:149(__init__)
+    15581    0.004    0.000    0.010    0.000 <string>:12(__new__)
+      243    0.004    0.000   19.439    0.080 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:126(loadFeatures)
       378    0.004    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:735(<listcomp>)
-    15581    0.004    0.000    0.009    0.000 <string>:12(__new__)
-     2664    0.004    0.000    0.020    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:199(reshape)
-     2760    0.004    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:423(memoize)
-      243    0.004    0.000   26.914    0.111 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:126(loadFeatures)
       270    0.004    0.000    0.036    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:1075(_picks_str_to_idx)
-     8586    0.004    0.000    0.026    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:63(read_tag_info)
-    12421    0.004    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:242(__exit__)
-     2430    0.004    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:388(add_done_callback)
+     2760    0.004    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:423(memoize)
+     8586    0.004    0.000    0.027    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:63(read_tag_info)
      2520    0.004    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:74(RLock)
-      216    0.004    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:495(in1d)
+    12421    0.004    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:242(__exit__)
     17686    0.004    0.000    0.004    0.000 {built-in method _struct.unpack}
+      216    0.004    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:495(in1d)
     14779    0.004    0.000    0.017    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\re.py:231(compile)
+     2430    0.004    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:388(add_done_callback)
+     5698    0.004    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:71(<dictcomp>)
+     2430    0.004    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:312(__init__)
+    17266    0.004    0.000    0.004    0.000 {method 'seek' of '_io.BytesIO' objects}
      6912    0.004    0.000    0.021    0.000 <__array_function__ internals>:2(argmax)
       108    0.004    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:554(<listcomp>)
-    17266    0.004    0.000    0.004    0.000 {method 'seek' of '_io.BytesIO' objects}
-     5698    0.004    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:71(<dictcomp>)
-     2430    0.004    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:312(__init__)
      6912    0.004    0.000    0.014    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:1114(argmax)
+      784    0.004    0.000    0.030    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:338(__exit__)
      1584    0.004    0.000    0.004    0.000 {built-in method numpy.empty}
-      784    0.003    0.000    0.026    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:338(__exit__)
-     2430    0.003    0.000    0.053    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:138(wakeup)
-      702    0.003    0.000    0.003    0.000 {method 'argsort' of 'numpy.ndarray' objects}
-     2430    0.003    0.000    0.042    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:279(_send_bytes)
+      702    0.004    0.000    0.004    0.000 {method 'argsort' of 'numpy.ndarray' objects}
+     2430    0.004    0.000    0.069    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:138(wakeup)
+     2430    0.003    0.000    0.057    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:279(_send_bytes)
       669    0.003    0.000    0.003    0.000 {built-in method numpy.arange}
-     2459    0.003    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:203(_send)
+      486    0.003    0.000    1.152    0.002 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:135(loadAnovaMask)
+     2484    0.003    0.000    0.150    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2589(amax)
+     2190    0.003    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:877(_read_bytes)
+      729    0.003    0.000    0.003    0.000 {method 'search' of '_sre.SRE_Pattern' objects}
+     1154    0.003    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:75(join)
+     2499    0.003    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:203(_send)
+     2972    0.003    0.000    0.003    0.000 {method 'format' of 'str' objects}
        54    0.003    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3011(<listcomp>)
       633    0.003    0.000    0.008    0.000 {built-in method builtins.any}
-     1134    0.003    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:75(join)
-     2190    0.003    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:877(_read_bytes)
-     2940    0.003    0.000    0.003    0.000 {method 'format' of 'str' objects}
      2430    0.003    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:245(__init__)
-      729    0.003    0.000    0.003    0.000 {method 'search' of '_sre.SRE_Pattern' objects}
-       90    0.003    0.000   12.664    0.141 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\disk.py:105(delete_folder)
-     2484    0.003    0.000    0.136    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2589(amax)
-     2430    0.003    0.000    0.221    0.000 <__array_function__ internals>:2(amin)
-      486    0.003    0.000    0.340    0.001 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:135(loadAnovaMask)
-     7750    0.003    0.000    0.003    0.000 {method 'decode' of 'bytes' objects}
-     2430    0.003    0.000    0.014    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:321(delayed)
-     8720    0.003    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:219(write)
-     1458    0.003    0.000    0.055    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:39(_iglob)
-     2728    0.003    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:664(__getitem__)
-      775    0.003    0.000    0.003    0.000 {built-in method _thread.allocate_lock}
+     2430    0.003    0.000    0.240    0.000 <__array_function__ internals>:2(amin)
+       90    0.003    0.000   11.896    0.132 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\disk.py:105(delete_folder)
+      778    0.003    0.000    0.003    0.000 {built-in method _thread.allocate_lock}
+     2430    0.003    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:321(delayed)
      2520    0.003    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:34(__init__)
-      729    0.003    0.000    0.058    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:9(glob)
-     1500    0.003    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:715(save_str)
-     2430    0.003    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:124(get_nested_backend)
+     1458    0.003    0.000    0.080    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:39(_iglob)
+      784    0.003    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:288(push)
+      729    0.003    0.000    0.083    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:9(glob)
+     8720    0.003    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:219(write)
+     7750    0.003    0.000    0.003    0.000 {method 'decode' of 'bytes' objects}
+     2430    0.003    0.000    0.006    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:124(get_nested_backend)
+     2728    0.003    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:664(__getitem__)
+     1500    0.003    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:715(save_str)
      4940    0.002    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:206(commit_frame)
+      784    0.002    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:321(enter_context)
       180    0.002    0.000    0.002    0.000 {method 'strftime' of 'datetime.date' objects}
-    18126    0.002    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:190(_deepcopy_atomic)
-       90    0.002    0.000    0.002    0.000 {method 'shuffle' of 'numpy.random.mtrand.RandomState' objects}
       540    0.002    0.000    0.002    0.000 {method 'sort' of 'numpy.ndarray' objects}
+       90    0.002    0.000    0.002    0.000 {method 'shuffle' of 'numpy.random.mtrand.RandomState' objects}
+    18126    0.002    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:190(_deepcopy_atomic)
       108    0.002    0.000    0.002    0.000 {method 'seed' of 'numpy.random.mtrand.RandomState' objects}
     14671    0.002    0.000    0.002    0.000 {method 'span' of '_sre.SRE_Match' objects}
-        3    0.002    0.001    0.002    0.001 {built-in method _winapi.ConnectNamedPipe}
-      784    0.002    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:288(push)
-     2484    0.002    0.000    0.140    0.000 <__array_function__ internals>:2(amax)
-     1240    0.002    0.000    0.016    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:94(ensure_running)
-       90    0.002    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:639(__init__)
-    14248    0.002    0.000    0.002    0.000 {method 'upper' of 'str' objects}
-      784    0.002    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:321(enter_context)
-     7291    0.002    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:254(_is_owned)
+     2484    0.002    0.000    0.154    0.000 <__array_function__ internals>:2(amax)
+       90    0.002    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:639(__init__)
+     1260    0.002    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:94(ensure_running)
     15030    0.002    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:710(_copy_dispatcher)
+     7291    0.002    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:254(_is_owned)
      1134    0.002    0.000    0.033    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:149(unique)
-    20980    0.002    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:719(__iter__)
     10800    0.002    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:574(_check_option)
-       90    0.002    0.000   12.704    0.141 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:612(_unlink_temporary_resources)
+    14392    0.002    0.000    0.002    0.000 {method 'upper' of 'str' objects}
   648/324    0.002    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:268(_reconstruct)
     12151    0.002    0.000    0.002    0.000 {built-in method builtins.setattr}
-     2430    0.002    0.000   68.403    0.028 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:537(wrap_future_result)
-     4049    0.002    0.000    0.002    0.000 {method 'encode' of 'str' objects}
+    20980    0.002    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:719(__iter__)
+       90    0.002    0.000   11.937    0.133 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:612(_unlink_temporary_resources)
+     2430    0.002    0.000   72.096    0.030 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:537(wrap_future_result)
+     4089    0.002    0.000    0.002    0.000 {method 'encode' of 'str' objects}
+      730    0.002    0.000    0.034    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:40(literal_eval)
     23032    0.002    0.000    0.002    0.000 {method 'keys' of 'dict' objects}
-      108    0.002    0.000    0.358    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:511(pick_info)
-      766    0.002    0.000    0.003    0.000 {method '__reduce_ex__' of 'object' objects}
-      730    0.002    0.000    0.032    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:40(literal_eval)
-   260/40    0.002    0.000    0.046    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:837(_batch_setitems)
-      784    0.002    0.000    0.002    0.000 {method 'seek' of '_io.BufferedReader' objects}
-     6337    0.002    0.000    0.002    0.000 {built-in method nt.fspath}
       181    0.002    0.000    0.002    0.000 {built-in method nt.cpu_count}
+        3    0.002    0.001    0.002    0.001 {built-in method _winapi.ConnectNamedPipe}
+      766    0.002    0.000    0.003    0.000 {method '__reduce_ex__' of 'object' objects}
       306    0.002    0.000    0.002    0.000 {built-in method numpy.zeros}
+      108    0.002    0.000    0.354    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:511(pick_info)
+   260/40    0.002    0.000    0.046    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:837(_batch_setitems)
      4860    0.002    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:206(_put)
-      820    0.002    0.000    0.031    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:317(untokenize)
-     7020    0.002    0.000    0.002    0.000 {method 'tobytes' of 'numpy.ndarray' objects}
+     6397    0.002    0.000    0.002    0.000 {built-in method nt.fspath}
+      820    0.002    0.000    0.032    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:317(untokenize)
+      730    0.002    0.000    0.036    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\utils.py:962(safe_eval)
      7190    0.002    0.000    0.002    0.000 {method 'items' of 'dict' objects}
-     3357    0.001    0.000    0.001    0.000 {method 'replace' of 'str' objects}
-   360/20    0.001    0.000    0.042    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:549(save_reduce)
-      730    0.001    0.000    0.033    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\utils.py:962(safe_eval)
-      108    0.001    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\index_tricks.py:316(__getitem__)
-      730    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:217(read_magic)
-     7561    0.001    0.000    0.001    0.000 {method '__enter__' of '_thread.lock' objects}
+      730    0.002    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:217(read_magic)
+     3397    0.002    0.000    0.002    0.000 {method 'replace' of 'str' objects}
+        1    0.002    0.002    0.002    0.002 {method 'read' of '_io.FileIO' objects}
+   360/20    0.001    0.000    0.043    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:549(save_reduce)
      2430    0.001    0.000    0.001    0.000 {method '__enter__' of '_multiprocessing.SemLock' objects}
-     1944    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1544(isEnabledFor)
-     2920    0.001    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:65(<genexpr>)
-       54    0.001    0.000    1.812    0.034 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:168(_read_matrix)
-     8680    0.001    0.000    0.001    0.000 {method 'write' of '_io.BytesIO' objects}
-      108    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:1152(diff)
-      216    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:545(_can_coerce_all)
-      180    0.001    0.000    0.056    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:864(_print)
+      108    0.001    0.000    0.005    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\index_tricks.py:316(__getitem__)
       277    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\uuid.py:106(__init__)
-       90    0.001    0.000    0.031    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\executor.py:25(get_memmapping_executor)
-     1134    0.001    0.000    0.001    0.000 {method 'flatten' of 'numpy.ndarray' objects}
-    10458    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1524(times)
+     7956    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\multiarray.py:311(where)
+     2920    0.001    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:65(<genexpr>)
+      108    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:1152(diff)
+     1944    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1544(isEnabledFor)
+      730    0.001    0.000    0.016    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2337(all)
      9840    0.001    0.000    0.001    0.000 {method 'isidentifier' of 'str' objects}
+       90    0.001    0.000    0.032    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\executor.py:25(get_memmapping_executor)
+     8680    0.001    0.000    0.001    0.000 {method 'write' of '_io.BytesIO' objects}
+     7561    0.001    0.000    0.001    0.000 {method '__enter__' of '_thread.lock' objects}
+      180    0.001    0.000    0.057    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:864(_print)
+     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:345(__init__)
+     7020    0.001    0.000    0.001    0.000 {method 'tobytes' of 'numpy.ndarray' objects}
      2430    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:66(copy)
-       20    0.001    0.000    0.141    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:53(__init__)
+      216    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:545(_can_coerce_all)
+    10458    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1524(times)
+      181    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:472(normpath)
+      679    0.001    0.000    0.001    0.000 {method '_acquire_restore' of '_thread.RLock' objects}
+      576    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\abc.py:180(__instancecheck__)
+     1134    0.001    0.000    0.001    0.000 {method 'flatten' of 'numpy.ndarray' objects}
+     2430    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:94(__enter__)
+     3130    0.001    0.000    0.001    0.000 {built-in method _struct.pack}
+       54    0.001    0.000    1.778    0.033 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:168(_read_matrix)
+      784    0.001    0.000    0.001    0.000 {method 'seek' of '_io.BufferedReader' objects}
     13512    0.001    0.000    0.001    0.000 {method 'tell' of '_io.BytesIO' objects}
+       54    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:162(_getitem)
       468    0.001    0.000    0.001    0.000 {built-in method builtins.round}
      1830    0.001    0.000    0.001    0.000 {built-in method builtins.min}
-      950    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:138(on_destroy)
-     8136    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\multiarray.py:311(where)
-      730    0.001    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2337(all)
-      181    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:472(normpath)
-      576    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\abc.py:180(__instancecheck__)
-      784    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:271(__init__)
-     2430    0.001    0.000    0.001    0.000 {method 'pop' of 'list' objects}
       108    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:775(_ensure_events)
-      676    0.001    0.000    0.001    0.000 {method '_acquire_restore' of '_thread.RLock' objects}
-     2728    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:734(encodekey)
-     3130    0.001    0.000    0.001    0.000 {built-in method _struct.pack}
-     4860    0.001    0.000    0.001    0.000 {method '__enter__' of '_thread.RLock' objects}
-       54    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:162(_getitem)
-   560/80    0.001    0.000    0.031    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:733(save_tuple)
+     2430    0.001    0.000    0.001    0.000 {method 'pop' of 'list' objects}
+      260    0.001    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:915(save_global)
+       20    0.001    0.000    0.143    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:53(__init__)
+      784    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:271(__init__)
      2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:260(__init__)
-      260    0.001    0.000    0.007    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:915(save_global)
-     1134    0.001    0.000    0.035    0.000 <__array_function__ internals>:2(unique)
-      378    0.001    0.000    0.016    0.000 <decorator-gen-22>:1(_unique_channel_names)
-     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\functools.py:74(wraps)
-      162    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:779(<listcomp>)
-       90    0.001    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:403(_write_array_header)
-      364    0.001    0.000    0.001    0.000 {method 'union' of 'set' objects}
-      378    0.001    0.000    0.006    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:236(_deepcopy_dict)
-     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:345(__init__)
-     3276    0.001    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_asarray.py:86(asanyarray)
-     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:382(__get_result)
-       90    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\disk.py:42(memstr_to_bytes)
-      181    0.001    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\context.py:169(_cpu_count_user)
-      784    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:281(_push_cm_exit)
+      970    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:138(on_destroy)
       730    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:282(descr_to_dtype)
-       54    0.001    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:318(_read_coord_trans_struct)
-      540    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:932(_check_excludes_includes)
-     7290    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:275(__len__)
-     2430    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:94(__enter__)
-    258/1    0.001    0.000    0.004    0.004 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:64(_compile)
-      108    0.001    0.000    0.744    0.007 <decorator-gen-212>:1(__init__)
-     2832    0.001    0.000    0.001    0.000 {method 'update' of 'dict' objects}
-      117    0.001    0.000   27.007    0.231 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:989(getFeatureList)
-      730    0.001    0.000    0.017    0.000 <__array_function__ internals>:2(all)
-      432    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:24(atleast_1d)
-    175/1    0.001    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:470(_parse)
-     2592    0.001    0.000    0.001    0.000 {method 'insert' of 'list' objects}
-      180    0.001    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:168(_get_temp_dir)
-      162    0.001    0.000    0.001    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
-      994    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:657(get)
-       20    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:701(copy)
-     6321    0.001    0.000    0.001    0.000 {method 'append' of 'collections.deque' objects}
-      162    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:772(<dictcomp>)
+     2728    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:734(encodekey)
+     4860    0.001    0.000    0.001    0.000 {method '__enter__' of '_thread.RLock' objects}
+      784    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:281(_push_cm_exit)
+   560/80    0.001    0.000    0.032    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:733(save_tuple)
+      364    0.001    0.000    0.001    0.000 {method 'union' of 'set' objects}
       820    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:224(__init__)
-      290    0.001    0.000    0.001    0.000 {method 'index' of 'list' objects}
+      378    0.001    0.000    0.016    0.000 <decorator-gen-22>:1(_unique_channel_names)
+      730    0.001    0.000    0.018    0.000 <__array_function__ internals>:2(all)
+      181    0.001    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\context.py:169(_cpu_count_user)
+       90    0.001    0.000    0.022    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:403(_write_array_header)
+     1134    0.001    0.000    0.036    0.000 <__array_function__ internals>:2(unique)
+     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\functools.py:74(wraps)
+      378    0.001    0.000    0.006    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:236(_deepcopy_dict)
+      162    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:779(<listcomp>)
+       90    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\disk.py:42(memstr_to_bytes)
+     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\concurrent\futures\_base.py:382(__get_result)
+     3276    0.001    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_asarray.py:86(asanyarray)
+     2832    0.001    0.000    0.001    0.000 {method 'update' of 'dict' objects}
+     7290    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:275(__len__)
+      729    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:145(has_magic)
+      162    0.001    0.000    0.001    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+      117    0.001    0.000   28.159    0.241 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:992(getFeatureList)
+      994    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:657(get)
+      540    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:932(_check_excludes_includes)
+      180    0.001    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:168(_get_temp_dir)
      1080    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:70(__contains__)
-       90    0.001    0.000    0.006    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1030(setOrder)
-      950    0.001    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:198(maybe_unlink)
-       90    0.001    0.000    0.006    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:154(_prepare_worker_env)
+     2592    0.001    0.000    0.001    0.000 {method 'insert' of 'list' objects}
+    258/1    0.001    0.000    0.004    0.004 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:64(_compile)
+     6324    0.001    0.000    0.001    0.000 {method 'append' of 'collections.deque' objects}
      1568    0.001    0.000    0.001    0.000 {method 'startswith' of 'bytes' objects}
-       90    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:105(get_reusable_executor)
-     1239    0.001    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:179(_check_alive)
-     6912    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:1110(_argmax_dispatcher)
+       54    0.001    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:318(_read_coord_trans_struct)
+      432    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:24(atleast_1d)
      2700    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:202(_qsize)
+      108    0.001    0.000    0.739    0.007 <decorator-gen-212>:1(__init__)
+       90    0.001    0.000    0.006    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1033(setOrder)
+    175/1    0.001    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:470(_parse)
+      970    0.001    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:198(maybe_unlink)
+       20    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:701(copy)
+      162    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:772(<dictcomp>)
+     1259    0.001    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:179(_check_alive)
+       91    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:27(__init__)
+      290    0.001    0.000    0.001    0.000 {method 'index' of 'list' objects}
+       90    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:105(get_reusable_executor)
      1316    0.001    0.000    0.001    0.000 {method 'join' of 'str' objects}
       108    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:616(decimate)
      2459    0.001    0.000    0.001    0.000 {method 'extend' of 'list' objects}
-     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:210(_get)
-     2430    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:97(__exit__)
+     6912    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:1110(_argmax_dispatcher)
+       90    0.001    0.000    0.006    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:154(_prepare_worker_env)
      2430    0.001    0.000    0.001    0.000 {method '__exit__' of '_multiprocessing.SemLock' objects}
-       90    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:76(get_active_backend)
-      542    0.001    0.000    0.028    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\genericpath.py:16(exists)
      1640    0.001    0.000    0.001    0.000 {method 'readline' of '_io.StringIO' objects}
-       90    0.001    0.000   12.705    0.141 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:546(terminate)
-      630    0.001    0.000    2.252    0.004 <__array_function__ internals>:2(concatenate)
-   324/54    0.001    0.000    0.028    0.001 <decorator-gen-5>:1(make_dir_tree)
-       91    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:27(__init__)
+     2430    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:97(__exit__)
+      542    0.001    0.000    0.030    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\genericpath.py:16(exists)
      2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:590(__init__)
+       90    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:76(get_active_backend)
+     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:210(_get)
+       90    0.001    0.000   11.938    0.133 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:546(terminate)
+      630    0.001    0.000    2.287    0.004 <__array_function__ internals>:2(concatenate)
+   324/54    0.001    0.000    0.028    0.001 <decorator-gen-5>:1(make_dir_tree)
+     2664    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:194(_reshape_dispatcher)
+       90    0.001    0.000    0.933    0.010 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:84(getMaskedFeatureList)
       216    0.001    0.000    0.008    0.000 <decorator-gen-4>:1(metadata)
      1242    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:75(_frombuffer_rows)
-       90    0.001    0.000    0.899    0.010 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:84(getMaskedFeatureList)
-      378    0.001    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:106(_unique_channel_names)
-       90    0.001    0.000    0.047    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:611(write_array)
-     2664    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:194(_reshape_dispatcher)
-      277    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\uuid.py:621(uuid4)
      2728    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:728(check_str)
+      378    0.001    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:106(_unique_channel_names)
+     2610    0.001    0.000    0.001    0.000 {built-in method time.time}
+        1    0.001    0.001    0.002    0.002 <frozen importlib._bootstrap_external>:830(get_data)
+      180    0.001    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:583(register_folder_finalizer)
       666    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\enum.py:803(__and__)
-       90    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:354(_wrap_header)
-      729    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:145(has_magic)
-       40    0.001    0.000    0.073    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\reduction.py:261(dump)
-      216    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:400(metadata)
+      277    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\uuid.py:621(uuid4)
+       90    0.001    0.000    0.001    0.000 {built-in method atexit.unregister}
+      261    0.001    0.000    0.001    0.000 {built-in method builtins.__import__}
+      277    0.001    0.000    0.001    0.000 {built-in method nt.urandom}
+       40    0.001    0.000    0.074    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\reduction.py:261(dump)
+     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1047(_start_executor_manager_thread)
+     7561    0.001    0.000    0.001    0.000 {method '__exit__' of '_thread.lock' objects}
+       90    0.001    0.000    0.046    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:611(write_array)
+      200    0.001    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:736(save_global)
+       90    0.001    0.000    0.052    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:486(configure)
      1243    0.001    0.000    0.001    0.000 {built-in method builtins.max}
      1428    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\enum.py:517(__new__)
-       90    0.001    0.000    0.001    0.000 {built-in method atexit.unregister}
-     7561    0.001    0.000    0.001    0.000 {method '__exit__' of '_thread.lock' objects}
-      180    0.001    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:583(register_folder_finalizer)
-      277    0.001    0.000    0.001    0.000 {built-in method nt.urandom}
-       90    0.001    0.000    0.050    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:486(configure)
-      261    0.001    0.000    0.001    0.000 {built-in method builtins.__import__}
-      180    0.001    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:537(register_new_context)
-      200    0.001    0.000    0.010    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:736(save_global)
-      740    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:662(save_long)
-       90    0.001    0.000    0.019    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\shutil.py:369(_rmtree_unsafe)
-     2610    0.001    0.000    0.001    0.000 {built-in method time.time}
+      216    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:400(metadata)
       216    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1529(_set_times)
-       90    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:567(_unregister_context)
-     1944    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1530(getEffectiveLevel)
-     2510    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:134(_check_closed)
+      180    0.001    0.000    0.023    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:537(register_new_context)
+      740    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:662(save_long)
        90    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:280(__init__)
-       90    0.001    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:501(effective_n_jobs)
-      108    0.001    0.000    0.087    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:564(_check_consistency)
-       90    0.001    0.000   12.668    0.141 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:644(_try_delete_folder)
-      144    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:82(atleast_2d)
+       90    0.001    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:567(_unregister_context)
+      108    0.001    0.000    0.085    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:564(_check_consistency)
+       90    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:354(_wrap_header)
+       90    0.001    0.000    0.019    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\shutil.py:369(_rmtree_unsafe)
      4860    0.001    0.000    0.001    0.000 {method '__exit__' of '_thread.RLock' objects}
-      540    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:23(_ensure_int)
-      820    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:190(_check_version)
-      279    0.001    0.000    0.001    0.000 {built-in method from_bytes}
-      594    0.001    0.000    0.003    0.000 {method 'any' of 'numpy.ndarray' objects}
-     2430    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1047(_start_executor_manager_thread)
-     1134    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:136(_unpack_tuple)
-      971    0.001    0.000    0.001    0.000 {method 'split' of 'str' objects}
-      822    0.001    0.000    0.001    0.000 {method 'rstrip' of 'str' objects}
-      108    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:449(__enter__)
-      108    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:133(_check_event_id)
-      108    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\twodim_base.py:152(eye)
-     2760    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:446(put)
-      221    0.001    0.000    0.001    0.000 {built-in method _winapi.DuplicateHandle}
-     1660    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:687(__iter__)
-      108    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:536(_make_projector)
-      729    0.001    0.000    0.038    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:260(lexists)
-      784    0.001    0.000    0.001    0.000 {built-in method sys.exc_info}
-       90    0.001    0.000    2.251    0.025 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:223(vstack)
+     2510    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:134(_check_closed)
       820    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tokenize.py:739(generate_tokens)
+      540    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:23(_ensure_int)
+     1944    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1530(getEffectiveLevel)
+      820    0.001    0.000    0.001    0.000 {built-in method _struct.calcsize}
+      729    0.001    0.000    0.062    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:260(lexists)
+      971    0.001    0.000    0.001    0.000 {method 'split' of 'str' objects}
+      279    0.001    0.000    0.001    0.000 {built-in method from_bytes}
+       90    0.001    0.000    0.013    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:501(effective_n_jobs)
+      144    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:82(atleast_2d)
+      108    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:133(_check_event_id)
+      822    0.001    0.000    0.001    0.000 {method 'rstrip' of 'str' objects}
+       90    0.001    0.000   11.901    0.132 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:644(_try_delete_folder)
+      108    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\twodim_base.py:152(eye)
+      784    0.001    0.000    0.001    0.000 {built-in method sys.exc_info}
+      108    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:449(__enter__)
+       90    0.001    0.000    2.286    0.025 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:223(vstack)
+      221    0.001    0.000    0.001    0.000 {built-in method _winapi.DuplicateHandle}
+      594    0.001    0.000    0.003    0.000 {method 'any' of 'numpy.ndarray' objects}
+       80    0.001    0.000    0.001    0.000 {built-in method _winapi.OpenProcess}
+      810    0.001    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1298(info)
+      108    0.001    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:536(_make_projector)
+     1660    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:687(__iter__)
       260    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:187(_is_registered_pickle_by_value)
-      729    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:22(iglob)
-      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:141(<dictcomp>)
-      810    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1298(info)
-       54    0.000    0.000    0.022    0.000 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_extractions.py:216(load_events)
-     1134    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:263(_read_simple)
-      162    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:159(_add_filter)
-       21    0.000    0.000    0.000    0.000 {built-in method nt.pipe}
-   260/40    0.000    0.000    0.046    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:824(save_dict)
-       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:473(get_memmapping_reducers)
- 1782/810    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:273(<genexpr>)
-      820    0.000    0.000    0.000    0.000 {built-in method _struct.calcsize}
-      200    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:552(_is_parametrized_type_hint)
-      520    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:268(_getattribute)
-     1428    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\enum.py:267(__call__)
-       80    0.000    0.000    0.000    0.000 {built-in method _winapi.OpenProcess}
-      277    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\uuid.py:280(hex)
-      260    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:284(_lookup_module_and_qualname)
-     2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2709(_amin_dispatcher)
-       90    0.000    0.000    0.032    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\executor.py:19(get_memmapping_executor)
-      432    0.000    0.000    0.004    0.000 <__array_function__ internals>:2(atleast_1d)
-       90    0.000    0.000    0.050    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:732(_initialize_backend)
-      260    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:247(_should_pickle_by_reference)
-       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:326(header_data_from_array_1_0)
-     1134    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1286(debug)
-        1    0.000    0.000    0.000    0.000 {built-in method nt.unlink}
-     4900    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:533(persistent_id)
-      181    0.000    0.000    0.014    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\context.py:110(cpu_count)
-       90    0.000    0.000    0.018    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:518(__init__)
-       54    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\event.py:149(_read_events_fif)
-      731    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:34(_get_bothseps)
-   342/85    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:173(getwidth)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:338(__init__)
-      108    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:271(_handle_event_repeated)
-       54    0.000    0.000   12.251    0.227 <decorator-gen-6>:1(fiff_open)
-      108    0.000    0.000    0.006    0.000 <decorator-gen-213>:1(decimate)
+   260/40    0.001    0.000    0.046    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:824(save_dict)
+     2760    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:446(put)
+       90    0.001    0.000    0.032    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\executor.py:19(get_memmapping_executor)
+      277    0.001    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\uuid.py:280(hex)
+      729    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\glob.py:22(iglob)
      2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:142(_check_writable)
-      108    0.000    0.000    0.260    0.002 <decorator-gen-219>:1(_get_data)
-       80    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\_win_reduction.py:52(reduce_pipe_connection)
-      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:296(_read_id_struct)
-      676    0.000    0.000    0.000    0.000 {method '_release_save' of '_thread.RLock' objects}
-       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\logger.py:39(short_format_time)
-       90    0.000    0.000    2.252    0.025 <__array_function__ internals>:2(vstack)
-      730    0.000    0.000    0.018    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:30(parse)
-       90    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:248(islink)
-       72    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numeric.py:144(ones)
-       20    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\spawn.py:53(get_preparation_data)
-        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap_external>:830(get_data)
-      839    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:232(__next)
-      680    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:458(get)
-      162    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\transforms.py:91(__init__)
-      108    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:810(setup_proj)
-     2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:324(delayed_function)
-     1250    0.000    0.000    0.000    0.000 {built-in method builtins.iter}
-      210    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\popen_spawn_win32.py:73(wait)
-      260    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:201(_whichmodule)
+      162    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:159(_add_filter)
+      260    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:284(_lookup_module_and_qualname)
+      200    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:552(_is_parametrized_type_hint)
+      432    0.000    0.000    0.004    0.000 <__array_function__ internals>:2(atleast_1d)
+     1134    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:263(_read_simple)
+       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:473(get_memmapping_reducers)
+     1134    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:136(_unpack_tuple)
+     2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2709(_amin_dispatcher)
+      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:141(<dictcomp>)
+       90    0.000    0.000    0.018    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:518(__init__)
+      820    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:190(_check_version)
+ 1782/810    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:273(<genexpr>)
+     1428    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\enum.py:267(__call__)
+      520    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:268(_getattribute)
+      260    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:247(_should_pickle_by_reference)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:338(__init__)
+       21    0.000    0.000    0.000    0.000 {built-in method nt.pipe}
+       90    0.000    0.000    0.052    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:732(_initialize_backend)
+      181    0.000    0.000    0.015    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\context.py:110(cpu_count)
+      108    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:271(_handle_event_repeated)
+     4900    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:533(persistent_id)
+       54    0.000    0.000    0.015    0.000 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_extractions.py:216(load_events)
       802    0.000    0.000    0.000    0.000 {method 'rsplit' of 'str' objects}
-      687    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\numerics.py:1017(_stamp_to_dt)
-       18    0.000    0.000   30.535    1.696 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:462(loadData)
+        1    0.000    0.000    0.000    0.000 {built-in method nt.unlink}
+      731    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:34(_get_bothseps)
+     1134    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\logging\__init__.py:1286(debug)
+       80    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\_win_reduction.py:52(reduce_pipe_connection)
+      679    0.000    0.000    0.000    0.000 {method '_release_save' of '_thread.RLock' objects}
+       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:326(header_data_from_array_1_0)
+       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\logger.py:39(short_format_time)
+   342/85    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:173(getwidth)
+        1    0.000    0.000    0.000    0.000 {built-in method nt.open}
+      730    0.000    0.000    0.020    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ast.py:30(parse)
+       54    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\event.py:149(_read_events_fif)
+      108    0.000    0.000    0.006    0.000 <decorator-gen-213>:1(decimate)
+       54    0.000    0.000    3.359    0.062 <decorator-gen-6>:1(fiff_open)
+     1250    0.000    0.000    0.000    0.000 {built-in method builtins.iter}
+       90    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:248(islink)
+      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:296(_read_id_struct)
+       90    0.000    0.000    2.287    0.025 <__array_function__ internals>:2(vstack)
+       20    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\spawn.py:53(get_preparation_data)
+      108    0.000    0.000    0.256    0.002 <decorator-gen-219>:1(_get_data)
+      162    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+      680    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:458(get)
        54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3356(_update_offset)
-       90    0.000    0.000    0.000    0.000 {built-in method now}
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:85(__exit__)
-      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:360(issubdtype)
-      108    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:286(hstack)
-       90    0.000    0.000    0.020    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\shutil.py:451(rmtree)
-      918    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_asarray.py:14(asarray)
-      432    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
-       24    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:50(__init__)
+      687    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:85(__exit__)
+      180    0.000    0.000    0.008    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:188(register)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\transforms.py:91(__init__)
+      210    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\popen_spawn_win32.py:73(wait)
+       72    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numeric.py:144(ones)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\numerics.py:1017(_stamp_to_dt)
+      108    0.000    0.000    0.355    0.003 <decorator-gen-8>:1(pick_info)
+       18    0.000    0.000   21.765    1.209 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:465(loadData)
+      108    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:810(setup_proj)
       730    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:597(<listcomp>)
       100    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:100(__getstate__)
-       54    0.000    0.000    0.004    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:41(_fiff_get_fid)
-      937    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:163(__getitem__)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:59(__init__)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:548(__init__)
-      108    0.000    0.000    0.358    0.003 <decorator-gen-8>:1(pick_info)
-     1458    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:554(<listcomp>)
-      162    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:777(_update_redundant)
-     2484    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2584(_amax_dispatcher)
-      180    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:1073(__repr__)
       486    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\compat\py3k.py:53(isfileobj)
-      108    0.000    0.000    0.004    0.000 <decorator-gen-16>:1(setup_proj)
-     2430    0.000    0.000    0.000    0.000 {method 'popleft' of 'collections.deque' objects}
-       80    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\_win_reduction.py:25(__init__)
-      180    0.000    0.000    0.009    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:188(register)
+       90    0.000    0.000    0.000    0.000 {built-in method now}
+      108    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:286(hstack)
+      839    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:232(__next)
+      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:360(issubdtype)
+      260    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle.py:201(_whichmodule)
+      937    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:163(__getitem__)
+       24    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:50(__init__)
+     2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:324(delayed_function)
+      432    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:548(__init__)
       270    0.000    0.000    0.000    0.000 {built-in method builtins.repr}
-        1    0.000    0.000    0.146    0.146 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1085(_adjust_process_count)
-        1    0.000    0.000    0.000    0.000 {method 'read' of '_io.FileIO' objects}
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\evoked.py:785(_check_decim)
+      918    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_asarray.py:14(asarray)
+      108    0.000    0.000    0.004    0.000 <decorator-gen-16>:1(setup_proj)
        54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\ctf_comp.py:80(_read_ctf_comp)
-       90    0.000    0.000    0.109    0.001 <__array_function__ internals>:2(save)
-        1    0.000    0.000    0.000    0.000 {built-in method nt.open}
-       54    0.000    0.000   24.549    0.455 <decorator-gen-228>:1(read_epochs)
-      262    0.000    0.000    0.000    0.000 {built-in method _winapi.GetCurrentProcess}
-      108    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:569(find_common_type)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:195(magic)
-       20    0.000    0.000    0.143    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\process.py:33(_Popen)
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:286(__reduce__)
-      252    0.000    0.000    0.001    0.000 {built-in method builtins.next}
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:356(__init__)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:246(dtype_to_descr)
-      181    0.000    0.000    0.000    0.000 {built-in method nt._getfullpathname}
-      251    0.000    0.000    0.000    0.000 {method 'write' of '_io.BufferedWriter' objects}
-      440    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:282(whichmodule)
-      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:143(simplefilter)
+     1458    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:554(<listcomp>)
+     2484    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2584(_amax_dispatcher)
+       90    0.000    0.000    0.020    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\shutil.py:451(rmtree)
+     2430    0.000    0.000    0.000    0.000 {method 'popleft' of 'collections.deque' objects}
+       90    0.000    0.000    0.097    0.001 <__array_function__ internals>:2(save)
+      180    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:1073(__repr__)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\evoked.py:785(_check_decim)
+       80    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\_win_reduction.py:25(__init__)
+      162    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:777(_update_redundant)
+       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:246(dtype_to_descr)
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:428(__init__)
-      216    0.000    0.000    0.013    0.000 <__array_function__ internals>:2(in1d)
-       54    0.000    0.000    0.000    0.000 {built-in method fromtimestamp}
        54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:119(filterwarnings)
-      162    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2418(cumsum)
-       90    0.000    0.000   12.705    0.141 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:757(_terminate_backend)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:236(_has_metadata)
-       40    0.000    0.000    0.049    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:408(dump)
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numeric.py:2317(array_equal)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:195(magic)
+       90    0.000    0.000   11.938    0.133 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\parallel.py:757(_terminate_backend)
+      181    0.000    0.000    0.000    0.000 {built-in method nt._getfullpathname}
+      262    0.000    0.000    0.000    0.000 {built-in method _winapi.GetCurrentProcess}
+       20    0.000    0.000    0.147    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\process.py:33(_Popen)
+       54    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:41(_fiff_get_fid)
+        1    0.000    0.000    0.151    0.151 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1085(_adjust_process_count)
+       40    0.000    0.000    0.050    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:408(dump)
+      252    0.000    0.000    0.001    0.000 {built-in method builtins.next}
       594    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:53(_any)
-      181    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:309(expanduser)
-      162    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:146(_item_to_select)
-       72    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(copyto)
-      108    0.000    0.000    0.040    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:575(copy)
+      162    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2418(cumsum)
+       54    0.000    0.000   15.555    0.288 <decorator-gen-228>:1(read_epochs)
+        1    0.000    0.000    0.000    0.000 {built-in method nt.mkdir}
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:356(__init__)
+      108    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:569(find_common_type)
+      181    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:309(expanduser)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:236(_has_metadata)
+      216    0.000    0.000    0.013    0.000 <__array_function__ internals>:2(in1d)
+      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:143(simplefilter)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numeric.py:2317(array_equal)
       181    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:545(abspath)
-       90    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:193(unregister)
-      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:269(_read_string)
        18    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Data_processing.py:54(Select_time_window)
-       21    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\util.py:151(__init__)
-      224    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:223(_randbelow)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:361(reset_batch_stats)
+       89    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:180(_resize)
+      162    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:146(_item_to_select)
+      251    0.000    0.000    0.000    0.000 {method 'write' of '_io.BufferedWriter' objects}
+       54    0.000    0.000    0.000    0.000 {built-in method fromtimestamp}
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:59(__init__)
+      108    0.000    0.000    0.040    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:575(copy)
+      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:269(_read_string)
+       72    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(copyto)
+       90    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:193(unregister)
+      417    0.000    0.000    0.000    0.000 {built-in method nt.getpid}
       270    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:1156(<listcomp>)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:250(_optimize_charset)
-       40    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:797(_batch_appends)
-      210    0.000    0.000    0.000    0.000 {built-in method _winapi.WaitForSingleObject}
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:71(__init__)
-       54    0.000    0.000    0.316    0.006 <decorator-gen-27>:1(read_meas_info)
-       54    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:1510(_ensure_meas_date_none_or_dt)
       108    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\Inner_Speech_Dataset\Python_Processing\Utilitys.py:135(sub_name)
-       54    0.000    0.000    0.284    0.005 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1163(drop_bad)
-     1134    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:144(_unique_dispatcher)
-      198    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:208(_arrays_for_stack_dispatcher)
-     46/1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:407(_parse_sub)
-      144    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(atleast_2d)
-      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:286(issubclass_)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:38(check_fname)
-      216    0.000    0.000    0.000    0.000 <__array_function__ internals>:2(ndim)
-       18    0.000    0.000   30.535    1.696 f:\PythonProjects\NietoExcercise-1\dataLoader.py:117(load_multiple_datasets)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\event.py:177(<listcomp>)
-      162    0.000    0.000    0.002    0.000 <__array_function__ internals>:2(cumsum)
-       91    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:199(_init)
+      210    0.000    0.000    0.000    0.000 {built-in method _winapi.WaitForSingleObject}
       784    0.000    0.000    0.000    0.000 {method 'pop' of 'collections.deque' objects}
       198    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:219(_vhstack_dispatcher)
+       18    0.000    0.000   21.764    1.209 f:\PythonProjects\NietoExcercise-1\dataLoader.py:117(load_multiple_datasets)
+       54    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:1510(_ensure_meas_date_none_or_dt)
+       21    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\util.py:151(__init__)
+      440    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:282(whichmodule)
+      216    0.000    0.000    0.000    0.000 <__array_function__ internals>:2(ndim)
+       54    0.000    0.000    0.312    0.006 <decorator-gen-27>:1(read_meas_info)
+     1134    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:144(_unique_dispatcher)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:71(__init__)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:250(_optimize_charset)
+       91    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:232(get_context)
+      162    0.000    0.000    0.002    0.000 <__array_function__ internals>:2(cumsum)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:286(__reduce__)
+     46/1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:407(_parse_sub)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\check.py:38(check_fname)
+       40    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:797(_batch_appends)
+      224    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:223(_randbelow)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\event.py:177(<listcomp>)
+       91    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\queue.py:199(_init)
+      144    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(atleast_2d)
+      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:286(issubclass_)
+       54    0.000    0.000    0.281    0.005 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1163(drop_bad)
        90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\logger.py:23(_squeeze_time)
-      224    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:255(choice)
-      417    0.000    0.000    0.000    0.000 {built-in method nt.getpid}
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:185(in_main_thread)
-       54    0.000    0.000    0.000    0.000 <decorator-gen-12>:1(_read_proj)
-      108    0.000    0.000    0.002    0.000 <__array_function__ internals>:2(diff)
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\reduction.py:173(_set_dispatch_table)
-        1    0.000    0.000    0.000    0.000 {built-in method nt.mkdir}
-      162    0.000    0.000    0.000    0.000 {method '__reduce_ex__' of 'datetime.datetime' objects}
-       54    0.000    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\json\decoder.py:334(decode)
-       21    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:84(BoundedSemaphore)
-     2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:111(_copy_immutable)
-      604    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:253(get)
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\misc.py:315(_file_like)
-       21    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\subprocess.py:233(_args_from_interpreter_flags)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\genericpath.py:117(_splitext)
-       20    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:52(_cleanup)
-      108    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:653(make_projector_info)
-      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:174(_format_trans)
-      102    0.000    0.000    0.000    0.000 {built-in method _winapi.CloseHandle}
+      198    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:208(_arrays_for_stack_dispatcher)
+      224    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:255(choice)
       108    0.000    0.000    0.002    0.000 {method 'max' of 'numpy.ndarray' objects}
+     2430    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copy.py:111(_copy_immutable)
+      108    0.000    0.000    0.002    0.000 <__array_function__ internals>:2(diff)
+      102    0.000    0.000    0.000    0.000 {built-in method _winapi.CloseHandle}
+       54    0.000    0.000    0.000    0.000 <decorator-gen-12>:1(_read_proj)
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\reduction.py:173(_set_dispatch_table)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:185(in_main_thread)
        18    0.000    0.000    0.002    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:18(__init__)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:267(__len__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:1(<module>)
-      141    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\reduction.py:75(duplicate)
-       90    0.000    0.000    0.001    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1026(getLabels)
        54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\_digitization.py:166(_read_dig_fif)
-       54    0.000    0.000    0.286    0.005 <decorator-gen-217>:1(drop_bad)
-       54    0.000    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\json\__init__.py:302(loads)
+       21    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\subprocess.py:233(_args_from_interpreter_flags)
+       21    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:84(BoundedSemaphore)
+      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:174(_format_trans)
+      162    0.000    0.000    0.000    0.000 {method '__reduce_ex__' of 'datetime.datetime' objects}
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\genericpath.py:117(_splitext)
+      604    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:253(get)
       784    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:17(__enter__)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\event.py:179(<dictcomp>)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\misc.py:315(_file_like)
+       20    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:52(_cleanup)
+       54    0.000    0.000    0.282    0.005 <decorator-gen-217>:1(drop_bad)
+      108    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:653(make_projector_info)
+       54    0.000    0.000    0.011    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\json\decoder.py:334(decode)
        90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:157(helper)
-       28    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:157(__next__)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:223(splitext)
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2881(prod)
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:468(__exit__)
-      630    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\multiarray.py:143(concatenate)
       180    0.000    0.000    0.000    0.000 {built-in method atexit.register}
       730    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2333(_all_dispatcher)
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:57(_get_next_fname)
-      260    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:655(save_bool)
-       89    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:180(_resize)
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\transforms.py:61(_to_const)
-       91    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:1230(current_thread)
-       54    0.000    0.000   24.547    0.455 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3037(read_epochs)
+       90    0.000    0.000    0.001    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1029(getLabels)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:267(__len__)
+       54    0.000    0.000    0.012    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\json\__init__.py:302(loads)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:223(splitext)
        40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:705(__init__)
-       40    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\collections\__init__.py:891(__iter__)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:39(_wrapit)
-       20    0.000    0.000    0.144    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:95(start)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:361(reset_batch_stats)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:971(_read_bad_channels)
-      146    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
-      181    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:40(cpu_count)
-      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copyreg.py:87(__newobj__)
-      181    0.000    0.000    0.000    0.000 {method 'lstrip' of 'str' objects}
-      186    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
-      110    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:155(daemon)
-       54    0.000    0.000   12.250    0.227 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:100(fiff_open)
+       91    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:1230(current_thread)
+      141    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\reduction.py:75(duplicate)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\warnings.py:468(__exit__)
+      630    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\multiarray.py:143(concatenate)
+      260    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:655(save_bool)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\event.py:179(<dictcomp>)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2881(prod)
       209    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\util.py:48(debug)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:677(activate_proj)
+       54    0.000    0.000   15.554    0.288 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3037(read_epochs)
+       28    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:157(__next__)
+       20    0.000    0.000    0.148    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:95(start)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\transforms.py:61(_to_const)
+      181    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:40(cpu_count)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:39(_wrapit)
+      146    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+      181    0.000    0.000    0.000    0.000 {method 'lstrip' of 'str' objects}
+       40    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\collections\__init__.py:891(__iter__)
         9    0.000    0.000    0.001    0.000 f:\PythonProjects\NietoExcercise-1\svmMethods.py:10(__init__)
-      480    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:248(match)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:971(_read_bad_channels)
+      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copyreg.py:87(__newobj__)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:677(activate_proj)
+       54    0.000    0.000    3.358    0.062 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:100(fiff_open)
       277    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
-       91    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:232(get_context)
-      360    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:346(get_spawning_popen)
-      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\misc.py:322(<genexpr>)
-      108    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:507(make_projector)
+      100    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:125(duplicate_for_child)
+      110    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:155(daemon)
       108    0.000    0.000    0.001    0.000 {method 'min' of 'numpy.ndarray' objects}
        60    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:672(keys)
-      100    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:125(duplicate_for_child)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\fiff\raw.py:425(_get_fname_rep)
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\process.py:17(__init__)
-       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:379(_wrap_header_guess_version)
+      360    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:346(get_spawning_popen)
+      480    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:248(match)
+      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\misc.py:322(<genexpr>)
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:621(<listcomp>)
-       60    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:772(save_function)
-      210    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\popen_spawn_win32.py:89(poll)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\process.py:17(__init__)
+      108    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:507(make_projector)
       162    0.000    0.000    0.000    0.000 {method 'copy' of 'list' objects}
        54    0.000    0.000    0.000    0.000 <decorator-gen-13>:1(activate_proj)
-      108    0.000    0.000    0.002    0.000 <__array_function__ internals>:2(hstack)
-        1    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
-       24    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\__init__.py:8(_make_name)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:340(_read_proj)
-      676    0.000    0.000    0.000    0.000 {method '_is_owned' of '_thread.RLock' objects}
-       54    0.000    0.000    0.000    0.000 {method 'resize' of 'numpy.ndarray' objects}
-      108    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:37(_amax)
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proc_history.py:31(_read_proc_history)
-       40    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:201(end_framing)
-      258    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:111(__init__)
-      540    0.000    0.000    0.000    0.000 {built-in method _operator.index}
-      200    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:651(save_none)
-       28    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:160(<listcomp>)
-       90    0.000    0.000    0.016    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:533(set_current_context)
-       22    0.000    0.000    0.000    0.000 {built-in method nt.close}
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:130(get_command_line)
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:198(start_framing)
-        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:190(_get_default_tempdir)
-        9    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1233(find_spec)
-       54    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(array_equal)
-      378    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:722(<listcomp>)
-      355    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:171(append)
-      180    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:137(retrieval_context)
-      180    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:291(gettempdir)
-      162    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
-       92    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:664(__contains__)
-       90    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1086(getOrder)
-      372    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+      186    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
        20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\queues.py:65(__getstate__)
-       28    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:146(rng)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:524(spec_from_file_location)
-       40    0.000    0.000    0.000    0.000 {method 'mro' of 'type' objects}
-        1    0.000    0.000    0.000    0.000 {built-in method _thread.start_new_thread}
-      206    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:285(tell)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\numerics.py:1020(<listcomp>)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:223(_compile_charset)
-      432    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:20(_atleast_1d_dispatcher)
-      378    0.000    0.000    0.000    0.000 {built-in method _warnings._filters_mutated}
-       90    0.000    0.000    0.000    0.000 {built-in method _stat.S_ISLNK}
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:697(save_bytes)
-       40    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:784(save_list)
-      108    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.normalize_axis_index}
-      130    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:35(current_process)
-      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:367(_check_metadata)
+        1    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+       54    0.000    0.000    0.000    0.000 {method 'resize' of 'numpy.ndarray' objects}
+      210    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\popen_spawn_win32.py:89(poll)
+       90    0.000    0.000    0.016    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:533(set_current_context)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\fiff\raw.py:425(_get_fname_rep)
+      108    0.000    0.000    0.002    0.000 <__array_function__ internals>:2(hstack)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proj.py:340(_read_proj)
+      679    0.000    0.000    0.000    0.000 {method '_is_owned' of '_thread.RLock' objects}
       216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:3075(ndim)
-       54    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(prod)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:1468(_read_extended_ch_info)
-      468    0.000    0.000    0.000    0.000 {built-in method builtins.callable}
-       54    0.000    0.000    0.001    0.000 {method 'all' of 'numpy.ndarray' objects}
+       24    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\__init__.py:8(_make_name)
      10/4    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\abc.py:196(__subclasscheck__)
-       28    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:81(add)
-      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:41(_amin)
-       54    0.000    0.000    0.000    0.000 {method 'prod' of 'numpy.ndarray' objects}
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:213(__repr__)
+       60    0.000    0.000    0.003    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:772(save_function)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:1468(_read_extended_ch_info)
+      108    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:37(_amax)
+      200    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:651(save_none)
+      540    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+      258    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:111(__init__)
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:198(start_framing)
+       90    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\format.py:379(_wrap_header_guess_version)
+       28    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:160(<listcomp>)
+       40    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:201(end_framing)
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:697(save_bytes)
+        9    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:1233(find_spec)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:130(get_command_line)
+       22    0.000    0.000    0.000    0.000 {built-in method nt.close}
+      378    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:722(<listcomp>)
+       92    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:664(__contains__)
+      355    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:171(append)
+       54    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(array_equal)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\proc_history.py:31(_read_proc_history)
+      162    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
+      180    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:291(gettempdir)
+      180    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:137(retrieval_context)
+        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:190(_get_default_tempdir)
+      378    0.000    0.000    0.000    0.000 {built-in method _warnings._filters_mutated}
+       28    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:146(rng)
+        1    0.000    0.000    0.000    0.000 {built-in method _thread.start_new_thread}
+      369    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+      432    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:20(_atleast_1d_dispatcher)
+       40    0.000    0.000    0.000    0.000 {method 'mro' of 'type' objects}
       140    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:352(assert_spawning)
-      120    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:64(<genexpr>)
+      108    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.normalize_axis_index}
+       28    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:81(add)
        80    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:168(fileno)
-      249    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:159(__len__)
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:349(set_spawning_popen)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:223(_compile_charset)
+       54    0.000    0.000    0.001    0.000 {method 'all' of 'numpy.ndarray' objects}
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\numerics.py:1020(<listcomp>)
+       54    0.000    0.000    0.001    0.000 <__array_function__ internals>:2(prod)
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\open.py:57(_get_next_fname)
        90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\contextlib.py:79(__enter__)
-       54    0.000    0.000    0.000    0.000 {method 'transpose' of 'numpy.ndarray' objects}
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_asarray.py:139(ascontiguousarray)
-       40    0.000    0.000    0.049    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:600(dump)
-       60    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:698(__init__)
+       90    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1089(getOrder)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:213(__repr__)
+      468    0.000    0.000    0.000    0.000 {built-in method builtins.callable}
+       90    0.000    0.000    0.000    0.000 {built-in method _stat.S_ISLNK}
+       40    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:784(save_list)
+       40    0.000    0.000    0.050    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\cloudpickle\cloudpickle_fast.py:600(dump)
+      206    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:285(tell)
+      130    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:35(current_process)
        20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:359(__reduce__)
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:349(set_spawning_popen)
        90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_memmapping_reducer.py:115(__init__)
+       54    0.000    0.000    0.000    0.000 {method 'prod' of 'numpy.ndarray' objects}
+      120    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:64(<genexpr>)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+      108    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:41(_amin)
+       54    0.000    0.000    0.000    0.000 {method 'transpose' of 'numpy.ndarray' objects}
+      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:367(_check_metadata)
        48    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\enum.py:797(__or__)
        40    0.000    0.000    0.000    0.000 {method 'truncate' of '_io.BytesIO' objects}
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:800(__init__)
+      249    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:159(__len__)
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\baseline.py:12(_log_rescale)
-       40    0.000    0.000    0.000    0.000 {method 'getbuffer' of '_io.BytesIO' objects}
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\baseline.py:127(_check_baseline)
-        9    0.000    0.000    0.003    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1046(extendGlobalGoodFeaturesMaskList)
+       60    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:698(__init__)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_asarray.py:139(ascontiguousarray)
        54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:512(_rename_list)
-      206    0.000    0.000    0.000    0.000 {method 'find' of 'bytearray' objects}
-       21    0.000    0.000    0.000    0.000 {built-in method nt.getcwd}
-       54    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1450(get_data)
-       62    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:388(_simple)
        54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1536(tmin)
-      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:491(_in1d_dispatcher)
         3    0.000    0.000    0.000    0.000 {built-in method _winapi.CreateNamedPipe}
-        1    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:49(_prod)
-      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1198(<genexpr>)
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\_digitization.py:47(_format_dig_points)
+       62    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:388(_simple)
+      160    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:163(writable)
       160    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:158(readable)
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\spawn.py:68(<listcomp>)
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:174(authkey)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1095(ch_names)
-      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:3071(_ndim_dispatcher)
-       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:56(_all)
-      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2414(_cumsum_dispatcher)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\baseline.py:127(_check_baseline)
+       21    0.000    0.000    0.000    0.000 {built-in method nt.getcwd}
+       40    0.000    0.000    0.000    0.000 {method 'getbuffer' of '_io.BytesIO' objects}
+      206    0.000    0.000    0.000    0.000 {method 'find' of 'bytearray' objects}
+       54    0.000    0.000    0.002    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1450(get_data)
        21    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:144(__init__)
-        2    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap>:870(_find_spec)
+        9    0.000    0.000    0.003    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:1049(extendGlobalGoodFeaturesMaskList)
+      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\arraysetops.py:491(_in1d_dispatcher)
+      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1198(<genexpr>)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:80(start_call)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:49(_prod)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\_digitization.py:47(_format_dig_points)
+      162    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2414(_cumsum_dispatcher)
+      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:1148(_diff_dispatcher)
+      216    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:3071(_ndim_dispatcher)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\queues.py:220(__getstate__)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1095(ch_names)
+       72    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\multiarray.py:1043(copyto)
+       21    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\subprocess.py:223(_optim_args_from_interpreter_flags)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:174(authkey)
       144    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\shape_base.py:78(_atleast_2d_dispatcher)
+        2    0.000    0.000    0.002    0.001 <frozen importlib._bootstrap>:870(_find_spec)
         9    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:378(<listcomp>)
        20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\spawn.py:35(_check_not_importing_main)
-       24    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:90(_make_methods)
         3    0.000    0.000    0.002    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:520(Pipe)
-      108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\function_base.py:1148(_diff_dispatcher)
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:80(start_call)
-      108    0.000    0.000    0.000    0.000 {method 'end' of '_sre.SRE_Match' objects}
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:190(ident)
-       41    0.000    0.000    0.000    0.000 {built-in method msvcrt.get_osfhandle}
-       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\npyio.py:453(_save_dispatcher)
-       72    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\multiarray.py:1043(copyto)
        90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\_parallel_backends.py:83(stop_call)
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\utils\mixin.py:395(metadata)
-       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\queues.py:220(__getstate__)
-      160    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:163(writable)
-      224    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
-       21    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\subprocess.py:223(_optim_args_from_interpreter_flags)
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:194(__init__)
+      108    0.000    0.000    0.000    0.000 {method 'end' of '_sre.SRE_Match' objects}
+       54    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\_methods.py:56(_all)
      21/3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1145(__subclasscheck__)
-       45    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:57(_path_join)
-      339    0.000    0.000    0.000    0.000 {built-in method builtins.ord}
+      224    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\pickle.py:194(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:1(<module>)
+        9    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:996(extendFeatureList)
+       90    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\lib\npyio.py:453(_save_dispatcher)
        20    0.000    0.000    0.000    0.000 {method 'acquire' of '_multiprocessing.SemLock' objects}
-       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:170(authkey)
-      108    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+       41    0.000    0.000    0.000    0.000 {built-in method msvcrt.get_osfhandle}
+       45    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:57(_path_join)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1546(tmax)
+       24    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:90(_make_methods)
+       54    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
        45    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:59(<listcomp>)
        40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:83(<genexpr>)
-       95    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:1546(tmax)
+      339    0.000    0.000    0.000    0.000 {built-in method builtins.ord}
         1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:940(__init__)
+       95    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\spawn.py:68(<listcomp>)
+        3    0.000    0.000    0.000    0.000 {function Random.seed at 0x0000020829C65488}
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\pick.py:556(<listcomp>)
-        3    0.000    0.000    0.000    0.000 {function Random.seed at 0x000001859B267488}
-       54    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
-        2    0.000    0.000    0.002    0.001 <frozen importlib._bootstrap>:966(_find_and_load)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:35(_new_module)
+      108    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\epochs.py:3431(<genexpr>)
-        2    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1117(_get_spec)
-       24    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:342(_escape)
        25    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:196(get_start_method)
-        9    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\feature_extraction.py:993(extendFeatureList)
+       24    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:342(_escape)
+        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copyreg.py:96(_slotnames)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:163(_candidate_tempdir_list)
+        2    0.000    0.000    0.002    0.001 <frozen importlib._bootstrap_external>:1117(_get_spec)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:117(__init__)
+       22    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:84(opengroup)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:499(__init__)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:58(__iter__)
+        2    0.000    0.000    0.004    0.002 <frozen importlib._bootstrap>:966(_find_and_load)
         2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:371(unpack_collections)
         2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:506(compute)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:499(__init__)
         9    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:376(_mk_bitmap)
-       22    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:84(opengroup)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:58(__iter__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:757(__init__)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numeric.py:2313(_array_equal_dispatcher)
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:64(Lock)
+       20    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:190(ident)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numeric.py:2313(_array_equal_dispatcher)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:757(__init__)
+        1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:358(spawnv_passfds)
         3    0.000    0.000    0.000    0.000 {built-in method _winapi.CreateFile}
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:157(_get_module_lock)
+      3/2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:404(_unpack)
        54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\fromnumeric.py:2876(_prod_dispatcher)
-       25    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:186(get_context)
       4/2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:875(__extrahook__)
-        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap_external>:743(get_code)
       108    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\numpy\core\numerictypes.py:622(<listcomp>)
-        1    0.000    0.000    0.000    0.000 {built-in method _sre.compile}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:157(_get_module_lock)
+       25    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:186(get_context)
        55    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
        46    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:222(_verbose_message)
-      3/2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:404(_unpack)
-        2    0.000    0.000    0.002    0.001 <frozen importlib._bootstrap>:936(_find_and_load_unlocked)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:63(_path_split)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:72(_check_methods)
+       40    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\process.py:170(authkey)
        41    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\spawn.py:31(get_executable)
-       62    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:167(__setitem__)
-       46    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:81(groups)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:72(_check_methods)
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:386(mktemp)
+        1    0.000    0.000    0.000    0.000 {built-in method _sre.compile}
+        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:533(wait)
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:152(is_dask_collection)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:359(expandvars)
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:96(seed)
-        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap>:651(_load_unlocked)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:263(cache_from_source)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\ntpath.py:359(expandvars)
+       62    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:167(__setitem__)
        22    0.000    0.000    0.001    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:96(closegroup)
+        1    0.000    0.000    0.002    0.002 <frozen importlib._bootstrap_external>:743(get_code)
+       46    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:81(groups)
+       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:1456(<listcomp>)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:63(_path_split)
+        2    0.000    0.000    0.004    0.002 <frozen importlib._bootstrap>:936(_find_and_load_unlocked)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:26(__exit__)
+        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:828(start)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:504(_init_module_attrs)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\queues.py:36(__init__)
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:69(arbitrary_address)
-       54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\meas_info.py:1456(<listcomp>)
-        1    0.000    0.000    0.004    0.004 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:358(spawnv_passfds)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:361(_get_cached)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:163(_candidate_tempdir_list)
-        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\copyreg.py:96(_slotnames)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:103(release)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:26(__exit__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1028(_setup_queues)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\connection.py:117(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\encodings\__init__.py:71(search_function)
-        1    0.000    0.000    0.007    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:557(compile)
-        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:533(wait)
        54    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\mne\io\tag.py:513(<listcomp>)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:78(acquire)
-       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1080(_path_importer_cache)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:504(_init_module_attrs)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:485(_compile_bytecode)
-       10    0.000    0.000    0.000    0.000 {method '__subclasses__' of 'type' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\weakref.py:406(__setitem__)
-       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:75(_path_stat)
-        3    0.000    0.000    0.000    0.000 {built-in method _winapi.SetNamedPipeHandleState}
-        1    0.000    0.000    0.002    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:59(Pipe)
+       11    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:75(_path_stat)
         1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:430(_validate_bytecode_header)
-        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:828(start)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\queues.py:67(_after_fork)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:20(__enter__)
-        1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:844(parse)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:58(__init__)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:318(__exit__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\encodings\__init__.py:43(normalize_encoding)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:263(cache_from_source)
+        1    0.000    0.000    0.007    0.007 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:557(compile)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1080(_path_importer_cache)
         7    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1033(_abc_negative_cache_version)
-        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap_external>:672(exec_module)
-       13    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:294(_class_escape)
-        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:861(_find_spec_legacy)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\queues.py:34(__init__)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1228(_get_spec)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:369(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\encodings\latin_1.py:41(getregentry)
-       11    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1019(_abc_negative_cache)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\initializers.py:12(_make_viztracer_initializer_and_initargs)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:16(__init__)
-        2    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1149(find_spec)
-        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:161(__init__)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:147(__enter__)
+        1    0.000    0.000    0.003    0.003 <frozen importlib._bootstrap>:651(_load_unlocked)
+        1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:844(parse)
+        1    0.000    0.000    0.002    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:59(Pipe)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:78(acquire)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:1028(_setup_queues)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:195(makedirs)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:297(__init__)
-        2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:442(<listcomp>)
-        9    0.000    0.000    0.000    0.000 {method 'translate' of 'bytearray' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:850(_check_system_limits)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\queues.py:313(__init__)
-        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:87(__init__)
-       14    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:564(module_from_spec)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:498(__init__)
+        3    0.000    0.000    0.000    0.000 {built-in method _winapi.SetNamedPipeHandleState}
+       10    0.000    0.000    0.000    0.000 {method '__subclasses__' of 'type' objects}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:103(release)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\queues.py:67(_after_fork)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\encodings\__init__.py:71(search_function)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:861(_find_spec_legacy)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:20(__enter__)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:16(__init__)
+       13    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:294(_class_escape)
        14    0.000    0.000    0.000    0.000 {built-in method sys._getframe}
-        1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:94(__init__)
-        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:88(_exists)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:176(cb)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:227(_setup_queues)
-        1    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
-        1    0.000    0.000    0.000    0.000 {built-in method builtins.exec}
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:151(__exit__)
-       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:847(__exit__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:485(_compile_bytecode)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:850(_check_system_limits)
+        2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:442(<listcomp>)
+       11    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1019(_abc_negative_cache)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\encodings\__init__.py:43(normalize_encoding)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:58(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\queues.py:34(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:524(spec_from_file_location)
+        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\synchronize.py:161(__init__)
         9    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:37(_relax_case)
-       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:843(__enter__)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:847(__exit__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\encodings\latin_1.py:41(getregentry)
+        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\initializers.py:12(_make_viztracer_initializer_and_initargs)
+        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\random.py:87(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\queues.py:313(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:369(__init__)
+        1    0.000    0.000    0.003    0.003 <frozen importlib._bootstrap_external>:672(exec_module)
+        1    0.000    0.000    0.003    0.003 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:94(__init__)
+        2    0.000    0.000    0.002    0.001 <frozen importlib._bootstrap_external>:1149(find_spec)
+        9    0.000    0.000    0.000    0.000 {method 'translate' of 'bytearray' objects}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1228(_get_spec)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:498(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:297(__init__)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:147(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:564(module_from_spec)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:227(_setup_queues)
+        1    0.000    0.000    0.002    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:128(__init__)
+        3    0.000    0.000    0.000    0.000 {method 'get' of 'mappingproxy' objects}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:361(_get_cached)
+        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:88(_exists)
+      3/2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:419(<listcomp>)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:36(__init__)
         2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:271(__subclasshook__)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\queues.py:197(__init__)
-        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1156(__instancecheck__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\initializers.py:66(_prepare_initializer)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:36(__init__)
-        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:52(_commit_removals)
-        1    0.000    0.000    0.002    0.002 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:128(__init__)
-        6    0.000    0.000    0.000    0.000 {method 'find' of 'str' objects}
-       14    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:840(path_stats)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:176(cb)
         4    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_collections_abc.py:349(__subclasshook__)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:403(cached)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:482(_compile_info)
-        8    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1089(__eq__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:318(__exit__)
+       10    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:843(__enter__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\weakref.py:406(__setitem__)
+        1    0.000    0.000    0.001    0.001 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\initializers.py:66(_prepare_initializer)
+       14    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1156(__instancecheck__)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\pkg_resources\extern\__init__.py:23(find_module)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:35(_new_module)
+        6    0.000    0.000    0.000    0.000 {method 'find' of 'str' objects}
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:828(fix_flags)
-      3/2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\dask\base.py:419(<listcomp>)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:47(Popen)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:482(_compile_info)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.exec}
+       14    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:403(cached)
         2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:780(find_spec)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:223(__init__)
+        6    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\_weakrefset.py:52(_commit_removals)
         1    0.000    0.000    0.004    0.004 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:542(_code)
+        8    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\typing.py:1089(__eq__)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:151(__exit__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:223(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:886(_check_max_depth)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:52(_r_long)
         1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:85(_path_is_mode_type)
+        4    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:373(<genexpr>)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:160(__init__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:840(path_stats)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:1120(daemon)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\context.py:41(get_context)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:27(_get_next_executor_id)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:1136(daemon)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:143(__init__)
         2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:707(find_spec)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\codecs.py:93(__new__)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:143(__init__)
-        3    0.000    0.000    0.000    0.000 {method 'get' of 'mappingproxy' objects}
-        2    0.000    0.000    0.000    0.000 {built-in method _imp.is_frozen}
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:1136(daemon)
-        4    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\resource_tracker.py:373(<genexpr>)
-        1    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:1120(daemon)
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\tempfile.py:237(_get_candidate_names)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\reusable_executor.py:27(_get_next_executor_id)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:160(__init__)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:211(_call_with_frames_removed)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:94(_path_isfile)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:393(_check_name_wrapper)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\context.py:41(get_context)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\process_executor.py:886(_check_max_depth)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\pkg_resources\_vendor\six.py:184(find_module)
-        1    0.000    0.000    0.000    0.000 {method 'fileno' of '_io.TextIOWrapper' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\initializers.py:46(_chain_initializers)
+        2    0.000    0.000    0.000    0.000 {built-in method _imp.is_frozen}
         3    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:760(getenv)
-        2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:539(isstring)
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:311(__enter__)
-        6    0.000    0.000    0.000    0.000 {method 'remove' of 'set' objects}
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:307(__init__)
-        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:52(_r_long)
+        1    0.000    0.000    0.000    0.000 {method 'fileno' of '_io.TextIOWrapper' objects}
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_parse.py:76(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:211(_call_with_frames_removed)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:393(_check_name_wrapper)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:800(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:251(_acquire_restore)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\initializers.py:46(_chain_initializers)
+        6    0.000    0.000    0.000    0.000 {method 'remove' of 'set' objects}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:311(__enter__)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:94(_path_isfile)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:1067(__subclasshook__)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\six.py:184(find_module)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\tlz\_build_tlz.py:46(find_spec)
-        6    0.000    0.000    0.000    0.000 {method 'isalnum' of 'str' objects}
-        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:321(<genexpr>)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\os.py:1067(__subclasshook__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:251(_acquire_restore)
-        1    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\paradigmSetting.py:31(upDownRightLeftInnerSpecial2)
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\pkg_resources\_vendor\six.py:184(find_module)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:248(_release_save)
-        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
-        3    0.000    0.000    0.000    0.000 {method 'release' of '_thread.lock' objects}
-        1    0.000    0.000    0.000    0.000 {method 'index' of 'str' objects}
-        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:825(get_filename)
-        2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:506(is_set)
-        2    0.000    0.000    0.000    0.000 {method 'partition' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\site-packages\joblib\externals\loky\backend\popen_loky_win32.py:47(Popen)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:321(<genexpr>)
+        1    0.000    0.000    0.000    0.000 f:\PythonProjects\NietoExcercise-1\paradigmSetting.py:62(upDownRightLeftVisSpecialPlot)
         1    0.000    0.000    0.000    0.000 <string>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:307(__init__)
+        1    0.000    0.000    0.000    0.000 {method 'index' of 'str' objects}
+        6    0.000    0.000    0.000    0.000 {method 'isalnum' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        2    0.000    0.000    0.000    0.000 {method 'partition' of 'str' objects}
         1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:669(create_module)
+        2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\sre_compile.py:539(isstring)
+        2    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\threading.py:506(is_set)
+        3    0.000    0.000    0.000    0.000 {method 'release' of '_thread.lock' objects}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:825(get_filename)
         1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:424(has_location)
         1    0.000    0.000    0.000    0.000 C:\Users\Luna\anaconda3\envs\mentalab3\lib\multiprocessing\context.py:212(_check_available)
 

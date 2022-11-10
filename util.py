@@ -154,15 +154,40 @@ def fftData(data):
     return fftData
 
 
-def ifftData(fftDataBC, origData):
-    # Compute fft inluding complex from orig data, the complex/phase part of this one needs to be kept.
-    # Then add this complex part to fftDataBC, then do iFFT
-
-    fftData = np.zeros([data.shape[0], data.shape[1], data.shape[2] // 2])
+# TODO: Split into real and imaginary instead. Send back both
+def fftData2(data):
+    fftDataC = np.zeros([data.shape[0], data.shape[1], data.shape[2] // 2])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
-            fftData[tr_nr, ch_nr, :] = abs(rfft(channel))[: (channel.shape[0] // 2)]
-    return fftData
+            fftDataC[tr_nr, ch_nr, :] = rfft(channel)[: (channel.shape[0] // 2)]
+    return fftDataC.real, fftDataC.imag
+
+
+def shortTimefftData(data, windowLength, nperseg):
+    from scipy.signal import stft
+
+    sfftData = np.zeros([data.shape[0], data.shape[1], data.shape[2] // 2])
+    for tr_nr, trial in enumerate(data):
+        for ch_nr, channel in enumerate(trial):
+            sfftData[tr_nr, ch_nr, :] = stft(
+                channel, noverlap=True, window=windowLength, nperseg=nperseg
+            )
+            # abs(rfft(channel))[: (channel.shape[0] // 2)]
+    return abs(sfftData), sfftData.real, sfftData.imag
+
+
+# use complex(data, dataC.imag) to put them back together
+def ifftData(data, dataC):
+    # Compute fft inluding complex from orig data, the complex/phase part of this one needs to be kept.
+    # Then add this complex part to fftDataBC, then do iFFT
+    from scipy import irfft
+
+    ifftData = np.zeros([data.shape[0], data.shape[1], data.shape[2] * 2])
+    for tr_nr, trial in enumerate(data):
+        for ch_nr, channel in enumerate(trial):
+            ifftData[tr_nr, ch_nr, :] = irfft(channel)
+            abs(rfft(channel))[: (channel.shape[0] // 2)]
+    return ifftData
 
 
 def welchData(data, nperseg, fs=256):

@@ -59,6 +59,21 @@ def upDownRightLeftVis():
     )
 
 
+def upDownRightLeftVisSpecialPlot():
+    return (
+        "vvvvudrlspecplot",
+        [
+            [["Visualized"], ["Visualized"], ["Visualized"], ["Visualized"]],
+            [
+                ["Up"],
+                ["Down"],
+                ["Right"],
+                ["Left"],
+            ],
+        ],
+    )
+
+
 def upDownRightLeftVisInner():
     return (
         "iiiivvvvudrl",
@@ -103,6 +118,19 @@ def upDownInner():
 def upDownInnerSpecial():
     return (
         "iiudspec",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownInnerSpecialPlot():
+    return (
+        "iiudspecplot",
         [
             [["Inner"], ["Inner"]],
             [
@@ -220,6 +248,19 @@ def upDownInnerSpecial4():
 def upDownVis():
     return (
         "vvud",
+        [
+            [["Visualized"], ["Visualized"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
+def upDownVisSpecialPlot():
+    return (
+        "vvudspecplot",
         [
             [["Visualized"], ["Visualized"]],
             [

@@ -253,8 +253,7 @@ def anovaTest(
             flatfeature = scaler.transform(flatfeature)
 
             # Running the ANOVA Test
-            f_statistic, p_values = feature_selection.f_classif(
-                flatfeature, labels)
+            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
 
             # Create a mask of features with P values below threshold
             p_values[p_values > significanceThreshold] = 0
@@ -576,8 +575,7 @@ def createChunkFeatures(
                         onlyUniqueFeatures=onlyUniqueFeatures,
                         uniqueThresh=uniqueThresh,
                     )
-                    fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(
-                        goodFeatureMaskList)
+                    fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(goodFeatureMaskList)
                 else:
                     goodFeatureMaskList = fClassDict2[
                         f"{sub}"
@@ -634,17 +632,17 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrlv-2feat"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{32}{repetitionName}"
+    repetitionName = "udv-2feat"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{28}{repetitionName}"
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
     useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top1udrlv.npy"
+    bestFeaturesSaveFile = "top1udv.npy"
     bestFeatures = np.load(bestFeaturesSaveFile, allow_pickle=True)
 
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 1
+    maxCombinationAmount = 2
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -658,8 +656,7 @@ def main():
     # paradigm = paradigmSetting.upDownInnerSpecial12()
     # paradigm = paradigmSetting.upDownInnerSpecial14()
     # paradigm = paradigmSetting.upDownInnerSpecialPlot()
-    # paradigm = paradigmSetting.upDownVisSpecialPlot()
-    paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
+    paradigm = paradigmSetting.upDownVisSpecialPlot()
     # paradigm = paradigmSetting.upDownInnerSpecial4()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownVisSpecial()
@@ -739,7 +736,7 @@ def main():
             print(len(featureList))
             print(featIndex)
             for featureI in featureListIndex[
-                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                featIndex * nrFCOT : (featIndex + 1) * nrFCOT
             ]:
                 featureList[featureI] = True
 
@@ -776,7 +773,6 @@ def main():
             # print(feature)
         # If Chunkfeatures, run create again but for non Chunk features
         if chunkFeatures:
-            featIndex = 0
             chunkFeatures = False
             while True:
 
@@ -791,7 +787,7 @@ def main():
                 print(len(featureList))
                 print(featIndex)
                 for featureI in featureListIndex[
-                    featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                    featIndex * nrFCOT : (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
 
@@ -906,8 +902,7 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correction")
+            print(f"Creating features for subject:{sub} after baseline correction")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -954,8 +949,7 @@ def main():
                     subjectsThatNeedFSelect.append(sub)
 
             else:
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1109,8 +1103,7 @@ def main():
 
             #     allResultsPerSubject.append(allResults)
 
-            savearray = np.array(
-                [seed, sub, allResultsPerSubject], dtype=object)
+            savearray = np.array([seed, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
@@ -1222,8 +1215,7 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correct")
+            print(f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1272,8 +1264,7 @@ def onlyCreateFeaturesFunction(
 
             else:
 
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
