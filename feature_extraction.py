@@ -522,7 +522,36 @@ class featureEClass:
             featureNameSaved = featureName
 
         if featureName == "fftData":
-            createdFeature = [ut.fftData(tempData), featureNameSaved]
+            absFFT, angleFFT = ut.fftData2(tempData)
+            createdFeature = [absFFT, featureNameSaved]
+            self.saveFeatures(f"angle{featureNameSaved}", angleFFT)
+
+        if featureName == "inverseFFT-BC":
+            if self.chunk:
+                # noReshape = True
+                loadedFFTBC = self.loadFeatures(
+                    f"fftDatacn{self.chunkAmount}BC"
+                )
+                loadedFFTAngle = self.loadFeatures(
+                    f"anglefftDatacn{self.chunkAmount}"
+                )
+
+            else:
+                loadedFFTBC = self.loadFeatures(
+                    "fftDataBC"
+                )
+                loadedFFTAngle = self.loadFeatures(
+                    "anglefftData"
+                )
+            if loadedFFTBC is not None and loadedFFTAngle is not None:
+
+                fftdata = loadedFFTBC[0]
+                createdFeature = [
+                    np.array(ut.ifftData(fftdata, loadedFFTAngle)),
+                    featureNameSaved,
+                ]
+            else:
+                return None
 
         if featureName == "welchData":
             if self.chunk:
@@ -935,6 +964,9 @@ class featureEClass:
 
                 if fNr == 24:
                     featureName = "dataCorr1dBC"
+
+                if fNr == 25:
+                    featureName = "inverseFFT-BC"
                 # if fNr == 24:
                 # featureName = "FFT-BC-IFFT"
 

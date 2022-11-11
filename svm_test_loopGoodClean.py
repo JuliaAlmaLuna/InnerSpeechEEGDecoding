@@ -581,19 +581,21 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "testJ1"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{38}{repetitionName}"
+    repetitionName = "testJ3"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{41}{repetitionName}"
 
     chunkFeatures = False
     chunkAmount = 3
 
     # Run test using all features except "BadFeatures"
     useAllFeatures = True
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23, 25, 26, 27, 28, 29, 30]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23, 26, 27, 28, 29, 30]
+    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+    #                16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30]
     # Using numbering in list below
 
     # Settings when using running a loop to create all features.
-    onlyCreateFeatures = True
+    onlyCreateFeatures = False
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
     featIndex = 0  # Multiplied by nrFCOT, First features to start creating
 
@@ -601,12 +603,13 @@ def main():
     # Can be saved. Like index of them.
     useBestFeaturesTest = False
     bestFeaturesSaveFile = "top2udrlv.npy"
-    bestFeatures = np.load(bestFeaturesSaveFile, allow_pickle=True)
+    bestFeatures = np.load(
+        f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
         print(bestFeatures)
         print(bestFeatures.shape)
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 1
+    maxCombinationAmount = 2
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -617,9 +620,9 @@ def main():
 
     # What paradigm to test
     # paradigm = paradigmSetting.upDownInnerSpecialPlot()
-    paradigm = paradigmSetting.upDownInnerSpecialTest()
+    # paradigm = paradigmSetting.upDownInnerSpecialTest2()
     # paradigm = paradigmSetting.upDownVisSpecialPlot()
-    # paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
+    paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
     # paradigm = paradigmSetting.rightLeftInnerSpecialPlot()
     # paradigm = paradigmSetting.rightLeftVisSpecialPlot()
 
@@ -650,7 +653,7 @@ def main():
         False,  # dataGCV2-BC 23 SKIP
         # With more channels. Only useful for chunks For 3 chunks.
         True,  # 24 Correlate1dBC
-        False,  # 25 imfftData
+        False,  # 25 inverseFFT-BC
         False,  # 26 realfftData
         False,  # 27 imfftDataBCBC
         False,  # 28 realfftDataBCBC
@@ -696,7 +699,7 @@ def main():
             featureList[9] = False  # 10
             featureList[21] = False  # 23
             featureList[22] = False  # 22
-            featureList[24] = False  # 25
+            # featureList[24] = False  # 25
             featureList[25] = False  # 26
             featureList[26] = False  # 27
             featureList[27] = False  # 28

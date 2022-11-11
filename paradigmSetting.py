@@ -154,6 +154,19 @@ def upDownInnerSpecialTest():
     )
 
 
+def upDownInnerSpecialTest2():
+    return (
+        "iiudspectest2",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
 def upDownInnerSpecial2():
     return (
         "iiudspec2",
