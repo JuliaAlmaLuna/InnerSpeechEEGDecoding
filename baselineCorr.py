@@ -95,7 +95,7 @@ class baseLineCorrection(featureEClass):
         for x in range(baselineBatches):
             self.paradigmName = f"split{x+1}"
             self.data = self.getBaselineData()[
-                :, :, x * trialSampleAmount : (x + 1) * trialSampleAmount
+                :, :, x * trialSampleAmount: (x + 1) * trialSampleAmount
             ]
             super().getFeatures(self.subject, featureList=featureList)
             baselineFeatureListList.append(self.getFeatureList())
@@ -117,21 +117,25 @@ class baseLineCorrection(featureEClass):
             avgFeature = np.mean(tempArray, axis=0)
             # Here, if chunked And one of the features not CV, then avg all chunks as well
             if self.chunk:
+                # Shape before session * channels * values
                 if "CV" not in unAvgFeature[1]:
                     avgFeature2 = np.reshape(
                         avgFeature,
                         [
-                            self.chunkAmount,
                             avgFeature.shape[0],
                             avgFeature.shape[1],
-                            -1,
+                            self.chunkAmount,
+                            -1,  # Now Session * channels * chunkAmount * onlySpecificDataPerchunk
                         ],
                     )
-                    avgFeature3 = np.mean(avgFeature2, axis=0)
-                    avgFeature = np.concatenate(
-                        [avgFeature3, avgFeature3, avgFeature3], axis=2
-                    )
-
+                    # Now session * channels * averagedSpecificDataPerChunk
+                    avgFeature3 = np.mean(avgFeature2, axis=2)
+                    avgFeature = np.repeat(
+                        avgFeature3, repeats=self.chunkAmount, axis=0)
+                    # np.concatenate(
+                    #     [avgFeature3, avgFeature3, avgFeature3], axis=2
+                    # )
+            print("Heyyo")
             avgFEATURESlist.append(avgFeature)
             print(avgFeature.shape)
 

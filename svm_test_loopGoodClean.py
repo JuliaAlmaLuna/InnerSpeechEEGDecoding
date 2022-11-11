@@ -405,8 +405,8 @@ def createChunkFeatures(
     t_max = 3
     sampling_rate = 256
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19,
-                   21, 22, 23, 25, 26, 27, 28, 29, 30]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19, 22,
+                   23, 25, 26, 27, 28, 29, 30]
 
     # What chunk features that are created and tested
     featureList = [
@@ -434,7 +434,7 @@ def createChunkFeatures(
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         False,  # dataGCV2-BC 23 With more channels. Only useful for chunks
         True,  # dataCorrBC 24
-        False,  # 25 imfftData
+        False,  # 25 invFFT
         False,  # 26 realfftData
         False,  # 27 imfftDataBCBC
         False,  # 28 realfftDataBCBC
@@ -558,7 +558,7 @@ def main():
 
     # Parameters for ANOVA test and ANOVA Feature Mask
     # Does ANOVA on all subjects except the one tested and uses as mask
-    signAll = True
+    signAll = False
     # 0.1 seems best, 0.05 a little faster
     # if useSepSubFS then this is also used for them
     globalSignificanceThreshold = 0.05
@@ -582,14 +582,14 @@ def main():
     # Name for this test, what it is saved as
     validationRepetition = True
     repetitionName = "testJ3"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{41}{repetitionName}"
+    repetitionValue = f"{51}{repetitionName}"
 
     chunkFeatures = False
-    chunkAmount = 3
+    chunkAmount = 6
 
     # Run test using all features except "BadFeatures"
     useAllFeatures = True
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23, 26, 27, 28, 29, 30]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23]
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     #                16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30]
     # Using numbering in list below
@@ -597,7 +597,7 @@ def main():
     # Settings when using running a loop to create all features.
     onlyCreateFeatures = False
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 0  # Multiplied by nrFCOT, First features to start creating
+    featIndex = 6  # Multiplied by nrFCOT, First features to start creating
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
@@ -619,10 +619,10 @@ def main():
     # Runs less hyperparameters, currently only C =  2.5
 
     # What paradigm to test
-    # paradigm = paradigmSetting.upDownInnerSpecialPlot()
+    paradigm = paradigmSetting.upDownInnerSpecialPlot()
     # paradigm = paradigmSetting.upDownInnerSpecialTest2()
     # paradigm = paradigmSetting.upDownVisSpecialPlot()
-    paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
+    # paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
     # paradigm = paradigmSetting.rightLeftInnerSpecialPlot()
     # paradigm = paradigmSetting.rightLeftVisSpecialPlot()
 
@@ -652,13 +652,13 @@ def main():
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         False,  # dataGCV2-BC 23 SKIP
         # With more channels. Only useful for chunks For 3 chunks.
-        True,  # 24 Correlate1dBC
+        True,  # 24 Correlate1dBC005s
         False,  # 25 inverseFFT-BC
-        False,  # 26 realfftData
-        False,  # 27 imfftDataBCBC
-        False,  # 28 realfftDataBCBC
-        False,  # 29 inverseFFT-BC
-        False,  # 30 inverseFFTCV-BC
+        False,  # 26 corr01s
+        False,  # 27 corr02s
+        False,  # 28 IRRFTcorr01s
+        False,  # 29 IRRFTcorr02s
+        False,  # 30 IRRFTcorr005s
         # True,  # FFT BC IFFT 24
         # More to be added
     ]
@@ -696,17 +696,21 @@ def main():
 
             featureList[3] = False  # 4
             featureList[4] = False  # 5
+            featureList[5] = False  # 6
+            featureList[6] = False  # 7
+            featureList[7] = False  # 8
             featureList[9] = False  # 10
-            featureList[21] = False  # 23
-            featureList[22] = False  # 22
+            featureList[21] = False  # 22
+            featureList[22] = False  # 23
             # featureList[24] = False  # 25
-            featureList[25] = False  # 26
-            featureList[26] = False  # 27
-            featureList[27] = False  # 28
-            featureList[28] = False  # 29
-            featureList[29] = False  # 30
+            # featureList[25] = False  # 26
+            # featureList[26] = False  # 27
+            # featureList[27] = False  # 28
+            # featureList[28] = False  # 29
+            # featureList[29] = False  # 30
             if chunkFeatures:
-                featureList[20] = False  # 21 Not okay for chunks
+                # featureList[21] = True  # 22
+                # featureList[20] = False  # 21 Not okay for chunks
                 featureList[18] = False  # 19 Not okay for chunks
 
             print(featureList)
@@ -754,17 +758,21 @@ def main():
 
                     featureList[3] = False  # 4
                     featureList[4] = False  # 5
+                    featureList[5] = False  # 6
+                    featureList[6] = False  # 7
+                    featureList[7] = False  # 8
                     featureList[9] = False  # 10
-                    featureList[21] = False  # 23
-                    featureList[22] = False  # 22
-                    featureList[24] = False  # 25
+                    featureList[21] = False  # 22
+                    featureList[22] = False  # 23
+                    # featureList[24] = False  # 25
                     featureList[25] = False  # 26
                     featureList[26] = False  # 27
                     featureList[27] = False  # 28
                     featureList[28] = False  # 29
                     featureList[29] = False  # 30
                     if chunkFeatures:
-                        featureList[20] = False  # 21 Not okay for chunks
+                        # featureList[21] = True  # 22
+                        # featureList[20] = False  # 21 Not okay for chunks
                         featureList[18] = False  # 19 Not okay for chunks
 
                 print(featureList)
@@ -976,15 +984,27 @@ def main():
             # Creating masked feature List using ANOVA/cov Mask
 
             # Then only create new combos containing that best combos + 1 or 2 more features
-            mDataList = mixShuffleSplit(
-                fClassDict[f"{sub}"].getMaskedFeatureList(),
-                labels=fClassDict[f"{sub}"].getLabels(),
-                order=fClassDict[f"{sub}"].getOrder(),
-                featureClass=fClassDict[f"{sub}"],
-                maxCombinationAmount=maxCombinationAmount,
-                bestFeatures=bestFeatures,
-                useBestFeaturesTest=useBestFeaturesTest,
-            )
+            if signAll:
+
+                mDataList = mixShuffleSplit(
+                    fClassDict[f"{sub}"].getMaskedFeatureList(),
+                    labels=fClassDict[f"{sub}"].getLabels(),
+                    order=fClassDict[f"{sub}"].getOrder(),
+                    featureClass=fClassDict[f"{sub}"],
+                    maxCombinationAmount=maxCombinationAmount,
+                    bestFeatures=bestFeatures,
+                    useBestFeaturesTest=useBestFeaturesTest,
+                )
+            else:
+                mDataList = mixShuffleSplit(
+                    fClassDict[f"{sub}"].getFeatureListFlat(),
+                    labels=fClassDict[f"{sub}"].getLabels(),
+                    order=fClassDict[f"{sub}"].getOrder(),
+                    featureClass=fClassDict[f"{sub}"],
+                    maxCombinationAmount=maxCombinationAmount,
+                    bestFeatures=bestFeatures,
+                    useBestFeaturesTest=useBestFeaturesTest,
+                )
 
             allResultsPerSubject = []
             # For loop of each combination of features
@@ -1136,7 +1156,59 @@ def onlyCreateFeaturesFunction(
             allSubjFListList = []
             allSubjFLabelsList = []
             subjectsThatNeedFSelect = []
-        for sub in subjects:
+        for sub in subjects[:4]:
+
+            if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
+                if useSepSubjFS:
+                    print("fSelectSepSub Place Used here")
+                    fSelectUsingSepSubjects(
+                        fClassDict,
+                        globalSignificanceThreshold,
+                        onlyUniqueFeatures,
+                        uniqueThresh,
+                        paradigm[0],
+                        subjects,
+                    )
+                    break
+                else:
+                    allSubjFList, allSubjFLabels = combineAllSubjects(
+                        fClassDict, subjectLeftOut=sub, onlyTrain=False
+                    )
+
+                    # add allSubjFlist and Labels to list
+                    allSubjFLabelsList.append(allSubjFLabels)
+                    allSubjFListList.append(allSubjFList)
+                    subjectsThatNeedFSelect.append(sub)
+
+            else:
+
+                print(
+                    f"Feature Mask Already exist for all Features for subject {sub}")
+
+        if useSepSubjFS is not True:
+            goodFeatureMaskListList = []
+            for subj, features, labels in zip(
+                subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
+            ):
+
+                # Maybe dp before here
+                goodFeatureMaskList = anovaTest(
+                    features,
+                    labels,
+                    globalSignificanceThreshold,
+                    onlyUniqueFeatures,
+                    uniqueThresh,
+                    paradigm[0],
+                    subj,
+                )
+
+                goodFeatureMaskListList.append(goodFeatureMaskList)
+
+            compute3 = dask.compute(goodFeatureMaskListList)
+            # print(compute3)
+            goodFeatureMaskListList = dask.compute(compute3)
+
+        for sub in subjects[4:]:
 
             if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
                 if useSepSubjFS:

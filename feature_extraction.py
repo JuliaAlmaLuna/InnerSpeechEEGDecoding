@@ -510,6 +510,32 @@ class featureEClass:
 
         return self.data, self.labels
 
+    def chunkCovariance(self, loadedCorrectFeature, featureNameSaved):
+        loadedCorrectFeature[0] = np.reshape(
+            loadedCorrectFeature[0],
+            [
+                loadedCorrectFeature[0].shape[0],
+                loadedCorrectFeature[0].shape[1] *
+                self.chunkAmount,
+                -1
+            ],
+        )
+        from math import ceil
+        covSplitList = []
+        onlyFeature = loadedCorrectFeature[0]
+        for splitNr in range(int(ceil(self.chunkAmount / 2))):
+            splitFeature = onlyFeature[:, splitNr::(
+                int(ceil(self.chunkAmount / 2))), :]  # Split Channels
+            covSplitList.append(ut.fftCovariance(splitFeature))
+            # covSplits.append(splitFeature)
+
+        rejoinedSplits = np.concatenate(covSplitList, axis=1)
+        createdFeature = [
+            np.array(rejoinedSplits),
+            featureNameSaved,
+        ]  # dataFFTCV
+        return createdFeature
+
     def createFeature(self, featureName, tempData):
         noReshape = False
         createdFeature = None
@@ -608,6 +634,7 @@ class featureEClass:
                 np.array(ut.fftCovariance(dataHR)),
                 featureNameSaved,
             ]  # dataHRCV
+
         if featureName == "dataGCV":
             datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
             createdFeature = [
@@ -641,21 +668,90 @@ class featureEClass:
                 ndimage.correlate1d(tempData, weights=weights, axis=2),
                 featureNameSaved,
             ]
+
+        if featureName == "dataCorr1d01s":
+            weights = np.zeros(shape=[32])
+            weights[:3] = 1
+            weights[29:] = 1
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=2),
+                featureNameSaved,
+            ]
+
+        if featureName == "dataCorr1d02s":
+            weights = np.zeros(shape=[58])
+            weights[:3] = 1
+            weights[55:] = 1
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=2),
+                featureNameSaved,
+            ]
+
+        if featureName == "iFFTdataCorr1d01s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
+                weights = np.zeros(shape=[32])
+                weights[:3] = 1
+                weights[29:] = 1
+                createdFeature = [
+                    ndimage.correlate1d(onlyFeature, weights=weights, axis=2),
+                    featureNameSaved,
+                ]
+            else:
+                return None
+
+        if featureName == "iFFTdataCorr1d02s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
+                weights = np.zeros(shape=[58])
+                weights[:3] = 1
+                weights[55:] = 1
+                createdFeature = [
+                    ndimage.correlate1d(onlyFeature, weights=weights, axis=2),
+                    featureNameSaved,
+                ]
+            else:
+                return None
+
+        if featureName == "iFFTdataCorr1d005s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
+                weights = np.zeros(shape=[20])
+                weights[:3] = 1
+                weights[16:] = 1
+                createdFeature = [
+                    ndimage.correlate1d(onlyFeature, weights=weights, axis=2),
+                    featureNameSaved,
+                ]
+            else:
+                return None
+
         if featureName == "dataFFTCV-BC":
             if self.chunk:
                 noReshape = True
                 loadedCorrectFeature = self.loadFeatures(
                     f"fftDatacn{self.chunkAmount}BC"
                 )
+
             else:
                 loadedCorrectFeature = self.loadFeatures("fftDataBC")
             if loadedCorrectFeature is not None:
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved)
+                else:
 
-                fftdata = loadedCorrectFeature[0]
-                createdFeature = [
-                    np.array(ut.fftCovariance(fftdata)),
-                    featureNameSaved,
-                ]  # dataFFTCV
+                    fftdata = loadedCorrectFeature[0]
+                    createdFeature = [
+                        np.array(ut.fftCovariance(fftdata)),
+                        featureNameSaved,
+                    ]  # dataFFTCV
             else:
                 return None
 
@@ -665,26 +761,15 @@ class featureEClass:
                 loadedCorrectFeature = self.loadFeatures(
                     f"fftDatacn{self.chunkAmount}BC"
                 )
-                if loadedCorrectFeature is not None:
-                    loadedCorrectFeature[0] = np.reshape(
-                        loadedCorrectFeature[0],
-                        [
-                            loadedCorrectFeature[0].shape[0],
-                            -1,
-                            int(loadedCorrectFeature[0].shape[2] /
-                                self.chunkAmount),
-                        ],
-                    )
-                # Testing this!
-            else:
-                loadedCorrectFeature = self.loadFeatures("fftDataBC")
-            if loadedCorrectFeature is not None:
 
-                fftdata = loadedCorrectFeature[0]
-                createdFeature = [
-                    np.array(ut.fftCovariance(fftdata)),
-                    featureNameSaved,
-                ]  # dataFFTCV
+                if loadedCorrectFeature is not None:
+                    # Part below could be a function for all chunked covariance
+                    # Shape it so that each split has their own channels
+                    # Send in loadedFeature and get back covariance but done with every 3rd/6th channel only
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved)
+                else:
+                    return None
             else:
                 return None
 
@@ -697,11 +782,16 @@ class featureEClass:
             else:
                 loadedCorrectFeature = self.loadFeatures("welchDataBC")
             if loadedCorrectFeature is not None:
-                welchdata = loadedCorrectFeature[0]
-                createdFeature = [
-                    np.array(ut.fftCovariance(welchdata)),
-                    featureNameSaved,
-                ]  # dataWCV
+
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved)
+                else:
+                    welchdata = loadedCorrectFeature[0]
+                    createdFeature = [
+                        np.array(ut.fftCovariance(welchdata)),
+                        featureNameSaved,
+                    ]  # dataWCV
             else:
                 return None
         if featureName == "dataHRCV-BC":
@@ -713,12 +803,16 @@ class featureEClass:
             else:
                 loadedCorrectFeature = self.loadFeatures("dataHRBC")
             if loadedCorrectFeature is not None:
-                dataHR = loadedCorrectFeature[0]
-                # dataHR = dataH.real
-                createdFeature = [
-                    np.array(ut.fftCovariance(dataHR)),
-                    featureNameSaved,
-                ]  # dataHRCV
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved)
+                else:
+                    dataHR = loadedCorrectFeature[0]
+                    # dataHR = dataH.real
+                    createdFeature = [
+                        np.array(ut.fftCovariance(dataHR)),
+                        featureNameSaved,
+                    ]  # dataHRCV
             else:
                 return None
 
@@ -731,12 +825,15 @@ class featureEClass:
             else:
                 loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
             if loadedCorrectFeature is not None:
-
-                gaussiandata = loadedCorrectFeature[0]
-                createdFeature = [
-                    np.array(ut.fftCovariance(gaussiandata)),
-                    featureNameSaved,
-                ]  # dataFFTCV
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved)
+                else:
+                    gaussiandata = loadedCorrectFeature[0]
+                    createdFeature = [
+                        np.array(ut.fftCovariance(gaussiandata)),
+                        featureNameSaved,
+                    ]  # dataFFTCV
             else:
                 return None
 
@@ -967,11 +1064,18 @@ class featureEClass:
 
                 if fNr == 25:
                     featureName = "inverseFFT-BC"
-                # if fNr == 24:
-                # featureName = "FFT-BC-IFFT"
 
-                # if fNr == 18:
-                #     featureName = "Chunk"
+                if fNr == 26:
+                    featureName = "dataCorr1d01s"
+                if fNr == 27:
+                    featureName = "dataCorr1d02s"
+                if fNr == 28:
+                    featureName = "iFFTdataCorr1d01s-BC"
+                if fNr == 29:
+                    featureName = "iFFTdataCorr1d02s-BC"
+                if fNr == 30:
+                    featureName = "iFFTdataCorr1d005s-BC"
+
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:
                         loadedFeature = self.loadFeatures(
@@ -1025,6 +1129,14 @@ class featureEClass:
 
     def getFeatureList(self):
         tempFeatureList = dp(self.createdFeatureList)
+        return tempFeatureList
+
+    def getFeatureListFlat(self):
+
+        tempFeatureList = dp(self.createdFeatureList)
+        for feature in tempFeatureList:
+            feature[0] = self.flattenAllExceptTrial(feature[0])
+
         return tempFeatureList
 
     def extendFeatureList(self, additionList):

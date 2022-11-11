@@ -123,17 +123,22 @@ class baseLineCorrection(featureEClass):
                     avgFeature2 = np.reshape(
                         avgFeature,
                         [
-                            self.chunkAmount,
                             avgFeature.shape[0],
                             avgFeature.shape[1],
-                            -1,
+                            self.chunkAmount,
+                            -1,  # Now Session * channels * chunkAmount * onlySpecificDataPerchunk
                         ],
                     )
-                    avgFeature3 = np.mean(avgFeature2, axis=0)
-                    avgFeature = np.concatenate(
-                        [avgFeature3, avgFeature3, avgFeature3], axis=2
-                    )
-
+                    # Now session * channels * averagedSpecificDataPerChunk
+                    avgFeature3 = np.mean(avgFeature2, axis=2)
+                    avgFeature = np.tile(avgFeature3, reps=[
+                                         1, 1, self.chunkAmount])
+                    # np.repeat(
+                    #     avgFeature3, repeats=self.chunkAmount, axis=0)
+                    # np.concatenate(
+                    #     [avgFeature3, avgFeature3, avgFeature3], axis=2
+                    # )
+            print("Heyyo")
             avgFEATURESlist.append(avgFeature)
             print(avgFeature.shape)
 
