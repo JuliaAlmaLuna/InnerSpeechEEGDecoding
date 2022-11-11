@@ -141,6 +141,19 @@ def upDownInnerSpecialPlot():
     )
 
 
+def upDownInnerSpecialTest():
+    return (
+        "iiudspectest",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
 def upDownInnerSpecial2():
     return (
         "iiudspec2",
@@ -319,6 +332,32 @@ def rightLeftInner():
         "iirl",
         [
             [["Inner"], ["Inner"]],
+            [
+                ["Right"],
+                ["Left"],
+            ],
+        ],
+    )
+
+
+def rightLeftInnerSpecialPlot():
+    return (
+        "iirlspecplot",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Right"],
+                ["Left"],
+            ],
+        ],
+    )
+
+
+def rightLeftVisSpecialPlot():
+    return (
+        "vvrlspecplot",
+        [
+            [["Visualized"], ["Visualized"]],
             [
                 ["Right"],
                 ["Left"],

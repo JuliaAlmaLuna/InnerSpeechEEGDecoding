@@ -19,8 +19,6 @@ import glob
 import os
 import dask
 
-# from dask.distributed import Client
-
 
 def testLoop(
     data_train,
@@ -28,10 +26,6 @@ def testLoop(
     labels_train,
     labels_test,
     name,
-    testNr,
-    testSize,
-    count,
-    lengthDataList,
     useAda,
     fmetDict,
     sub,
@@ -260,16 +254,17 @@ def anovaTest(
             p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
 
             goodData = f_statistic * p_values
+            f_statistic = None
+            p_values = None
+            if "CV" in featureName:
+                goodData = np.reshape(goodData, [feature[0].shape[1], -1])
 
-            #  if "CV" in featureName:
-            #     if feature[0].ndim > 2:
-            #         print(feature[0])
-            #         feature[0] = np.triu(
-            #             feature[0], k=1
-            #         )  # Keep only half of CV matrices. Rest is the same. No need to cull twice.
-            #         print(feature[0])
-            #     # Should apply to only the last two axises.
-
+                goodData = np.triu(
+                    goodData, k=0
+                )  # Keep only half of CV matrices. Rest is the same. No need to cull twice.
+                goodData = np.reshape(goodData, [-1])
+                # Should apply to only the last two axises.
+            feature[0] = None
             # Use covcorrelation matrix to remove too similar features from mask.
             if onlyUniqueFeatures:
                 # This function is dask delayed so when called later compute() to multiprocess it.
@@ -397,8 +392,6 @@ def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
 # Should be done in a more compact way, which doesnt need another function fully like this.
 def createChunkFeatures(
     chunkAmount,
-    signAll,
-    signSolo,
     onlyUniqueFeatures,
     globalSignificanceThreshold,
     uniqueThresh,
@@ -411,23 +404,9 @@ def createChunkFeatures(
     t_min = 1.8
     t_max = 3
     sampling_rate = 256
-
-    # Parameters for ANOVA test and ANOVA Feature Mask
-    # signAll = True
-    # globalSignificanceThreshold = 0.05
-    # onlyUniqueFeatures = True
-    # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
-
-    # What paradigm to test
-
-    # paradigm = paradigmSetting.upDownInner()
-    # paradigm = paradigmSetting.upDownVis()
-    # paradigm = paradigmSetting.upDownVisSpecial()
-    # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
-    # paradigm = paradigmSetting.upDownRightLeftInner()
-    # paradigm = paradigmSetting.upDownRightLeftVis()
-    # paradigm = paradigmSetting.rightLeftInner()
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19,
+                   21, 22, 23, 25, 26, 27, 28, 29, 30]
 
     # What chunk features that are created and tested
     featureList = [
@@ -455,20 +434,18 @@ def createChunkFeatures(
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         False,  # dataGCV2-BC 23 With more channels. Only useful for chunks
         True,  # dataCorrBC 24
+        False,  # 25 imfftData
+        False,  # 26 realfftData
+        False,  # 27 imfftDataBCBC
+        False,  # 28 realfftDataBCBC
+        False,  # 29 inverseFFT-BC
+        False,  # 30 inverseFFTCV-BC
         # More to be added
     ]
-
-    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 21, 22]
-    # badFeatures = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 22, 23]
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19,
-                   21, 22, 23, 25, 26, 27, 28, 29, 30]
-    # goodFeatures = []
 
     for ind, fea in enumerate(badFeatures):
         badFeatures[ind] = fea - 1
 
-    # for ind, fea in enumerate(goodFeatures):
-    #     goodFeatures[ind] = fea - 1
     featureListIndex = np.arange(len(featureList))
     useAllFeatures = True
 
@@ -554,45 +531,6 @@ def createChunkFeatures(
             )
             print("But I dont care about BC not existing here for some reason")
 
-    # if signAll, then create or get globalGoodFeatures mask
-    needsFix = True
-    if needsFix is not True:
-        if signAll:
-
-            # TODO One process/thread per subject
-            # Create list of procesess. One per subject
-            # Assign each one to check/create/get globalGoodFeatureMask
-
-            # After all joined back. Continue
-
-            for sub in subjects:
-                if (
-                    fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask() is None
-                    and useSepSubjFS is not True
-                ):
-                    print(
-                        f"Anova Mask for sub:{sub}, sign:{globalSignificanceThreshold} was not complete, creating new"
-                    )
-
-                    allSubjFList, allSubjFLabels = combineAllSubjects(
-                        fClassDict2, subjectLeftOut=sub, onlyTrain=False
-                    )
-                    goodFeatureList, goodFeatureMaskList = anovaTest(
-                        allSubjFList,
-                        allSubjFLabels,
-                        globalSignificanceThreshold,
-                        fClass=fClassDict2[f"{sub}"],
-                        onlyUniqueFeatures=onlyUniqueFeatures,
-                        uniqueThresh=uniqueThresh,
-                    )
-                    fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(
-                        goodFeatureMaskList)
-                else:
-                    goodFeatureMaskList = fClassDict2[
-                        f"{sub}"
-                    ].getGlobalGoodFeaturesMask()
-        else:
-            print("Not using Anova Test, not creating Mask")
     return fClassDict2, bClassDict2
 
     # Instead, just loop through all subjects, doing Anova on each one.
@@ -643,25 +581,32 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrli-1feat"  # "udrliplotnoAda1hyperparams"
+    repetitionName = "testJ1"  # "udrliplotnoAda1hyperparams"
     repetitionValue = f"{38}{repetitionName}"
-    maxCombinationAmount = 1
 
-    chunkFeatures = True
+    chunkFeatures = False
     chunkAmount = 3
-    onlyCreateFeatures = False
+
+    # Run test using all features except "BadFeatures"
     useAllFeatures = True
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23, 25, 26, 27, 28, 29, 30]
+    # Using numbering in list below
+
+    # Settings when using running a loop to create all features.
+    onlyCreateFeatures = True
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 5
+    featIndex = 0  # Multiplied by nrFCOT, First features to start creating
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
     useBestFeaturesTest = False
     bestFeaturesSaveFile = "top2udrlv.npy"
     bestFeatures = np.load(bestFeaturesSaveFile, allow_pickle=True)
-    print(bestFeatures)
-    print(bestFeatures.shape)
+    if useBestFeaturesTest:
+        print(bestFeatures)
+        print(bestFeatures.shape)
     # How many features that are maximally combined and tested together
+    maxCombinationAmount = 1
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -671,25 +616,12 @@ def main():
     # Runs less hyperparameters, currently only C =  2.5
 
     # What paradigm to test
-    # paradigm = paradigmSetting.upDownInnerSpecial11()
-    # paradigm = paradigmSetting.upDownInnerSpecial12()
-    # paradigm = paradigmSetting.upDownInnerSpecial14()
     # paradigm = paradigmSetting.upDownInnerSpecialPlot()
+    paradigm = paradigmSetting.upDownInnerSpecialTest()
     # paradigm = paradigmSetting.upDownVisSpecialPlot()
     # paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
     # paradigm = paradigmSetting.rightLeftInnerSpecialPlot()
     # paradigm = paradigmSetting.rightLeftVisSpecialPlot()
-
-    # paradigm = paradigmSetting.upDownInnerSpecial4()
-    # paradigm = paradigmSetting.upDownVis()
-    # paradigm = paradigmSetting.upDownVisSpecial()
-    # paradigm = paradigmSetting.upDownRightLeftInner()
-    # paradigm = paradigmSetting.upDownVisInner()
-    # paradigm = paradigmSetting.upDownVisInnersep()
-    paradigm = paradigmSetting.upDownRightLeftInnerSpecial2()
-    # paradigm = paradigmSetting.upDownRightLeftInnerSpecial()
-    # paradigm = paradigmSetting.upDownRightLeftVis()
-    # paradigm = paradigmSetting.rightLeftInner()
 
     # What features that are created and tested
     featureList = [
@@ -725,17 +657,14 @@ def main():
         False,  # 29 inverseFFT-BC
         False,  # 30 inverseFFTCV-BC
         # True,  # FFT BC IFFT 24
-        # Takes up 50 GB apparently. So. no.
-        # Corr1dBC
         # More to be added
     ]
-    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 22, 23]
-    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 22]
-    # badFeatures = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 22, 23]
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23, 25, 26, 27, 28, 29, 30]
 
-    goodFeatures = []
+    # Features that aren´t tested when using useAllFeatures
 
+    goodFeatures = []  # To be implemented. Opposite way with only good features tested
+
+    # For loops to fit with numbering from 0 to len()-1 instead of 1 to len()
     for ind, fea in enumerate(badFeatures):
         badFeatures[ind] = fea - 1
 
@@ -743,7 +672,6 @@ def main():
         goodFeatures[ind] = fea - 1
 
     print(badFeatures)
-    # badFeatures = badFeatures - 1
 
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
@@ -757,8 +685,7 @@ def main():
                 break
             if featIndex > len(featureList) - (nrFCOT + 1):
                 featIndex = len(featureList) - (nrFCOT + 1)
-            print(len(featureList))
-            print(featIndex)
+
             for featureI in featureListIndex[
                 featIndex * nrFCOT: (featIndex + 1) * nrFCOT
             ]:
@@ -800,23 +727,23 @@ def main():
             )
 
             featIndex = featIndex + 1
-            # print(feature)
+
         # If Chunkfeatures, run create again but for non Chunk features
         if chunkFeatures:
             featIndex = 0
-            chunkFeatures = False
+            chunkFeatures = False  # Turn it off to create None chunk features as well
             while True:
 
                 for featureI in featureListIndex:
                     featureList[featureI] = False
 
                 if (featIndex * nrFCOT) > len(featureList) - 1:
-                    chunkFeatures = True
+                    chunkFeatures = True  # Then turn it back on again after
                     break
+
                 if featIndex > len(featureList) - (nrFCOT + 1):
                     featIndex = len(featureList) - (nrFCOT + 1)
-                print(len(featureList))
-                print(featIndex)
+
                 for featureI in featureListIndex[
                     featIndex * nrFCOT: (featIndex + 1) * nrFCOT
                 ]:
@@ -869,7 +796,7 @@ def main():
                 continue
             featureList[featureI] = True
 
-    print(featureList)
+    print(f"FeatureList so far: {featureList}")
     # Creating the features for each subject and putting them in a dict
     fClassDict = dict()
     fmetDict = dict()
@@ -956,16 +883,9 @@ def main():
             )
 
     if signAll:
-
-        # client = Client(
-        #     n_workers=6, threads_per_worker=1
-        # )  # Using all but one core. 12 is max
-        # print(client)
-
         if useSepSubjFS is not True:
             allSubjFListList = []
             allSubjFLabelsList = []
-            # goodFeatureMaskListList = []
             subjectsThatNeedFSelect = []
         for sub in subjects:
 
@@ -1019,16 +939,14 @@ def main():
             goodFeatureMaskListList = dask.compute(compute3)
 
     if chunkFeatures:
-        fClassDict2, bClassDict2 = createChunkFeatures(
+        fClassDict2 = createChunkFeatures(
             chunkAmount=chunkAmount,
-            signAll=signAll,
-            signSolo=signSolo,
             onlyUniqueFeatures=onlyUniqueFeatures,
             globalSignificanceThreshold=globalSignificanceThreshold,
             paradigm=paradigm,
             uniqueThresh=uniqueThresh,
             useSepSubjFS=useSepSubjFS,
-        )
+        )[0]
 
         for sub in subjects:
             fClassDict[f"{sub}"].extendFeatureList(
@@ -1038,12 +956,8 @@ def main():
                 fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
             )
 
-    testNr = 0
-    count = 0
-
     # A for loop just running all subjects using different seeds for train/data split
     for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
-        testNr += 1
 
         # Setting random order for test/train split for all subjects for this seed
 
@@ -1059,7 +973,6 @@ def main():
             # Creating masked feature List using ANOVA/cov Mask
 
             # Then only create new combos containing that best combos + 1 or 2 more features
-            # print(fClassDict[f"{sub}"].getLabels())
             mDataList = mixShuffleSplit(
                 fClassDict[f"{sub}"].getMaskedFeatureList(),
                 labels=fClassDict[f"{sub}"].getLabels(),
@@ -1070,23 +983,9 @@ def main():
                 useBestFeaturesTest=useBestFeaturesTest,
             )
 
-            # # Create a new list in Features, called Masked Features.
-            # # Which are all features except only the good data left after mask
-            # mDataList = mixShuffleSplit(
-            #     fClassDict[f"{sub}"].getFeatureList(),
-            #     labels=fClassDict[f"{sub}"].getLabels(),
-            #     order=fClassDict[f"{sub}"].getOrder(),
-            #     featureClass=fClassDict[f"{sub}"],
-            #     maxCombinationAmount=maxCombinationAmount,
-            # )
-
             allResultsPerSubject = []
             # For loop of each combination of features
-            # Training a SVM using each one and then saving the results
-            count = 1
-
-            # for x in range(10000):
-            #     h = 4 + x
+            # Training a SVM using each one and then saving the result
 
             allResultsPerSubject = Parallel(n_jobs=-5, verbose=10, batch_size=1)(
                 delayed(testLoop)(
@@ -1095,10 +994,6 @@ def main():
                     labels_train,
                     labels_test,
                     name,
-                    testNr,
-                    testSize,
-                    count,
-                    len(mDataList),
                     useAda,
                     fmetDict,
                     sub,
@@ -1106,55 +1001,11 @@ def main():
                 for data_train, data_test, labels_train, labels_test, name in mDataList
             )
 
-            # for (
-            #     data_train,
-            #     data_test,
-            #     labels_train,
-            #     labels_test,
-            #     name,
-            #     # gdData,
-            # ) in mDataList:
-
-            #     # print(f"\n Running dataset: {name} \n")
-            #     print(
-            #         f" Test {testNr}/{testSize} - Progress {count}/{len(mDataList)}")
-            #     count += 1
-
-            #     # Below here can be switch to NN ? Create method? Or just different testSuite.
-            #     # Right now using Adaboost.
-            #     # TODO, use joblib parallel to spread this over as many cpu as possible
-            #     # Would say 4 or 5 is reasonable.
-            #     if useAda:
-
-            #         allResults = fmetDict[f"{sub}"].testSuiteAda(
-            #             data_train,
-            #             data_test,
-            #             labels_train,
-            #             labels_test,
-            #             name,
-            #             # gdData,
-            #             kernels=["linear", "sigmoid", "rbf"],  #
-            #         )
-            #     else:
-            #         allResults = fmetDict[f"{sub}"].testSuite(
-            #             data_train,
-            #             data_test,
-            #             labels_train,
-            #             labels_test,
-            #             name,
-            #             # gdData,
-            #             kernels=["linear", "sigmoid", "rbf"],  #
-            #         )
-
-            #     allResultsPerSubject.append(allResults)
-
             savearray = np.array(
                 [seed, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
-
-            # import os
 
             now = datetime.now()
             # Month abbreviation, day and year, adding time of save to filename
@@ -1277,22 +1128,16 @@ def onlyCreateFeaturesFunction(
                 verbose=True,
             )
 
-    # useSepSubjFS = True
     if signAll:
-        # client = Client(
-        #     n_workers=6, threads_per_worker=1
-        # )  # Using all but one core. 12 is max
-        # print(client)
         if useSepSubjFS is not True:
             allSubjFListList = []
             allSubjFLabelsList = []
-            # goodFeatureMaskListList = []
             subjectsThatNeedFSelect = []
         for sub in subjects:
 
             if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
                 if useSepSubjFS:
-                    print("Other Place Used")
+                    print("fSelectSepSub Place Used here")
                     fSelectUsingSepSubjects(
                         fClassDict,
                         globalSignificanceThreshold,
@@ -1303,7 +1148,6 @@ def onlyCreateFeaturesFunction(
                     )
                     break
                 else:
-                    # fClass.getFeatureList() for all other subjects into
                     allSubjFList, allSubjFLabels = combineAllSubjects(
                         fClassDict, subjectLeftOut=sub, onlyTrain=False
                     )
@@ -1352,106 +1196,3 @@ if __name__ == "__main__":
     ps.print_stats()
     with open("testStats.txt", "w+") as f:
         f.write(s.getvalue())
-
-
-# print(goodFeatureMaskListList)
-
-# for goodFeatureMaskList in goodFeatureMaskListList:
-#     saveAnovaMaskNoClass()
-
-# for rp in range(1):
-#     processList = []
-#     # for subj, features, labels in zip(subjectsThatNeedFSelect[rp * 3:(rp + 1) * 3],
-#     #                                   allSubjFListList[rp *
-#     #                                                    3:(rp + 1) * 3],
-#     #                                   allSubjFLabelsList[rp * 3:(rp + 1) * 3]):
-#     for subj, features, labels in zip(subjectsThatNeedFSelect,
-#                                       allSubjFListList,
-#                                       allSubjFLabelsList):
-#         # procSubj = dp(subj)
-#         print("start")
-#         procFeatures = features
-#         print("hoppla")
-#         procLabels = labels
-#         # print("CreatingNewFclass")
-#         # procFclass = fclass.featureEClass(
-#         #     procSubj,
-#         #     dp(paradigm[0]),
-#         #     globalSignificance=globalSignificanceThreshold,
-#         #     chunk=False,
-#         #     chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
-#         #     onlyUniqueFeatures=onlyUniqueFeatures,
-#         #     uniqueThresh=0.8
-#         # )
-
-#         # kwargsSubj = {"featureList": procFeatures,
-#         #               "labels": procLabels,
-#         #               "significanceThreshold": globalSignificanceThreshold,
-#         #               "fClass": procFclass,
-#         #               "onlyUniqueFeatures": onlyUniqueFeatures,
-#         #               "uniqueThresh": uniqueThresh}
-
-#         print(f"Creating process for subj {subj}")
-#         # procFclass = "hello"
-
-#         # featureList, labels, significanceThreshold, fClass, onlyUniqueFeatures,
-#         # uniqueThresh, paradigmName, subject
-#         # p = multiprocessing.Process(target=anovaTest, kwargs=kwargsSubj)
-#         p = multiprocessing.Process(target=anovaTest, args=(
-#             procFeatures, procLabels, globalSignificanceThreshold,
-#             onlyUniqueFeatures, uniqueThresh, paradigm[0], subj))
-#         processList.append(p)
-#         # print(p, p.is_alive())
-#         # p.start()
-#         # print(p, p.is_alive())
-#         # time.sleep(10)
-
-#     for process in processList:
-#         # print(process, process.is_alive())
-#         time.sleep(15)
-#         process.start()
-#         # while True:
-#         #     time.sleep(1)
-#         #     # print(process)
-#         #     if process.is_alive():
-#         #         break
-#         # print(process, process.is_alive())
-#         # Create processList
-#         #
-#         # iterate through subjects, creating processes running AnovaTest
-
-#     while True:
-#         time.sleep(5)
-#         print(len(multiprocessing.active_children()))
-#         if len(multiprocessing.active_children()) < 1:
-#             break
-
-#         # goodFeatureList, goodFeatureMaskList = anovaTest(
-#         #     allSubjFList,
-#         #     allSubjFLabels,
-#         #     globalSignificanceThreshold,
-#         #     fClass=fClassDict[f"{sub}"],
-#         #     onlyUniqueFeatures=onlyUniqueFeatures,
-#         #     uniqueThresh=uniqueThresh
-#         # )
-#     for process in processList:
-#         process.join()
-
-# for subj in subjects:
-#     fClassDict[f"{sub}"].setGlobalGoodFeaturesMask(
-#         goodFeatureMaskList
-#     )  # WHY IS THIS WEIRD SHAPE???
-
-# if chunkFeatures:
-#     fClassDict2, bClassDict2 = createChunkFeatures(chunkAmount=chunkAmount, signAll=signAll,
-#                                                    signSolo=signSolo, onlyUniqueFeatures=onlyUniqueFeatures,
-#                                                    globalSignificanceThreshold=globalSignificanceThreshold,
-#                                                    paradigm=paradigm,
-#                                                    uniqueThresh=uniqueThresh)
-
-#     for sub in subjects:
-#         fClassDict[f"{sub}"].extendFeatureList(
-#             fClassDict2[f"{sub}"].getFeatureList()
-#         )
-#         fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-#             fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask())
