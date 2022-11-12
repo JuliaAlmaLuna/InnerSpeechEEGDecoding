@@ -446,8 +446,8 @@ class SvmMets:
 
         from sklearn.neural_network import MLPClassifier
 
-        mlp = MLPClassifier(hidden_layer_sizes=(100, 50),
-                            solver="lbfgs", activation="relu", early_stopping=True, validation_fraction=0.15)
+        mlp = MLPClassifier(hidden_layer_sizes=(20, 12, 6, 3),
+                            solver="lbfgs", activation="relu", early_stopping=True, validation_fraction=0.1)
         mlp.fit(ndata_train, labels_train)
         predictions = mlp.predict(ndata_test)
 

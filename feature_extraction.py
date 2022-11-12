@@ -680,6 +680,26 @@ class featureEClass:
                 featureNameSaved,
             ]
 
+        if featureName == "dataCorr2ax1dtwo":
+            weights = np.zeros(shape=[32])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[29:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "dataCorr2ax1dthree":
+            weights = np.zeros(shape=[58])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[55:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+
         if featureName == "dataCorr1d01s":
             weights = np.zeros(shape=[32])
             weights[:3] = [0.25, 0.5, 0.25]

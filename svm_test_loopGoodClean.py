@@ -431,7 +431,7 @@ def createChunkFeatures(
     t_max = 3
     sampling_rate = 256
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19, 21, 22,
+    badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22,
                    23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
 
     # What chunk features that are created and tested
@@ -609,12 +609,12 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "rndMlP3"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{56}{repetitionName}"
-    maxCombinationAmount = 3
+    repetitionName = "mlp3"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{81}{repetitionName}"
+    maxCombinationAmount = 4
     chunkFeatures = True
     chunkAmount = 3
-
+    quickTest = True  # For testing best Feature. Works well enough
     # Run test using all features except "BadFeatures"
     useAllFeatures = True
     badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 21,
@@ -631,7 +631,7 @@ def main():
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
     useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top2mlpudrlv.npy"
+    bestFeaturesSaveFile = "top3udrlv.npy"
     bestFeatures = np.load(
         f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
@@ -642,7 +642,6 @@ def main():
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
 
-    quickTest = True  # For testing best Feature. Works well enough
     # Rare to see increase in more than 1-2% accuracy without it.
     # Runs less hyperparameters, currently only C =  2.5
 
@@ -1046,7 +1045,7 @@ def main():
             # For loop of each combination of features
             # Training a SVM using each one and then saving the result
 
-            allResultsPerSubject = Parallel(n_jobs=-5, verbose=10, batch_size=1)(
+            allResultsPerSubject = Parallel(n_jobs=4, verbose=10)(
                 delayed(testLoop)(
                     data_train,
                     data_test,
