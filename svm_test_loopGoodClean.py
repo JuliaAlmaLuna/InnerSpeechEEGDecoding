@@ -27,6 +27,8 @@ def testLoop(
     labels_test,
     name,
     useAda,
+    userndF,
+    useMLP,
     fmetDict,
     sub,
 ):
@@ -41,6 +43,26 @@ def testLoop(
     if useAda:
 
         allResults = fmetDict[f"{sub}"].testSuiteAda(
+            data_train,
+            data_test,
+            labels_train,
+            labels_test,
+            name,
+            # gdData,
+            kernels=["linear", "sigmoid", "rbf"],  #
+        )
+    elif userndF:
+        allResults = fmetDict[f"{sub}"].testSuiteForest(
+            data_train,
+            data_test,
+            labels_train,
+            labels_test,
+            name,
+            # gdData,
+            kernels=["linear", "sigmoid", "rbf"],  #
+        )
+    elif useMLP:
+        allResults = fmetDict[f"{sub}"].testSuiteMLP(
             data_train,
             data_test,
             labels_train,
@@ -164,7 +186,11 @@ def delayedAnovaPart(
         printProcess(f"subj{subject}output", goodfeature.shape)
         goodData = np.zeros(goodData.shape)
     else:
-
+        # TODO: Only part after here needs to be dasked. It needs goodfeature, indexList and goodData,
+        # and returns new goodData. It can
+        # be used in this way: Send in featurename as well. Return goodData and featureName.
+        # Use this to save it correctly afterwards
+        # So return will be two things. List of names/subject, and list of goodData arrays.
         printProcess(f"subj{subject}output", time.clock())
         # Create a corrcoef matrix of the features, comparing them to one another
         corrMat = np.corrcoef(goodfeature)
@@ -193,7 +219,7 @@ def delayedAnovaPart(
             f"{np.count_nonzero(goodData)} good Features \
                             after covRemoval:{uniqueThresh} in {featureName}",
         )
-
+    # This one cant be here then
     saveAnovaMaskNoClass(
         featurename=featureName,
         maskname=f"sign{significanceThreshold}",
@@ -405,8 +431,8 @@ def createChunkFeatures(
     t_max = 3
     sampling_rate = 256
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19, 22,
-                   23, 25, 26, 27, 28, 29, 30]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19, 21, 22,
+                   23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
 
     # What chunk features that are created and tested
     featureList = [
@@ -558,7 +584,7 @@ def main():
 
     # Parameters for ANOVA test and ANOVA Feature Mask
     # Does ANOVA on all subjects except the one tested and uses as mask
-    signAll = False
+    signAll = True
     # 0.1 seems best, 0.05 a little faster
     # if useSepSubFS then this is also used for them
     globalSignificanceThreshold = 0.05
@@ -572,6 +598,8 @@ def main():
     signSolo = False
     soloSignificanceThreshold = 0.005  # Not really used anymore!
     useAda = False  # For 1 feauture combo amount actually hurts.
+    userndF = False  # For 1 feauture combo amount actually hurts.
+    useMLP = True  # For 1 feauture combo amount actually hurts
 
     onlyUniqueFeatures = True
     uniqueThresh = 0.8
@@ -581,15 +609,16 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "testJ3"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{51}{repetitionName}"
-
-    chunkFeatures = False
-    chunkAmount = 6
+    repetitionName = "rndMlP3"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{56}{repetitionName}"
+    maxCombinationAmount = 3
+    chunkFeatures = True
+    chunkAmount = 3
 
     # Run test using all features except "BadFeatures"
     useAllFeatures = True
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 21, 22, 23]
+    badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 21,
+                   22, 23, 26, 27]  # 26, 27, 28, 29, 30, 31, 32
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     #                16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30]
     # Using numbering in list below
@@ -601,15 +630,14 @@ def main():
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
-    useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top2udrlv.npy"
+    useBestFeaturesTest = True
+    bestFeaturesSaveFile = "top2mlpudrlv.npy"
     bestFeatures = np.load(
         f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
         print(bestFeatures)
         print(bestFeatures.shape)
     # How many features that are maximally combined and tested together
-    maxCombinationAmount = 2
 
     # All the subjects that are tested, and used to create ANOVA Mask
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
@@ -619,10 +647,10 @@ def main():
     # Runs less hyperparameters, currently only C =  2.5
 
     # What paradigm to test
-    paradigm = paradigmSetting.upDownInnerSpecialPlot()
+    # paradigm = paradigmSetting.upDownInnerSpecialPlot()
     # paradigm = paradigmSetting.upDownInnerSpecialTest2()
     # paradigm = paradigmSetting.upDownVisSpecialPlot()
-    # paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
+    paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
     # paradigm = paradigmSetting.rightLeftInnerSpecialPlot()
     # paradigm = paradigmSetting.rightLeftVisSpecialPlot()
 
@@ -656,9 +684,15 @@ def main():
         False,  # 25 inverseFFT-BC
         False,  # 26 corr01s
         False,  # 27 corr02s
-        False,  # 28 IRRFTcorr01s
-        False,  # 29 IRRFTcorr02s
-        False,  # 30 IRRFTcorr005s
+        False,  # 28 iFFTdataCorr1d01s-BC
+        False,  # 29 iFFTdataCorr1d02s-BC
+        False,  # 30 iFFTdataCorr1d005s-BC
+        False,  # 31 dataCorr1d01sBC
+        False,  # 32 dataCorr1d02sBC
+        False,  # 33 dataCorr2ax1d
+        False,  # 34 iFFTdataCorr2ax1d005s-BC
+        False,  # 35 dataCorr2ax1dBC
+
         # True,  # FFT BC IFFT 24
         # More to be added
     ]
@@ -708,6 +742,8 @@ def main():
             # featureList[27] = False  # 28
             # featureList[28] = False  # 29
             # featureList[29] = False  # 30
+            # featureList[30] = False  # 31
+            # featureList[31] = False  # 32
             if chunkFeatures:
                 # featureList[21] = True  # 22
                 # featureList[20] = False  # 21 Not okay for chunks
@@ -1018,6 +1054,8 @@ def main():
                     labels_test,
                     name,
                     useAda,
+                    userndF,
+                    useMLP,
                     fmetDict,
                     sub,
                 )

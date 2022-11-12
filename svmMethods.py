@@ -329,6 +329,141 @@ class SvmMets:
 
         return np.array(allResults, dtype=object)
 
+    def svmPipelineForest(
+        self,
+        ndata_train,
+        ndata_test,
+        labels_train,
+        labels_test,
+        kernel="linear",
+        degree=3,
+        gamma="auto",
+        C=1,
+    ):
+        # coefs=None,
+        # goodData,
+        """
+        Pipeline using SVM
+
+        Args:
+            data_train (np.array): Training data for SVM pipeline
+            data_test (np.array): Test data for SVM pipeline
+            labels_train (np.array): Training labels for SVM pipeline
+            labels_test (np.array): Test labels for SVM pipeline
+            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
+            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
+            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
+            . Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        # if coefs is None:
+        #     coefs = np.zeros([1, ndata_train.shape[1]])
+
+        # from sklearn import multioutput as multiO, create new class for multiOutput
+
+        clf = make_pipeline(
+            SVC(  # anova_filter/#,
+                gamma=gamma,
+                kernel=kernel,
+                degree=degree,
+                verbose=False,
+                C=C,
+                cache_size=1800,
+                tol=self.tol,
+            ),
+        )
+
+        clf.fit(ndata_train, labels_train)
+        predictions = clf.predict(ndata_test)
+
+        correct = np.zeros(labels_test.shape)
+        correctamount = 0
+        for nr, pred in enumerate(predictions, 0):
+            if pred == labels_test[nr]:
+                correct[nr] = 1
+                correctamount += 1
+
+        return correctamount / labels_test.shape[0]  # , coefs
+
+    def testSuiteForest(
+        self,
+        data_train,
+        data_test,
+        labels_train,
+        labels_test,
+        name,
+        kernels=["linear", "rbf", "sigmoid"],
+    ):
+
+        scaler = StandardScaler()
+        scaler = scaler.fit(data_train)
+
+        ndata_train = scaler.transform(data_train)
+        ndata_test = scaler.transform(data_test)
+
+        from sklearn.ensemble import RandomForestClassifier
+        # from sklearn.neural_network import MLPClassifier
+
+        # mlp = MLPClassifier(hidden_layer_sizes=(2000,1000), solver="lbfgs", activation="relu")
+
+        rfc = RandomForestClassifier(n_estimators=100)
+        rfc.fit(ndata_train, labels_train)
+        predictions = rfc.predict(ndata_test)
+
+        correct = np.zeros(labels_test.shape)
+        correctamount = 0
+        for nr, pred in enumerate(predictions, 0):
+            if pred == labels_test[nr]:
+                correct[nr] = 1
+                correctamount += 1
+
+        res = correctamount / labels_test.shape[0]
+        allResults = []
+        allResults.append([name, res, "gini", 1])
+        allResults.append([name, res, "gini", 1])
+
+        return np.array(allResults, dtype=object)
+
+    def testSuiteMLP(
+        self,
+        data_train,
+        data_test,
+        labels_train,
+        labels_test,
+        name,
+        kernels=["linear", "rbf", "sigmoid"],
+    ):
+
+        scaler = StandardScaler()
+        scaler = scaler.fit(data_train)
+
+        ndata_train = scaler.transform(data_train)
+        ndata_test = scaler.transform(data_test)
+
+        from sklearn.neural_network import MLPClassifier
+
+        mlp = MLPClassifier(hidden_layer_sizes=(100, 50),
+                            solver="lbfgs", activation="relu", early_stopping=True, validation_fraction=0.15)
+        mlp.fit(ndata_train, labels_train)
+        predictions = mlp.predict(ndata_test)
+
+        correct = np.zeros(labels_test.shape)
+        correctamount = 0
+        for nr, pred in enumerate(predictions, 0):
+            if pred == labels_test[nr]:
+                correct[nr] = 1
+                correctamount += 1
+
+        res = correctamount / labels_test.shape[0]
+        allResults = []
+        allResults.append([name, res, "gini", 1])
+        allResults.append([name, res, "gini", 1])
+
+        return np.array(allResults, dtype=object)
     # Not in this file atm
     # def plotHeatMaps(self, plotData):
     #     # Plots heatmaps, used for covariance features.

@@ -662,28 +662,41 @@ class featureEClass:
 
         if featureName == "dataCorr1d":
             weights = np.zeros(shape=[20])
-            weights[:3] = 1
-            weights[16:] = 1
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[17:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(tempData, weights=weights, axis=2),
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=2, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "dataCorr2ax1d":
+            weights = np.zeros(shape=[20])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[17:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
         if featureName == "dataCorr1d01s":
             weights = np.zeros(shape=[32])
-            weights[:3] = 1
-            weights[29:] = 1
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[29:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(tempData, weights=weights, axis=2),
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=2, mode="wrap"),
                 featureNameSaved,
             ]
 
         if featureName == "dataCorr1d02s":
             weights = np.zeros(shape=[58])
-            weights[:3] = 1
-            weights[55:] = 1
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[55:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(tempData, weights=weights, axis=2),
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=2, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -693,10 +706,11 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 onlyFeature = loadedCorrectFeature[0]
                 weights = np.zeros(shape=[32])
-                weights[:3] = 1
-                weights[29:] = 1
+                weights[:3] = [0.25, 0.5, 0.25]
+                weights[29:] = [0.25, 0.5, 0.25]
                 createdFeature = [
-                    ndimage.correlate1d(onlyFeature, weights=weights, axis=2),
+                    ndimage.correlate1d(
+                        onlyFeature, weights=weights, axis=2, mode="wrap"),
                     featureNameSaved,
                 ]
             else:
@@ -708,10 +722,11 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 onlyFeature = loadedCorrectFeature[0]
                 weights = np.zeros(shape=[58])
-                weights[:3] = 1
-                weights[55:] = 1
+                weights[:3] = [0.25, 0.5, 0.25]
+                weights[55:] = [0.25, 0.5, 0.25]
                 createdFeature = [
-                    ndimage.correlate1d(onlyFeature, weights=weights, axis=2),
+                    ndimage.correlate1d(
+                        onlyFeature, weights=weights, axis=2, mode="wrap"),
                     featureNameSaved,
                 ]
             else:
@@ -723,10 +738,27 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 onlyFeature = loadedCorrectFeature[0]
                 weights = np.zeros(shape=[20])
-                weights[:3] = 1
-                weights[16:] = 1
+                weights[:3] = [0.25, 0.5, 0.25]
+                weights[17:] = [0.25, 0.5, 0.25]
                 createdFeature = [
-                    ndimage.correlate1d(onlyFeature, weights=weights, axis=2),
+                    ndimage.correlate1d(
+                        onlyFeature, weights=weights, axis=2, mode="wrap"),
+                    featureNameSaved,
+                ]
+            else:
+                return None
+
+        if featureName == "iFFTdataCorr2ax1d005s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
+                weights = np.zeros(shape=[20])
+                weights[:3] = [0.25, 0.5, 0.25]
+                weights[17:] = [0.25, 0.5, 0.25]
+                createdFeature = [
+                    ndimage.correlate1d(
+                        onlyFeature, weights=weights, axis=1, mode="wrap"),
                     featureNameSaved,
                 ]
             else:
@@ -1075,6 +1107,16 @@ class featureEClass:
                     featureName = "iFFTdataCorr1d02s-BC"
                 if fNr == 30:
                     featureName = "iFFTdataCorr1d005s-BC"
+                if fNr == 31:
+                    featureName = "dataCorr1d01sBC"
+                if fNr == 32:
+                    featureName = "dataCorr1d02sBC"
+                if fNr == 33:
+                    featureName = "dataCorr2ax1d"
+                if fNr == 34:
+                    featureName = "iFFTdataCorr2ax1d005s-BC"
+                if fNr == 35:
+                    featureName = "dataCorr2ax1dBC"
 
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:
