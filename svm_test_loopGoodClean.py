@@ -14,7 +14,7 @@ import cProfile
 import pstats
 import io
 import time
-
+from numpy import float32
 import glob
 import os
 import dask
@@ -191,27 +191,42 @@ def delayedAnovaPart(
         # be used in this way: Send in featurename as well. Return goodData and featureName.
         # Use this to save it correctly afterwards
         # So return will be two things. List of names/subject, and list of goodData arrays.
-        printProcess(f"subj{subject}output", time.clock())
-        # Create a corrcoef matrix of the features, comparing them to one another
-        corrMat = np.corrcoef(goodfeature)
-        goodfeature = None
-        printProcess(f"subj{subject}output", time.clock())
 
-        printProcess(f"subj{subject}output", corrMat.shape)
+        # Reducing size of array before creating cov.
+        # from numpy.core import defchararray as np_f
+        # from numpy import int8
+        # goodfeature = np.array(goodfeature, dtype=float16)
+        # maxPow =int(np.log10(np.max(goodfeature)))
+        # goodfeature = np.round(goodfeature, maxPow+4)
+        # goodfeatureStr = np.array(goodfeature, dtype=str)
+        # goodfeatureStr = np_f.replace(goodfeatureStr, ".","")
+        # goodfeature= np.array(goodfeatureStr,dtype=int8)
 
-        # Keep only everything above diagonal
-        halfCorrMat = np.triu(corrMat, 1)
-
-        corrMat = None
-        # Create list of all features that are too correlated, except one of the features ( the one with lower index)
-        deleteIndexes = np.where(halfCorrMat > uniqueThresh)[1]
-        halfCorrMat = None
+        # if goodfeature.shape[0] > 2:
 
         printProcess(
             f"subj{subject}output",
             f"{np.count_nonzero(goodData)} good Features \
                             before covRemoval:{uniqueThresh}in {featureName}",
         )
+        printProcess(f"subj{subject}output", time.process_time())
+        # Create a corrcoef matrix of the features, comparing them to one another
+
+        corrMat = np.corrcoef(goodfeature, dtype=float32)
+        # corrMat = np.array(corrMat, dtype=float16)
+        goodfeature = None
+        printProcess(f"subj{subject}output", time.process_time())
+
+        printProcess(f"subj{subject}output", corrMat.shape)
+
+        # Keep only everything above diagonal
+        halfCorrMat = np.triu(corrMat, 1)
+        halfCorrMat = np.array(halfCorrMat, dtype=float32)
+        corrMat = None
+        # Create list of all features that are too correlated, except one of the features ( the one with lower index)
+        deleteIndexes = np.where(halfCorrMat > uniqueThresh)[1]
+        halfCorrMat = None
+
         # Delete these features from goodData mask
         goodData[indexList[deleteIndexes]] = 0
         printProcess(
@@ -275,11 +290,27 @@ def anovaTest(
             f_statistic, p_values = feature_selection.f_classif(
                 flatfeature, labels)
 
+            varSelect = feature_selection.VarianceThreshold(0.01)
+            varSelect.fit(flatfeature)
+            varMask = varSelect.get_support()
+            # goodVarflatfeature = varSelect.transform(flatfeature)
+            printProcess(f"subj{subject}output",
+                         f"varMask Nonzero amount {np.count_nonzero(varMask)}")
+
             # Create a mask of features with P values below threshold
             p_values[p_values > significanceThreshold] = 0
             p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
 
-            goodData = f_statistic * p_values
+            goodData = f_statistic * p_values * varMask
+
+            remainingNrOfFeatures = np.count_nonzero(goodData)
+            if remainingNrOfFeatures > 12000:
+                ratioKeep = int(12000 / len(goodData) * 100)
+                bestPercentile = feature_selection.SelectPercentile(
+                    feature_selection.f_classif, percentile=ratioKeep)
+                bestPercentile.fit(flatfeature, labels)
+                goodData = bestPercentile.get_support() * 1
+
             f_statistic = None
             p_values = None
             if "CV" in featureName:
@@ -431,8 +462,8 @@ def createChunkFeatures(
     t_max = 3
     sampling_rate = 256
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
-    badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 19, 21, 22,
-                   23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+    badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 18, 19, 22,
+                   23, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
 
     # What chunk features that are created and tested
     featureList = [
@@ -461,11 +492,18 @@ def createChunkFeatures(
         False,  # dataGCV2-BC 23 With more channels. Only useful for chunks
         True,  # dataCorrBC 24
         False,  # 25 invFFT
-        False,  # 26 realfftData
-        False,  # 27 imfftDataBCBC
-        False,  # 28 realfftDataBCBC
-        False,  # 29 inverseFFT-BC
-        False,  # 30 inverseFFTCV-BC
+        False,  # 26 dataCorr1d01s"
+        False,  # 27 "dataCorr1d02s"
+        False,  # 28 "iFFTdataCorr1d01s-BC"
+        False,  # 29 "iFFTdataCorr1d02s-BC"
+        False,  # 30 "iFFTdataCorr1d005s-BC"
+        False,  # 31 dataCorr1d01sBC
+        False,  # 32 dataCorr1d02sBC
+        False,  # 33 dataCorr2ax1d
+        False,  # 34 iFFTdataCorr2ax1d005s-BC
+        False,  # 35 dataCorr2ax1dBC
+        False,  # 36 inverseFFTCV-BC
+
         # More to be added
     ]
 
@@ -587,6 +625,7 @@ def main():
     signAll = True
     # 0.1 seems best, 0.05 a little faster
     # if useSepSubFS then this is also used for them
+    # If set to 1. Then it is basically not used. All features allowed through.
     globalSignificanceThreshold = 0.05
     useSepSubjFS = False  # Does not seem to help at all.
     # Not noticably. And seems slower
@@ -599,7 +638,7 @@ def main():
     soloSignificanceThreshold = 0.005  # Not really used anymore!
     useAda = False  # For 1 feauture combo amount actually hurts.
     userndF = False  # For 1 feauture combo amount actually hurts.
-    useMLP = True  # For 1 feauture combo amount actually hurts
+    useMLP = False  # For 1 feauture combo amount actually hurts
 
     onlyUniqueFeatures = True
     uniqueThresh = 0.8
@@ -609,16 +648,16 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "mlp3"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{81}{repetitionName}"
-    maxCombinationAmount = 4
+    repetitionName = "udrli3withAnovabothBCKinds"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{91}{repetitionName}"
+    maxCombinationAmount = 2
     chunkFeatures = True
     chunkAmount = 3
     quickTest = True  # For testing best Feature. Works well enough
     # Run test using all features except "BadFeatures"
     useAllFeatures = True
     badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 21,
-                   22, 23, 26, 27]  # 26, 27, 28, 29, 30, 31, 32
+                   22, 23, 26, 27, 33, 37, 39, 41, 43, 45, 47, 49]  # 26, 27, 28, 29, 30, 31, 32
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     #                16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30]
     # Using numbering in list below
@@ -626,12 +665,12 @@ def main():
     # Settings when using running a loop to create all features.
     onlyCreateFeatures = False
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 6  # Multiplied by nrFCOT, First features to start creating
+    featIndex = 2  # Multiplied by nrFCOT, First features to start creating
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
     useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top3udrlv.npy"
+    bestFeaturesSaveFile = "top2udrli.npy"
     bestFeatures = np.load(
         f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
@@ -649,10 +688,10 @@ def main():
     # paradigm = paradigmSetting.upDownInnerSpecialPlot()
     # paradigm = paradigmSetting.upDownInnerSpecialTest2()
     # paradigm = paradigmSetting.upDownVisSpecialPlot()
-    paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
+    # paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
     # paradigm = paradigmSetting.rightLeftInnerSpecialPlot()
     # paradigm = paradigmSetting.rightLeftVisSpecialPlot()
-
+    paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
     # What features that are created and tested
     featureList = [
         False,  # FFT 1
@@ -688,9 +727,24 @@ def main():
         False,  # 30 iFFTdataCorr1d005s-BC
         False,  # 31 dataCorr1d01sBC
         False,  # 32 dataCorr1d02sBC
-        False,  # 33 dataCorr2ax1d
-        False,  # 34 iFFTdataCorr2ax1d005s-BC
+        False,  # 33 dataCorr2ax1d #
+        False,  # 34 iFFTdataCorr2ax1d005s-BC       Try all of these , with new iFFTdata
         False,  # 35 dataCorr2ax1dBC
+        False,  # 36 inverseFFTCV-BC
+        False,  # 37 anglefftData
+        False,  # 38 anglefftDataBC
+        False,  # 39 2dataCorr2ax1d
+        False,  # 40 2dataCorr2ax1dBC
+        False,  # 41 3dataCorr2ax1d
+        False,  # 42 3dataCorr2ax1dBC
+        False,  # 43 4dataCorr2ax1d
+        False,  # 44 4dataCorr2ax1dBC
+        False,  # 45 5dataCorr2ax1d
+        False,  # 46 5dataCorr2ax1dBC
+        False,  # 47 6dataCorr2ax1d
+        False,  # 48 6dataCorr2ax1dBC
+        False,  # 49 05dataCorr2ax1d
+        False,  # 50 05dataCorr2ax1dBC
 
         # True,  # FFT BC IFFT 24
         # More to be added
@@ -747,6 +801,21 @@ def main():
                 # featureList[21] = True  # 22
                 # featureList[20] = False  # 21 Not okay for chunks
                 featureList[18] = False  # 19 Not okay for chunks
+                # featureList[25] = False  # 26
+                # featureList[26] = False  # 27
+                featureList[27] = False  # 28
+                featureList[28] = False  # 29
+                featureList[29] = False  # 30
+                featureList[30] = False  # 31
+                featureList[31] = False  # 32
+                featureList[32] = False  # 33
+                featureList[33] = False  # 34
+                featureList[34] = False  # 35
+                featureList[35] = False  # 36
+                featureList[36] = False  # 37
+                featureList[37] = False  # 38
+                featureList[38] = False  # 39
+                featureList[39] = False  # 40
 
             print(featureList)
             onlyCreateFeaturesFunction(
@@ -772,7 +841,7 @@ def main():
 
         # If Chunkfeatures, run create again but for non Chunk features
         if chunkFeatures:
-            featIndex = 0
+            featIndex = featIndex
             chunkFeatures = False  # Turn it off to create None chunk features as well
             while True:
 
@@ -790,28 +859,44 @@ def main():
                     featIndex * nrFCOT: (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
-
-                    featureList[3] = False  # 4
-                    featureList[4] = False  # 5
-                    featureList[5] = False  # 6
-                    featureList[6] = False  # 7
-                    featureList[7] = False  # 8
-                    featureList[9] = False  # 10
-                    featureList[21] = False  # 22
-                    featureList[22] = False  # 23
-                    # featureList[24] = False  # 25
-                    featureList[25] = False  # 26
-                    featureList[26] = False  # 27
+                featureList[3] = False  # 4
+                featureList[4] = False  # 5
+                featureList[5] = False  # 6
+                featureList[6] = False  # 7
+                featureList[7] = False  # 8
+                featureList[9] = False  # 10
+                featureList[21] = False  # 22
+                featureList[22] = False  # 23
+                # featureList[24] = False  # 25
+                # featureList[25] = False  # 26
+                # featureList[26] = False  # 27
+                # featureList[27] = False  # 28
+                # featureList[28] = False  # 29
+                # featureList[29] = False  # 30
+                # featureList[30] = False  # 31
+                # featureList[31] = False  # 32
+                if chunkFeatures:
+                    # featureList[21] = True  # 22
+                    # featureList[20] = False  # 21 Not okay for chunks
+                    featureList[18] = False  # 19 Not okay for chunks
+                    # featureList[25] = False  # 26
+                    # featureList[26] = False  # 27
                     featureList[27] = False  # 28
                     featureList[28] = False  # 29
                     featureList[29] = False  # 30
-                    if chunkFeatures:
-                        # featureList[21] = True  # 22
-                        # featureList[20] = False  # 21 Not okay for chunks
-                        featureList[18] = False  # 19 Not okay for chunks
+                    featureList[30] = False  # 31
+                    featureList[31] = False  # 32
+                    featureList[32] = False  # 33
+                    featureList[33] = False  # 34
+                    featureList[34] = False  # 35
+                    featureList[35] = False  # 36
+                    featureList[36] = False  # 37
+                    featureList[37] = False  # 38
+                    featureList[38] = False  # 39
+                    featureList[39] = False  # 40
 
                 print(featureList)
-                onlyCreateFeaturesFunction(
+                a, b, c = onlyCreateFeaturesFunction(
                     subjects,
                     paradigm,
                     signAll,
@@ -829,6 +914,9 @@ def main():
                     featureList,
                     useSepSubjFS,
                 )
+                del a
+                del b
+                del c
 
                 featIndex = featIndex + 1
                 # print(feature)
@@ -998,9 +1086,10 @@ def main():
             fClassDict[f"{sub}"].extendFeatureList(
                 fClassDict2[f"{sub}"].getFeatureList()
             )
-            fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-                fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-            )
+            if signAll:
+                fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
+                    fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                )
 
     # A for loop just running all subjects using different seeds for train/data split
     for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
@@ -1040,7 +1129,6 @@ def main():
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
                 )
-
             allResultsPerSubject = []
             # For loop of each combination of features
             # Training a SVM using each one and then saving the result
@@ -1193,7 +1281,7 @@ def onlyCreateFeaturesFunction(
             allSubjFListList = []
             allSubjFLabelsList = []
             subjectsThatNeedFSelect = []
-        for sub in subjects[:4]:
+        for sub in subjects:
 
             if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
                 if useSepSubjFS:
@@ -1245,57 +1333,59 @@ def onlyCreateFeaturesFunction(
             # print(compute3)
             goodFeatureMaskListList = dask.compute(compute3)
 
-        for sub in subjects[4:]:
+        # for sub in subjects[4:]:
 
-            if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
-                if useSepSubjFS:
-                    print("fSelectSepSub Place Used here")
-                    fSelectUsingSepSubjects(
-                        fClassDict,
-                        globalSignificanceThreshold,
-                        onlyUniqueFeatures,
-                        uniqueThresh,
-                        paradigm[0],
-                        subjects,
-                    )
-                    break
-                else:
-                    allSubjFList, allSubjFLabels = combineAllSubjects(
-                        fClassDict, subjectLeftOut=sub, onlyTrain=False
-                    )
+        #     if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
+        #         if useSepSubjFS:
+        #             print("fSelectSepSub Place Used here")
+        #             fSelectUsingSepSubjects(
+        #                 fClassDict,
+        #                 globalSignificanceThreshold,
+        #                 onlyUniqueFeatures,
+        #                 uniqueThresh,
+        #                 paradigm[0],
+        #                 subjects,
+        #             )
+        #             break
+        #         else:
+        #             allSubjFList, allSubjFLabels = combineAllSubjects(
+        #                 fClassDict, subjectLeftOut=sub, onlyTrain=False
+        #             )
 
-                    # add allSubjFlist and Labels to list
-                    allSubjFLabelsList.append(allSubjFLabels)
-                    allSubjFListList.append(allSubjFList)
-                    subjectsThatNeedFSelect.append(sub)
+        #             # add allSubjFlist and Labels to list
+        #             allSubjFLabelsList.append(allSubjFLabels)
+        #             allSubjFListList.append(allSubjFList)
+        #             subjectsThatNeedFSelect.append(sub)
 
-            else:
+        #     else:
 
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+        #         print(
+        #             f"Feature Mask Already exist for all Features for subject {sub}")
 
-        if useSepSubjFS is not True:
-            goodFeatureMaskListList = []
-            for subj, features, labels in zip(
-                subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
-            ):
+        # if useSepSubjFS is not True:
+        #     goodFeatureMaskListList = []
+        #     for subj, features, labels in zip(
+        #         subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
+        #     ):
 
-                # Maybe dp before here
-                goodFeatureMaskList = anovaTest(
-                    features,
-                    labels,
-                    globalSignificanceThreshold,
-                    onlyUniqueFeatures,
-                    uniqueThresh,
-                    paradigm[0],
-                    subj,
-                )
+        #         # Maybe dp before here
+        #         goodFeatureMaskList = anovaTest(
+        #             features,
+        #             labels,
+        #             globalSignificanceThreshold,
+        #             onlyUniqueFeatures,
+        #             uniqueThresh,
+        #             paradigm[0],
+        #             subj,
+        #         )
 
-                goodFeatureMaskListList.append(goodFeatureMaskList)
+        #         goodFeatureMaskListList.append(goodFeatureMaskList)
 
-            compute3 = dask.compute(goodFeatureMaskListList)
-            # print(compute3)
-            goodFeatureMaskListList = dask.compute(compute3)
+        #     compute3 = dask.compute(goodFeatureMaskListList)
+        #     # print(compute3)
+        #     goodFeatureMaskListList = dask.compute(compute3)
+
+    return fClassDict, fmetDict, bClassDict
 
 
 if __name__ == "__main__":

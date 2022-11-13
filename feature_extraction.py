@@ -252,9 +252,9 @@ class featureEClass:
                 row = np.where(bestFeatures == feature[1])[0]
                 if maxCombinationAmount > 2:
                     column = np.where(bestFeatures == feature[1])[1]
-                    namesAndIndexBestFeatures[row, column] = index
+                    namesAndIndexBestFeatures[row, column] = int(index)
                 else:
-                    namesAndIndexBestFeatures[row] = index
+                    namesAndIndexBestFeatures[row] = int(index)
 
         # create All combinations of bestFeatures, dvs bara dem
         # Sen ta all combinations, of them and all other values
@@ -262,34 +262,42 @@ class featureEClass:
         if useBestFeaturesTest:
             maxCombinationAmount = maxCombinationAmount - bestFeatures.shape[1]
 
-        # print(maxCombinationAmount)
+        if maxCombinationAmount < 1:
+            for row in namesAndIndexBestFeatures:
+                combos.append(np.array(row))
+        else:
+            # print(maxCombinationAmount)
 
-        # print(maxCombinationAmount)
-        if maxCombinationAmount > len(dataNrs):
-            maxCombinationAmount = len(dataNrs)
-        for L in range(1, maxCombinationAmount + 1):
-            for subsetNr in itertools.combinations(dataNrs, L):
-                if useBestFeaturesTest:
-                    for row in namesAndIndexBestFeatures:
-                        # print(
-                        #     np.array(
-                        #         np.concatenate(
-                        #             [np.array(row), cp(subsetNr)], axis=0),
-                        #         dtype=int,
-                        #     )
-                        # )
-                        combos.append(
-                            np.array(
-                                np.concatenate(
-                                    [np.array(row), cp(subsetNr)], axis=0),
-                                dtype=int,
+            # print(maxCombinationAmount)
+            if maxCombinationAmount > len(dataNrs):
+                maxCombinationAmount = len(dataNrs)
+            for L in range(1, maxCombinationAmount + 1):
+                for subsetNr in itertools.combinations(dataNrs, L):
+                    if useBestFeaturesTest:
+                        for row in namesAndIndexBestFeatures:
+                            # print(
+                            #     np.array(
+                            #         np.concatenate(
+                            #             [np.array(row), cp(subsetNr)], axis=0),
+                            #         dtype=int,
+                            #     )
+                            # )
+                            combos.append(
+                                np.array(
+                                    np.concatenate(
+                                        [np.array(row), cp(subsetNr)], axis=0),
+                                    dtype=int,
+                                )
                             )
-                        )
-                else:
-                    combos.append(cp(subsetNr))
+                    else:
+                        combos.append(cp(subsetNr))
 
         print(f"Nr of combinations = {len(combos)}")
+        # print(combos)
+        if maxCombinationAmount < 1:
+            combos = np.array(combos, dtype=int)
         combos = np.array(combos, dtype=object)
+        # print(combos)
         # import re
         # print(combos)
         # print("oka")
@@ -536,6 +544,9 @@ class featureEClass:
         ]  # dataFFTCV
         return createdFeature
 
+    # TODO: Add derivative feature. First, second
+    # Then derivate CV
+    # Then either BC after first or second step.
     def createFeature(self, featureName, tempData):
         noReshape = False
         createdFeature = None
@@ -550,7 +561,10 @@ class featureEClass:
         if featureName == "fftData":
             absFFT, angleFFT = ut.fftData2(tempData)
             createdFeature = [absFFT, featureNameSaved]
-            self.saveFeatures(f"angle{featureNameSaved}", angleFFT)
+            self.saveFeatures(f"angle{featureNameSaved}", [
+                angleFFT,
+                f"angle{featureNameSaved}",
+            ])
 
         if featureName == "inverseFFT-BC":
             if self.chunk:
@@ -559,7 +573,7 @@ class featureEClass:
                     f"fftDatacn{self.chunkAmount}BC"
                 )
                 loadedFFTAngle = self.loadFeatures(
-                    f"anglefftDatacn{self.chunkAmount}"
+                    f"anglefftDatacn{self.chunkAmount}BC"
                 )
 
             else:
@@ -567,13 +581,14 @@ class featureEClass:
                     "fftDataBC"
                 )
                 loadedFFTAngle = self.loadFeatures(
-                    "anglefftData"
+                    "anglefftDataBC"
                 )
             if loadedFFTBC is not None and loadedFFTAngle is not None:
 
                 fftdata = loadedFFTBC[0]
+                fftangledata = loadedFFTAngle[0]
                 createdFeature = [
-                    np.array(ut.ifftData(fftdata, loadedFFTAngle)),
+                    np.array(ut.ifftData(fftdata, fftangledata)),
                     featureNameSaved,
                 ]
             else:
@@ -670,7 +685,7 @@ class featureEClass:
                 featureNameSaved,
             ]
 
-        if featureName == "dataCorr2ax1d":
+        if featureName == "1dataCorr2ax1d":
             weights = np.zeros(shape=[20])
             weights[:3] = [0.25, 0.5, 0.25]
             weights[17:] = [0.25, 0.5, 0.25]
@@ -680,15 +695,89 @@ class featureEClass:
                 featureNameSaved,
             ]
 
-        if featureName == "dataCorr2ax1dtwo":
-            weights = np.zeros(shape=[32])
+        if featureName == "05dataCorr2ax1d":
+            channelHop = 7
+            weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[29:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
             createdFeature = [
                 ndimage.correlate1d(
                     tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
+
+        if featureName == "2dataCorr2ax1d":
+            channelHop = 30
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "3dataCorr2ax1d":
+            channelHop = 50
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "4dataCorr2ax1d":
+            channelHop = 70
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+        if featureName == "5dataCorr2ax1d":
+            channelHop = 90
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+        if featureName == "6dataCorr2ax1d":
+            channelHop = 110
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(
+                    tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        # if featureName == "dataCorr2ax1dall":
+        #     firstOne = True
+        #     for channelHop in [30, 70, 90]:  # 5,  10, 50,  20, 40, 60, 80, 100
+
+        #         weights = np.zeros(shape=[3 + channelHop + 3])
+        #         weights[:3] = [0.25, 0.5, 0.25]
+        #         weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+        #         if firstOne:
+        #             allHops = ndimage.correlate1d(
+        #                 tempData, weights=weights, axis=1, mode="wrap")
+        #             firstOne = False
+        #         else:
+        #             allHops = np.concatenate([allHops, ndimage.correlate1d(
+        #                 tempData, weights=weights, axis=1, mode="wrap")], axis=1)
+
+        #         createdFeature = [
+        #             allHops,
+        #             featureNameSaved,
+        #         ]
 
         if featureName == "dataCorr2ax1dthree":
             weights = np.zeros(shape=[58])
@@ -889,6 +978,26 @@ class featureEClass:
             else:
                 return None
 
+        if featureName == "inverseFFTCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"inverseFFT{self.chunkAmount}-BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+            if loadedCorrectFeature is not None:
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved)
+                else:
+                    ifftdata = loadedCorrectFeature[0]
+                    createdFeature = [
+                        np.array(ut.fftCovariance(ifftdata)),
+                        featureNameSaved,
+                    ]  # dataFFTCV
+            else:
+                return None
         if featureName == "dataGCV2-BC":
             if self.chunk:
                 noReshape = True
@@ -924,31 +1033,6 @@ class featureEClass:
                 ndimage.gaussian_filter1d(tempData, 5, axis=2),
                 featureNameSaved,
             ]
-
-        if featureName == "FFT-BC-IFFT":
-            if self.chunk:
-                pass
-
-                # TODO, fix this in Util
-                # noReshape = True
-                # loadedCorrectFeature = self.loadFeatures(
-                #     f"gaussianDatacn{self.chunkAmount}BC"
-                # )
-
-                # if loadedCorrectFeature is not None:
-                #     loadedCorrectFeature[0] = np.reshape(
-                #         loadedCorrectFeature[0],
-                #         [
-                #             loadedCorrectFeature[0].shape[0],
-                #             -1,
-                #             int(loadedCorrectFeature[0].shape[2] /
-                #                 self.chunkAmount),
-                #         ],
-                #     )
-            else:
-                loadedFFTBC = self.loadFeatures("fftDataBC")
-                loadedOrigData = tempData
-                ut.ifftData(loadedFFTBC, loadedOrigData)
 
         if self.chunk:
             if noReshape is False:
@@ -1105,6 +1189,7 @@ class featureEClass:
                 if fNr == 21:
                     featureName = "dataGCV-BC"
 
+                # TODO: ADD BOTH KINDS OF BC. It exists. Just use it!
                 if fNr == 22:
                     featureName = "dataFFTCV2-BC"
 
@@ -1132,11 +1217,45 @@ class featureEClass:
                 if fNr == 32:
                     featureName = "dataCorr1d02sBC"
                 if fNr == 33:
-                    featureName = "dataCorr2ax1d"
+                    featureName = "1dataCorr2ax1d"
                 if fNr == 34:
                     featureName = "iFFTdataCorr2ax1d005s-BC"
                 if fNr == 35:
-                    featureName = "dataCorr2ax1dBC"
+                    featureName = "1dataCorr2ax1dBC"
+                if fNr == 36:
+                    featureName = "inverseFFTCV-BC"
+                if fNr == 37:
+                    featureName = "anglefftData"
+                if fNr == 38:
+                    featureName = "anglefftDataBC"
+                if fNr == 39:
+                    featureName = "2dataCorr2ax1d"
+                if fNr == 40:
+                    featureName = "2dataCorr2ax1dBC"
+                if fNr == 41:
+                    featureName = "3dataCorr2ax1d"
+                if fNr == 42:
+                    featureName = "3dataCorr2ax1dBC"
+                if fNr == 43:
+                    featureName = "4dataCorr2ax1d"
+                if fNr == 44:
+                    featureName = "4dataCorr2ax1dBC"
+                if fNr == 45:
+                    featureName = "5dataCorr2ax1d"
+                if fNr == 46:
+                    featureName = "5dataCorr2ax1dBC"
+                if fNr == 47:
+                    featureName = "6dataCorr2ax1d"
+                if fNr == 48:
+                    featureName = "6dataCorr2ax1dBC"
+                if fNr == 49:
+                    featureName = "05dataCorr2ax1d"
+                if fNr == 50:
+                    featureName = "05dataCorr2ax1dBC"
+                # if fNr == 39:
+                #     featureName = "dataCorr2ax1dall"
+                # if fNr == 40:
+                #     featureName = "dataCorr2ax1dallBC"
 
                 if self.chunk:
                     if "BC" in featureName and "-BC" not in featureName:

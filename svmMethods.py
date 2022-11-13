@@ -192,7 +192,6 @@ class SvmMets:
         name,
         kernels=["linear", "rbf", "sigmoid"],
     ):
-
         scaler = StandardScaler()
         scaler = scaler.fit(data_train)
 

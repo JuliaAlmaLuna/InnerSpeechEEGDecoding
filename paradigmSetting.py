@@ -43,6 +43,21 @@ def upDownRightLeftInnerSpecial2():
     )
 
 
+def upDownRightLeftInnerSpecialPlot():
+    return (
+        "iiiiudrlspecplot",
+        [
+            [["Inner"], ["Inner"], ["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+                ["Right"],
+                ["Left"],
+            ],
+        ],
+    )
+
+
 # Try combiningWitInner?
 def upDownRightLeftVis():
     return (
