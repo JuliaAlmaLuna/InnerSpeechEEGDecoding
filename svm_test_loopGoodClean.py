@@ -649,8 +649,8 @@ def main():
     # Name for this test, what it is saved as
     validationRepetition = True
     repetitionName = "udrli3withAnovabothBCKinds"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{91}{repetitionName}"
-    maxCombinationAmount = 2
+    repetitionValue = f"{92}{repetitionName}"
+    maxCombinationAmount = 3
     chunkFeatures = True
     chunkAmount = 3
     quickTest = True  # For testing best Feature. Works well enough
