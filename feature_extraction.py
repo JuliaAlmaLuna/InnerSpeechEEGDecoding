@@ -74,8 +74,7 @@ class featureEClass:
         ):
             # print(feature[1])
             # print(feature[0].shape)
-            maskedFeature[0] = self.onlySignData(
-                feature=feature[0], goodData=mask)
+            maskedFeature[0] = self.onlySignData(feature=feature[0], goodData=mask)
             if maskedFeature[0] is not None:
                 cleanMaskedFeatureList.append(maskedFeature)
 
@@ -239,8 +238,7 @@ class featureEClass:
         combos = []
 
         namesAndIndex = np.array([len(featureList), 2], dtype=object)
-        namesAndIndexBestFeatures = np.zeros(
-            np.array(bestFeatures, dtype=object).shape)
+        namesAndIndexBestFeatures = np.zeros(np.array(bestFeatures, dtype=object).shape)
         bestFeatures = np.array(bestFeatures, dtype=object)
         # print(bestFeatures.shape)
         for index, feature in enumerate(featureList, 0):
@@ -285,7 +283,8 @@ class featureEClass:
                             combos.append(
                                 np.array(
                                     np.concatenate(
-                                        [np.array(row), cp(subsetNr)], axis=0),
+                                        [np.array(row), cp(subsetNr)], axis=0
+                                    ),
                                     dtype=int,
                                 )
                             )
@@ -464,10 +463,10 @@ class featureEClass:
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
 
-        data_train = data_s[order[0: int(labels_s.shape[0] * 0.8)]]
-        data_test = data_s[order[int(labels_s.shape[0] * 0.8):]]
-        labels_train = labels_s[order[0: int(labels_s.shape[0] * 0.8)]]
-        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8):]]
+        data_train = data_s[order[0 : int(labels_s.shape[0] * 0.8)]]
+        data_test = data_s[order[int(labels_s.shape[0] * 0.8) :]]
+        labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
+        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
 
         return data_train, data_test, labels_train, labels_test, name  # , gdData
 
@@ -523,17 +522,18 @@ class featureEClass:
             loadedCorrectFeature[0],
             [
                 loadedCorrectFeature[0].shape[0],
-                loadedCorrectFeature[0].shape[1] *
-                self.chunkAmount,
-                -1
+                loadedCorrectFeature[0].shape[1] * self.chunkAmount,
+                -1,
             ],
         )
         from math import ceil
+
         covSplitList = []
         onlyFeature = loadedCorrectFeature[0]
         for splitNr in range(int(ceil(self.chunkAmount / 2))):
-            splitFeature = onlyFeature[:, splitNr::(
-                int(ceil(self.chunkAmount / 2))), :]  # Split Channels
+            splitFeature = onlyFeature[
+                :, splitNr :: (int(ceil(self.chunkAmount / 2))), :
+            ]  # Split Channels
             covSplitList.append(ut.fftCovariance(splitFeature))
             # covSplits.append(splitFeature)
 
@@ -561,28 +561,23 @@ class featureEClass:
         if featureName == "fftData":
             absFFT, angleFFT = ut.fftData2(tempData)
             createdFeature = [absFFT, featureNameSaved]
-            self.saveFeatures(f"angle{featureNameSaved}", [
-                angleFFT,
+            self.saveFeatures(
                 f"angle{featureNameSaved}",
-            ])
+                [
+                    angleFFT,
+                    f"angle{featureNameSaved}",
+                ],
+            )
 
         if featureName == "inverseFFT-BC":
             if self.chunk:
                 # noReshape = True
-                loadedFFTBC = self.loadFeatures(
-                    f"fftDatacn{self.chunkAmount}BC"
-                )
-                loadedFFTAngle = self.loadFeatures(
-                    f"anglefftDatacn{self.chunkAmount}BC"
-                )
+                loadedFFTBC = self.loadFeatures(f"fftDatacn{self.chunkAmount}BC")
+                loadedFFTAngle = self.loadFeatures(f"anglefftDatacn{self.chunkAmount}")
 
             else:
-                loadedFFTBC = self.loadFeatures(
-                    "fftDataBC"
-                )
-                loadedFFTAngle = self.loadFeatures(
-                    "anglefftDataBC"
-                )
+                loadedFFTBC = self.loadFeatures("fftDataBC")
+                loadedFFTAngle = self.loadFeatures("anglefftData")
             if loadedFFTBC is not None and loadedFFTAngle is not None:
 
                 fftdata = loadedFFTBC[0]
@@ -680,8 +675,7 @@ class featureEClass:
             weights[:3] = [0.25, 0.5, 0.25]
             weights[17:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=2, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=2, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -690,8 +684,7 @@ class featureEClass:
             weights[:3] = [0.25, 0.5, 0.25]
             weights[17:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -699,10 +692,9 @@ class featureEClass:
             channelHop = 7
             weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -710,10 +702,9 @@ class featureEClass:
             channelHop = 30
             weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -721,10 +712,9 @@ class featureEClass:
             channelHop = 50
             weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -732,30 +722,27 @@ class featureEClass:
             channelHop = 70
             weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
         if featureName == "5dataCorr2ax1d":
             channelHop = 90
             weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
         if featureName == "6dataCorr2ax1d":
             channelHop = 110
             weights = np.zeros(shape=[3 + channelHop + 3])
             weights[:3] = [0.25, 0.5, 0.25]
-            weights[channelHop + 3:] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -784,8 +771,7 @@ class featureEClass:
             weights[:3] = [0.25, 0.5, 0.25]
             weights[55:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=1, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -794,8 +780,7 @@ class featureEClass:
             weights[:3] = [0.25, 0.5, 0.25]
             weights[29:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=2, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=2, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -804,8 +789,7 @@ class featureEClass:
             weights[:3] = [0.25, 0.5, 0.25]
             weights[55:] = [0.25, 0.5, 0.25]
             createdFeature = [
-                ndimage.correlate1d(
-                    tempData, weights=weights, axis=2, mode="wrap"),
+                ndimage.correlate1d(tempData, weights=weights, axis=2, mode="wrap"),
                 featureNameSaved,
             ]
 
@@ -819,7 +803,8 @@ class featureEClass:
                 weights[29:] = [0.25, 0.5, 0.25]
                 createdFeature = [
                     ndimage.correlate1d(
-                        onlyFeature, weights=weights, axis=2, mode="wrap"),
+                        onlyFeature, weights=weights, axis=2, mode="wrap"
+                    ),
                     featureNameSaved,
                 ]
             else:
@@ -835,7 +820,8 @@ class featureEClass:
                 weights[55:] = [0.25, 0.5, 0.25]
                 createdFeature = [
                     ndimage.correlate1d(
-                        onlyFeature, weights=weights, axis=2, mode="wrap"),
+                        onlyFeature, weights=weights, axis=2, mode="wrap"
+                    ),
                     featureNameSaved,
                 ]
             else:
@@ -851,7 +837,8 @@ class featureEClass:
                 weights[17:] = [0.25, 0.5, 0.25]
                 createdFeature = [
                     ndimage.correlate1d(
-                        onlyFeature, weights=weights, axis=2, mode="wrap"),
+                        onlyFeature, weights=weights, axis=2, mode="wrap"
+                    ),
                     featureNameSaved,
                 ]
             else:
@@ -867,7 +854,8 @@ class featureEClass:
                 weights[17:] = [0.25, 0.5, 0.25]
                 createdFeature = [
                     ndimage.correlate1d(
-                        onlyFeature, weights=weights, axis=1, mode="wrap"),
+                        onlyFeature, weights=weights, axis=1, mode="wrap"
+                    ),
                     featureNameSaved,
                 ]
             else:
@@ -885,7 +873,8 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 if self.chunk:
                     createdFeature = self.chunkCovariance(
-                        loadedCorrectFeature, featureNameSaved)
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
 
                     fftdata = loadedCorrectFeature[0]
@@ -908,7 +897,8 @@ class featureEClass:
                     # Shape it so that each split has their own channels
                     # Send in loadedFeature and get back covariance but done with every 3rd/6th channel only
                     createdFeature = self.chunkCovariance(
-                        loadedCorrectFeature, featureNameSaved)
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
                     return None
             else:
@@ -926,7 +916,8 @@ class featureEClass:
 
                 if self.chunk:
                     createdFeature = self.chunkCovariance(
-                        loadedCorrectFeature, featureNameSaved)
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
                     welchdata = loadedCorrectFeature[0]
                     createdFeature = [
@@ -946,7 +937,8 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 if self.chunk:
                     createdFeature = self.chunkCovariance(
-                        loadedCorrectFeature, featureNameSaved)
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
                     dataHR = loadedCorrectFeature[0]
                     # dataHR = dataH.real
@@ -968,7 +960,8 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 if self.chunk:
                     createdFeature = self.chunkCovariance(
-                        loadedCorrectFeature, featureNameSaved)
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
                     gaussiandata = loadedCorrectFeature[0]
                     createdFeature = [
@@ -989,7 +982,8 @@ class featureEClass:
             if loadedCorrectFeature is not None:
                 if self.chunk:
                     createdFeature = self.chunkCovariance(
-                        loadedCorrectFeature, featureNameSaved)
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
                     ifftdata = loadedCorrectFeature[0]
                     createdFeature = [
@@ -1011,8 +1005,7 @@ class featureEClass:
                         [
                             loadedCorrectFeature[0].shape[0],
                             -1,
-                            int(loadedCorrectFeature[0].shape[2] /
-                                self.chunkAmount),
+                            int(loadedCorrectFeature[0].shape[2] / self.chunkAmount),
                         ],
                     )
             else:
@@ -1118,8 +1111,7 @@ class featureEClass:
             if self.chunk:
                 tempData = np.reshape(
                     tempData,
-                    (tempData.shape[0] * self.chunkAmount,
-                     tempData.shape[1], -1),
+                    (tempData.shape[0] * self.chunkAmount, tempData.shape[1], -1),
                 )
 
             if useFeature:
@@ -1281,8 +1273,7 @@ class featureEClass:
                                 )
                         else:
                             if "split" not in self.paradigmName:
-                                print(
-                                    f"FeatureNameCorrectedNotExist {featureName}")
+                                print(f"FeatureNameCorrectedNotExist {featureName}")
                         correctedExists = False
                         continue
                     else:
@@ -1333,7 +1324,7 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[0: int(self.labels.shape[0] * 0.8)]]
+            f[0] = f[0][self.order[0 : int(self.labels.shape[0] * 0.8)]]
 
         return tempFeatureList
 
@@ -1341,17 +1332,17 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
 
         for f in tempFeatureList:
-            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8):]]
+            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8) :]]
 
         return tempFeatureList
 
     def getTrainLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[0: int(self.labels.shape[0] * 0.8)]]
+        return tempLabels[self.order[0 : int(self.labels.shape[0] * 0.8)]]
 
     def getTestLabels(self):
         tempLabels = dp(self.labels)
-        return tempLabels[self.order[int(self.labels.shape[0] * 0.8):]]
+        return tempLabels[self.order[int(self.labels.shape[0] * 0.8) :]]
 
     def getLabels(self):
         tempLabels = dp(self.labels)
@@ -1368,8 +1359,7 @@ class featureEClass:
 
         for feature, mask in zip(self.getFeatureList(), goodFeatures):
 
-            self.saveAnovaMask(
-                feature[1], f"sign{self.globalSignificance}", mask)
+            self.saveAnovaMask(feature[1], f"sign{self.globalSignificance}", mask)
 
         self.globalGoodFeatureMask = goodFeatures
 
@@ -1390,8 +1380,7 @@ class featureEClass:
             # print("hola")
             for feature in self.getFeatureList():
                 if (
-                    self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
                     is None
                 ):
                     print(feature[1])
@@ -1401,8 +1390,7 @@ class featureEClass:
                     return None
 
                 goodFeatures.append(
-                    self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
                 )
 
             self.globalGoodFeatureMask = goodFeatures

@@ -66,7 +66,7 @@ def data_into_freq_buckets(data, nr_of_buckets, buckets):
             for b in range(nr_of_buckets):
                 ff_c = abs(rfft(channel)) * 1000
                 freqAmps[tr_nr, ch_nr, b] = np.sum(
-                    ff_c[int(buckets[b, 0]): int(buckets[b, 1])]
+                    ff_c[int(buckets[b, 0]) : int(buckets[b, 1])]
                 )
     return freqAmps
 
@@ -150,8 +150,7 @@ def fftData(data):
     fftData = np.zeros([data.shape[0], data.shape[1], data.shape[2] // 2])
     for tr_nr, trial in enumerate(data):
         for ch_nr, channel in enumerate(trial):
-            fftData[tr_nr, ch_nr, :] = abs(rfft(channel))[
-                : (channel.shape[0] // 2)]
+            fftData[tr_nr, ch_nr, :] = abs(rfft(channel))[: (channel.shape[0] // 2)]
     return fftData
 
 
@@ -163,13 +162,13 @@ def fftData2(data):
         for ch_nr, channel in enumerate(trial):
             # print(channel.shape[0])
             # print(channel.shape[0] // 2)
-            fftDataAbs[tr_nr, ch_nr, :] = abs(rfft(
-                channel))[: (channel.shape[0] // 2)]
+            fftDataAbs[tr_nr, ch_nr, :] = abs(rfft(channel))[: (channel.shape[0] // 2)]
             # print("julia1")
             # print(fftDataAbs)
             # print("julia2")
-            fftDataAngle[tr_nr, ch_nr, :] = np.angle(rfft(
-                channel))[: (channel.shape[0] // 2)]
+            fftDataAngle[tr_nr, ch_nr, :] = np.angle(rfft(channel))[
+                : (channel.shape[0] // 2)
+            ]
 
             # print(fftDataAngle)
             # print("julia3")
@@ -192,6 +191,7 @@ def shortTimefftData(data, windowLength, nperseg):
 # use complex(data, dataC.imag) to put them back together
 def ifftData(data, angle):
     import cmath
+
     # Compute fft inluding complex from orig data, the complex/phase part of this one needs to be kept.
     # Then add this complex part to fftDataBC, then do iFFT
     # from scipy import irfft
@@ -225,28 +225,18 @@ def welchData(data, nperseg, fs=256):
         for ch_nr, channel in enumerate(trial):
 
             welchData[tr_nr, ch_nr, :] = welch(channel, fs=fs, nperseg=nperseg)[1][
-                0: arSize
+                0:arSize
             ]
     return welchData
 
 
-def welchData2(data, nperseg, fs=256):
+def welchData3(data, nperseg, fs=256):
     from scipy.signal import welch
 
-    if nperseg < fs:
-        arSize = nperseg // 2
-    else:
-        arSize = fs // 2
-    welchData = np.zeros([data.shape[0], data.shape[1], arSize])
-    for tr_nr, trial in enumerate(data):
-        for ch_nr, channel in enumerate(trial):
-            welchData[tr_nr, ch_nr, :] = welch(
-                channel, fs=fs, nperseg=nperseg, scaling="spectrum"
-            )[1][0:arSize]
+    # could just be
+    welchData = welch(data, fs=fs, window="blackman")
+
     return welchData
-
-
-# Channel name array
 
 
 def arrToDict(arr):
@@ -288,8 +278,7 @@ def get_power_array(split_data, samplingRate, trialSplit=1, t_min=0, t_max=0.99)
 
     # trialSplit = 16
     sR = samplingRate  # samplingRate = 32
-    data_power = np.zeros(
-        [split_data.shape[0], split_data.shape[1], trialSplit, 2])
+    data_power = np.zeros([split_data.shape[0], split_data.shape[1], trialSplit, 2])
     for t, trial in enumerate(split_data, 0):
         for c, channel in enumerate(trial, 0):
             for x in range(trialSplit):

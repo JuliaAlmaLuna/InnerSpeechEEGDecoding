@@ -287,15 +287,16 @@ def anovaTest(
             flatfeature = scaler.transform(flatfeature)
 
             # Running the ANOVA Test
-            f_statistic, p_values = feature_selection.f_classif(
-                flatfeature, labels)
+            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
 
             varSelect = feature_selection.VarianceThreshold(0.01)
             varSelect.fit(flatfeature)
             varMask = varSelect.get_support()
             # goodVarflatfeature = varSelect.transform(flatfeature)
-            printProcess(f"subj{subject}output",
-                         f"varMask Nonzero amount {np.count_nonzero(varMask)}")
+            printProcess(
+                f"subj{subject}output",
+                f"varMask Nonzero amount {np.count_nonzero(varMask)}",
+            )
 
             # Create a mask of features with P values below threshold
             p_values[p_values > significanceThreshold] = 0
@@ -307,7 +308,8 @@ def anovaTest(
             if remainingNrOfFeatures > 12000:
                 ratioKeep = int(12000 / len(goodData) * 100)
                 bestPercentile = feature_selection.SelectPercentile(
-                    feature_selection.f_classif, percentile=ratioKeep)
+                    feature_selection.f_classif, percentile=ratioKeep
+                )
                 bestPercentile.fit(flatfeature, labels)
                 goodData = bestPercentile.get_support() * 1
 
@@ -462,8 +464,31 @@ def createChunkFeatures(
     t_max = 3
     sampling_rate = 256
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
-    badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 18, 19, 22,
-                   23, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+    badFeatures = [
+        1,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        18,
+        19,
+        20,
+        22,
+        23,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+    ]
 
     # What chunk features that are created and tested
     featureList = [
@@ -503,7 +528,6 @@ def createChunkFeatures(
         False,  # 34 iFFTdataCorr2ax1d005s-BC
         False,  # 35 dataCorr2ax1dBC
         False,  # 36 inverseFFTCV-BC
-
         # More to be added
     ]
 
@@ -648,16 +672,39 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrli3withAnovabothBCKinds"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{92}{repetitionName}"
-    maxCombinationAmount = 3
-    chunkFeatures = True
+    repetitionName = "udrli1feattestanglnoBC"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{99}{repetitionName}"
+    maxCombinationAmount = 1
+    chunkFeatures = False
     chunkAmount = 3
     quickTest = True  # For testing best Feature. Works well enough
     # Run test using all features except "BadFeatures"
     useAllFeatures = True
-    badFeatures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 21,
-                   22, 23, 26, 27, 33, 37, 39, 41, 43, 45, 47, 49]  # 26, 27, 28, 29, 30, 31, 32
+    badFeatures = [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        18,
+        21,
+        22,
+        23,
+        26,
+        27,
+        33,
+        37,
+        39,
+        40,
+        41,
+        43,
+        45,
+        47,
+        49,
+    ]  # 26, 27, 28, 29, 30, 31, 32
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
     #                16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30]
     # Using numbering in list below
@@ -665,14 +712,13 @@ def main():
     # Settings when using running a loop to create all features.
     onlyCreateFeatures = False
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 2  # Multiplied by nrFCOT, First features to start creating
+    featIndex = 7  # Multiplied by nrFCOT, First features to start creating
 
     # Best feature Combo allow in function only needs to done once! Then which combos that are okay
     # Can be saved. Like index of them.
-    useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top2udrli.npy"
-    bestFeatures = np.load(
-        f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+    useBestFeaturesTest = False
+    bestFeaturesSaveFile = "top4udrli.npy"
+    bestFeatures = np.load(f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
         print(bestFeatures)
         print(bestFeatures.shape)
@@ -745,7 +791,6 @@ def main():
         False,  # 48 6dataCorr2ax1dBC
         False,  # 49 05dataCorr2ax1d
         False,  # 50 05dataCorr2ax1dBC
-
         # True,  # FFT BC IFFT 24
         # More to be added
     ]
@@ -777,7 +822,7 @@ def main():
                 featIndex = len(featureList) - (nrFCOT + 1)
 
             for featureI in featureListIndex[
-                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                featIndex * nrFCOT : (featIndex + 1) * nrFCOT
             ]:
                 featureList[featureI] = True
 
@@ -856,7 +901,7 @@ def main():
                     featIndex = len(featureList) - (nrFCOT + 1)
 
                 for featureI in featureListIndex[
-                    featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                    featIndex * nrFCOT : (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
                 featureList[3] = False  # 4
@@ -1000,8 +1045,7 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correction")
+            print(f"Creating features for subject:{sub} after baseline correction")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1047,8 +1091,7 @@ def main():
                     subjectsThatNeedFSelect.append(sub)
 
             else:
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1149,8 +1192,7 @@ def main():
                 for data_train, data_test, labels_train, labels_test, name in mDataList
             )
 
-            savearray = np.array(
-                [seed, sub, allResultsPerSubject], dtype=object)
+            savearray = np.array([seed, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
@@ -1260,8 +1302,7 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correct")
+            print(f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1307,8 +1348,7 @@ def onlyCreateFeaturesFunction(
 
             else:
 
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
