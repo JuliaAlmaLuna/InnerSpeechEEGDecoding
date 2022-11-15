@@ -287,7 +287,8 @@ def anovaTest(
             flatfeature = scaler.transform(flatfeature)
 
             # Running the ANOVA Test
-            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
+            f_statistic, p_values = feature_selection.f_classif(
+                flatfeature, labels)
 
             varSelect = feature_selection.VarianceThreshold(0.01)
             varSelect.fit(flatfeature)
@@ -718,7 +719,8 @@ def main():
     # Can be saved. Like index of them.
     useBestFeaturesTest = False
     bestFeaturesSaveFile = "top4udrli.npy"
-    bestFeatures = np.load(f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+    bestFeatures = np.load(
+        f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
         print(bestFeatures)
         print(bestFeatures.shape)
@@ -803,8 +805,9 @@ def main():
     for ind, fea in enumerate(badFeatures):
         badFeatures[ind] = fea - 1
 
-    for ind, fea in enumerate(goodFeatures):
-        goodFeatures[ind] = fea - 1
+    for featureGroup in goodFeatures:
+        for ind, fea in enumerate(featureGroup):
+            goodFeatures[ind] = fea - 1
 
     print(badFeatures)
 
@@ -822,7 +825,7 @@ def main():
                 featIndex = len(featureList) - (nrFCOT + 1)
 
             for featureI in featureListIndex[
-                featIndex * nrFCOT : (featIndex + 1) * nrFCOT
+                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
             ]:
                 featureList[featureI] = True
 
@@ -901,7 +904,7 @@ def main():
                     featIndex = len(featureList) - (nrFCOT + 1)
 
                 for featureI in featureListIndex[
-                    featIndex * nrFCOT : (featIndex + 1) * nrFCOT
+                    featIndex * nrFCOT: (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
                 featureList[3] = False  # 4
@@ -1045,7 +1048,8 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(f"Creating features for subject:{sub} after baseline correction")
+            print(
+                f"Creating features for subject:{sub} after baseline correction")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1091,7 +1095,8 @@ def main():
                     subjectsThatNeedFSelect.append(sub)
 
             else:
-                print(f"Feature Mask Already exist for all Features for subject {sub}")
+                print(
+                    f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1192,7 +1197,8 @@ def main():
                 for data_train, data_test, labels_train, labels_test, name in mDataList
             )
 
-            savearray = np.array([seed, sub, allResultsPerSubject], dtype=object)
+            savearray = np.array(
+                [seed, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
@@ -1302,7 +1308,8 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(f"Creating features for subject:{sub} after baseline correct")
+            print(
+                f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1348,7 +1355,8 @@ def onlyCreateFeaturesFunction(
 
             else:
 
-                print(f"Feature Mask Already exist for all Features for subject {sub}")
+                print(
+                    f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
