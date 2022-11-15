@@ -5,7 +5,7 @@ from joblib import Parallel, delayed
 from copy import deepcopy as dp
 import numpy as np
 import feature_extraction as fclass
-from baselineBefore import baseLineCorrection
+from baselineClean import baseLineCorrection
 import svmMethods as svmMet
 from sklearn import feature_selection
 from sklearn.preprocessing import StandardScaler
@@ -252,8 +252,7 @@ def anovaTest(
             flatfeature = scaler.transform(flatfeature)
 
             # Running the ANOVA Test
-            f_statistic, p_values = feature_selection.f_classif(
-                flatfeature, labels)
+            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
 
             # Create a mask of features with P values below threshold
             p_values[p_values > significanceThreshold] = 0
@@ -460,8 +459,7 @@ def createChunkFeatures(
 
     # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 21, 22]
     # badFeatures = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 22, 23]
-    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19,
-                   21, 22, 23, 25, 26, 27, 28, 29, 30]
+    badFeatures = [4, 5, 6, 7, 8, 9, 10, 19, 21, 22, 23, 25, 26, 27, 28, 29, 30]
     # goodFeatures = []
 
     for ind, fea in enumerate(badFeatures):
@@ -585,8 +583,7 @@ def createChunkFeatures(
                         onlyUniqueFeatures=onlyUniqueFeatures,
                         uniqueThresh=uniqueThresh,
                     )
-                    fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(
-                        goodFeatureMaskList)
+                    fClassDict2[f"{sub}"].setGlobalGoodFeaturesMask(goodFeatureMaskList)
                 else:
                     goodFeatureMaskList = fClassDict2[
                         f"{sub}"
@@ -760,7 +757,7 @@ def main():
             print(len(featureList))
             print(featIndex)
             for featureI in featureListIndex[
-                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                featIndex * nrFCOT : (featIndex + 1) * nrFCOT
             ]:
                 featureList[featureI] = True
 
@@ -818,7 +815,7 @@ def main():
                 print(len(featureList))
                 print(featIndex)
                 for featureI in featureListIndex[
-                    featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                    featIndex * nrFCOT : (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
 
@@ -939,8 +936,7 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correction")
+            print(f"Creating features for subject:{sub} after baseline correction")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -993,8 +989,7 @@ def main():
                     subjectsThatNeedFSelect.append(sub)
 
             else:
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1148,8 +1143,7 @@ def main():
 
             #     allResultsPerSubject.append(allResults)
 
-            savearray = np.array(
-                [seed, sub, allResultsPerSubject], dtype=object)
+            savearray = np.array([seed, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
@@ -1261,8 +1255,7 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correct")
+            print(f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1315,8 +1308,7 @@ def onlyCreateFeaturesFunction(
 
             else:
 
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []

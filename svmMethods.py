@@ -23,6 +23,8 @@ class SvmMets:
         self.verbose = verbose
         self.tol = tol
         self.quickTest = quickTest
+        self.hyperParams = None
+        self.featCombos = []
 
         if verbose is not True:
             import warnings
@@ -209,30 +211,29 @@ class SvmMets:
         # testing using different kernels, C and degrees.
         for kernel in kernels:
             if kernel == "linear":
-                for C in [2.5]:
-
-                    for degree in range(1, 2):
-                        res = self.svmPipeline(
-                            ndata_train,
-                            ndata_test,
-                            labels_train,
-                            labels_test,
-                            # goodData=goodData,
-                            degree=degree,
-                            kernel=kernel,
-                            C=C,
-                            # coefs=coefs,
-                        )
-                        if self.verbose:
-                            print(
-                                "Result for degree {}, kernel {}, C = {}: {}".format(
-                                    degree, kernel, (C * 100 // 10) / 10, res
-                                )
+                c = clist[0]
+                for degree in range(1, 2):
+                    res = self.svmPipeline(
+                        ndata_train,
+                        ndata_test,
+                        labels_train,
+                        labels_test,
+                        # goodData=goodData,
+                        degree=degree,
+                        kernel=kernel,
+                        C=c,
+                        # coefs=coefs,
+                    )
+                    if self.verbose:
+                        print(
+                            "Result for degree {}, kernel {}, C = {}: {}".format(
+                                degree, kernel, (c * 100 // 10) / 10, res
                             )
-                        allResults.append([name, res, kernel, C])
+                        )
+                    allResults.append([name, res, kernel, c])
 
             else:
-                for C in clist:
+                for c in clist:
                     for gamma in ["auto"]:
                         res = self.svmPipeline(
                             ndata_train,
@@ -243,18 +244,26 @@ class SvmMets:
                             degree=degree,
                             kernel=kernel,
                             gamma=gamma,
-                            C=C,
+                            C=c,
                         )
                         if self.verbose:
                             print(
                                 "Result for gamma {}, kernel {}, C = {}: {}".format(
-                                    gamma, kernel, (C * 100 // 10) / 10, res[0]
+                                    gamma, kernel, (c * 100 // 10) / 10, res[0]
                                 )
                             )
-                        allResults.append([name, res, kernel, C])
+                        allResults.append([name, res, kernel, c])
 
         # coefs = np.reshape(coefs, [128, -1])
+        # hyperParams = []
+        # hyperParams.append([kernels, clist])
+        if name not in self.featCombos:
+            self.featCombos.append(name)
+        self.hyperParams = [kernels, clist]
         return np.array(allResults, dtype=object)
+
+    def getTestInfo(self):
+        return self.hyperParams, self.featCombos
 
     def testSuiteAda(
         self,
@@ -280,7 +289,7 @@ class SvmMets:
         # testing using different kernels, C and degrees.
         for kernel in kernels:
             if kernel == "linear":
-                for C in [0.5]:
+                for c in clist:
 
                     for degree in range(1, 2):
                         res = self.svmPipelineAda(
@@ -291,19 +300,19 @@ class SvmMets:
                             # goodData=goodData,
                             degree=degree,
                             kernel=kernel,
-                            C=C,
+                            C=c,
                             # coefs=coefs,
                         )
                         if self.verbose:
                             print(
                                 "Result for degree {}, kernel {}, C = {}: {}".format(
-                                    degree, kernel, (C * 100 // 10) / 10, res
+                                    degree, kernel, (c * 100 // 10) / 10, res
                                 )
                             )
-                        allResults.append([name, res, kernel, C])
+                        allResults.append([name, res, kernel, c])
 
             else:
-                for C in clist:
+                for c in clist:
 
                     for gamma in ["auto"]:
 
@@ -316,15 +325,19 @@ class SvmMets:
                             degree=degree,
                             kernel=kernel,
                             gamma=gamma,
-                            C=C,
+                            C=c,
                         )
                         if self.verbose:
                             print(
                                 "Result for gamma {}, kernel {}, C = {}: {}".format(
-                                    gamma, kernel, (C * 100 // 10) / 10, res[0]
+                                    gamma, kernel, (c * 100 // 10) / 10, res[0]
                                 )
                             )
-                        allResults.append([name, res, kernel, C])
+                        allResults.append([name, res, kernel, c])
+
+        if name not in self.featCombos:
+            self.featCombos.append(name)
+        self.hyperParams = [kernels, clist]
 
         return np.array(allResults, dtype=object)
 
@@ -405,6 +418,7 @@ class SvmMets:
         ndata_test = scaler.transform(data_test)
 
         from sklearn.ensemble import RandomForestClassifier
+
         # from sklearn.neural_network import MLPClassifier
 
         # mlp = MLPClassifier(hidden_layer_sizes=(2000,1000), solver="lbfgs", activation="relu")
@@ -425,7 +439,7 @@ class SvmMets:
         allResults.append([name, res, "gini", 1])
         allResults.append([name, res, "gini", 1])
 
-        return np.array(allResults, dtype=object)
+        return np.array(allResults, dtype=object), ["gini", "1"]
 
     def testSuiteMLP(
         self,
@@ -445,8 +459,13 @@ class SvmMets:
 
         from sklearn.neural_network import MLPClassifier
 
-        mlp = MLPClassifier(hidden_layer_sizes=(20, 12, 6, 3),
-                            solver="lbfgs", activation="relu", early_stopping=True, validation_fraction=0.1)
+        mlp = MLPClassifier(
+            hidden_layer_sizes=(20, 12, 6, 3),
+            solver="lbfgs",
+            activation="relu",
+            early_stopping=True,
+            validation_fraction=0.1,
+        )
         mlp.fit(ndata_train, labels_train)
         predictions = mlp.predict(ndata_test)
 
@@ -462,7 +481,8 @@ class SvmMets:
         allResults.append([name, res, "gini", 1])
         allResults.append([name, res, "gini", 1])
 
-        return np.array(allResults, dtype=object)
+        return np.array(allResults, dtype=object), ["gini", "1"]
+
     # Not in this file atm
     # def plotHeatMaps(self, plotData):
     #     # Plots heatmaps, used for covariance features.

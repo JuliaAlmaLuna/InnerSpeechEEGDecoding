@@ -4,8 +4,8 @@ This class runs a pipeline testing SVM classification on data
 from joblib import Parallel, delayed
 from copy import deepcopy as dp
 import numpy as np
-import feature_extraction as fclass
-from baselineBefore import baseLineCorrection
+import feature_extractionClean as fclass
+from baselineClean import baseLineCorrection
 import svmMethods as svmMet
 from sklearn import feature_selection
 from sklearn.preprocessing import StandardScaler
@@ -14,7 +14,7 @@ import cProfile
 import pstats
 import io
 import time
-from numpy import float32
+from numpy import float32  # Reduces size of arrays. Float64 precision not always needd.
 import glob
 import os
 import dask
@@ -32,14 +32,8 @@ def testLoop(
     fmetDict,
     sub,
 ):
-    # print(f"\n Running dataset: {name} \n")
-    # print(
-    #     f" Test {testNr}/{testSize} - Progress {count}/{lengthDataList}")
-    # count = count + 1
 
-    # Below here can be switch to NN ? Create method? Or just different testSuite. Right now using Adaboost.
-    # TODO, use joblib parallel to spread this over as many cpu as possible
-    # Would say 4 or 5 is reasonable.
+    # If else statements that swap between different train/test models.
     if useAda:
 
         allResults = fmetDict[f"{sub}"].testSuiteAda(
@@ -91,7 +85,6 @@ def testLoop(
 def mixShuffleSplit(
     createdFeatureList,
     labels,
-    order,
     featureClass,
     maxCombinationAmount,
     bestFeatures,
@@ -105,7 +98,6 @@ def mixShuffleSplit(
     mDataList = featureClass.createListOfDataMixes(
         featureList=tempFeatureList,
         labels=tempLabels,
-        order=order,
         maxCombinationAmount=maxCombinationAmount,
         bestFeatures=bestFeatures,
         useBestFeaturesTest=useBestFeaturesTest,
@@ -192,18 +184,6 @@ def delayedAnovaPart(
         # Use this to save it correctly afterwards
         # So return will be two things. List of names/subject, and list of goodData arrays.
 
-        # Reducing size of array before creating cov.
-        # from numpy.core import defchararray as np_f
-        # from numpy import int8
-        # goodfeature = np.array(goodfeature, dtype=float16)
-        # maxPow =int(np.log10(np.max(goodfeature)))
-        # goodfeature = np.round(goodfeature, maxPow+4)
-        # goodfeatureStr = np.array(goodfeature, dtype=str)
-        # goodfeatureStr = np_f.replace(goodfeatureStr, ".","")
-        # goodfeature= np.array(goodfeatureStr,dtype=int8)
-
-        # if goodfeature.shape[0] > 2:
-
         printProcess(
             f"subj{subject}output",
             f"{np.count_nonzero(goodData)} good Features \
@@ -287,8 +267,8 @@ def anovaTest(
             flatfeature = scaler.transform(flatfeature)
 
             # Running the ANOVA Test
-            f_statistic, p_values = feature_selection.f_classif(
-                flatfeature, labels)
+            # Try selectFWE or selectFPR as well maybe.
+            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
 
             varSelect = feature_selection.VarianceThreshold(0.01)
             varSelect.fit(flatfeature)
@@ -316,6 +296,8 @@ def anovaTest(
 
             f_statistic = None
             p_values = None
+
+            # If CV in name, then feature is a Covariance matrix. And as such. Only half of it is useful information
             if "CV" in featureName:
                 goodData = np.reshape(goodData, [feature[0].shape[1], -1])
 
@@ -324,8 +306,10 @@ def anovaTest(
                 )  # Keep only half of CV matrices. Rest is the same. No need to cull twice.
                 goodData = np.reshape(goodData, [-1])
                 # Should apply to only the last two axises.
+
             feature[0] = None
-            # Use covcorrelation matrix to remove too similar features from mask.
+
+            # If onlyUniqueFeatures, then uses covcorrelation matrix to remove too similar features from mask.
             if onlyUniqueFeatures:
                 # This function is dask delayed so when called later compute() to multiprocess it.
                 goodData = delayedAnovaPart(
@@ -351,6 +335,8 @@ def anovaTest(
 
 # This function creates Fselect masks for each subject, then adds all the other subjects ( except one subject ) masks
 # Does not seem to help much, but keep it. To check later. Maybe with fixes will be better!
+# And for features that are extremely different between subjects.
+#
 def fSelectUsingSepSubjects(
     fClassDict,
     globalSignificanceThreshold,
@@ -457,14 +443,16 @@ def createChunkFeatures(
     uniqueThresh,
     paradigm,
     useSepSubjFS,
+    allFeaturesList,
+    featuresToTestList,
+    useAllFeatures,
+    t_min=1.8,
+    t_max=3,
+    sampling_rate=256,
+    subjects=[1, 2, 3, 4, 5, 6, 7, 8, 9],
 ):
     # Fix it so chunkFeatures are not touched by not chunk functions . And checks alone
-
-    # Loading parameters, what part of the trials to load and test
-    t_min = 1.8
-    t_max = 3
-    sampling_rate = 256
-    subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
+    # Remove this when featuresToTestList Works
     badFeatures = [
         1,
         4,
@@ -490,55 +478,24 @@ def createChunkFeatures(
         34,
         35,
     ]
-
-    # What chunk features that are created and tested
-    featureList = [
-        False,  # FFT 1
-        False,  # Welch 2
-        False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
-        False,  # Powerbands 4
-        False,  # FFT frequency buckets 5
-        False,  # FFT Covariance 6
-        False,  # Welch Covariance 7
-        False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
-        False,  # Covariance on smoothed Data 9 dataGCV
-        False,  # Covariance on smoothed Data2 10
-        False,  # Correlate1d # SEEMS BAD 11
-        False,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
-        False,  # dataWCV-BC 13
-        False,  # dataHRCV-BC 14 DataHR seems to not add much if any to FFT and Welch
-        True,  # fftDataBC 15
-        False,  # welchDataBC 16
-        False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
-        False,  # gaussianData 18
-        False,  # dataGCVBC 19
-        True,  # gaussianDataBC 20
-        True,  # dataGCV-BC       21      - BC means BC before covariance
-        False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
-        False,  # dataGCV2-BC 23 With more channels. Only useful for chunks
-        True,  # dataCorrBC 24
-        False,  # 25 invFFT
-        False,  # 26 dataCorr1d01s"
-        False,  # 27 "dataCorr1d02s"
-        False,  # 28 "iFFTdataCorr1d01s-BC"
-        False,  # 29 "iFFTdataCorr1d02s-BC"
-        False,  # 30 "iFFTdataCorr1d005s-BC"
-        False,  # 31 dataCorr1d01sBC
-        False,  # 32 dataCorr1d02sBC
-        False,  # 33 dataCorr2ax1d
-        False,  # 34 iFFTdataCorr2ax1d005s-BC
-        False,  # 35 dataCorr2ax1dBC
-        False,  # 36 inverseFFTCV-BC
-        # More to be added
-    ]
+    featureList = allFeaturesList
 
     for ind, fea in enumerate(badFeatures):
         badFeatures[ind] = fea - 1
 
+    # Just to fix numbering system from starting at 1 to starting at zero
+    for ind, fea in enumerate(featuresToTestList):
+        featuresToTestList[ind] = fea - 1
+
     featureListIndex = np.arange(len(featureList))
-    useAllFeatures = True
 
     if useAllFeatures:
+        for featureI in featureListIndex:
+            if featureI in featuresToTestList:
+                featureList[featureI] = True
+            else:
+                featureList[featureI] = False
+
         for featureI in featureListIndex:
             featureList[featureI] = False
 
@@ -619,8 +576,8 @@ def createChunkFeatures(
                 verbose=True,
             )
             print("But I dont care about BC not existing here for some reason")
-
-    return fClassDict2, bClassDict2
+    bClassDict2 = None
+    return fClassDict2
 
     # Instead, just loop through all subjects, doing Anova on each one.
     # Saving it as something not used in testing
@@ -631,7 +588,7 @@ def createChunkFeatures(
 def main():
 
     testSize = 10  # Nr of seed iterations until stopping
-    seedStart = 39  # Arbitrary, could be randomized as well.
+    seed = 39  # Arbitrary, could be randomized as well.
 
     # TODO
     # Here, wrap all in another for loop that tests:
@@ -673,9 +630,9 @@ def main():
 
     # Name for this test, what it is saved as
     validationRepetition = True
-    repetitionName = "udrli1feattestanglnoBC"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{99}{repetitionName}"
-    maxCombinationAmount = 1
+    repetitionName = "newStraSplitTest"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{4}{repetitionName}"
+    maxCombinationAmount = 2
     chunkFeatures = False
     chunkAmount = 3
     quickTest = True  # For testing best Feature. Works well enough
@@ -719,8 +676,7 @@ def main():
     # Can be saved. Like index of them.
     useBestFeaturesTest = False
     bestFeaturesSaveFile = "top4udrli.npy"
-    bestFeatures = np.load(
-        f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+    bestFeatures = np.load(f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
     if useBestFeaturesTest:
         print(bestFeatures)
         print(bestFeatures.shape)
@@ -825,7 +781,7 @@ def main():
                 featIndex = len(featureList) - (nrFCOT + 1)
 
             for featureI in featureListIndex[
-                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                featIndex * nrFCOT : (featIndex + 1) * nrFCOT
             ]:
                 featureList[featureI] = True
 
@@ -904,7 +860,7 @@ def main():
                     featIndex = len(featureList) - (nrFCOT + 1)
 
                 for featureI in featureListIndex[
-                    featIndex * nrFCOT: (featIndex + 1) * nrFCOT
+                    featIndex * nrFCOT : (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
                 featureList[3] = False  # 4
@@ -944,7 +900,7 @@ def main():
                     featureList[39] = False  # 40
 
                 print(featureList)
-                a, b, c = onlyCreateFeaturesFunction(
+                onlyCreateFeaturesFunction(
                     subjects,
                     paradigm,
                     signAll,
@@ -962,9 +918,6 @@ def main():
                     featureList,
                     useSepSubjFS,
                 )
-                del a
-                del b
-                del c
 
                 featIndex = featIndex + 1
                 # print(feature)
@@ -1048,8 +1001,7 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correction")
+            print(f"Creating features for subject:{sub} after baseline correction")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1095,8 +1047,7 @@ def main():
                     subjectsThatNeedFSelect.append(sub)
 
             else:
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1138,20 +1089,19 @@ def main():
                 fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
                     fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
                 )
+        fClassDict2 = None
+
+    for sub in subjects:
+        fClassDict[f"{sub}"].setOrder(seed, testSize)
+        fClassDict[f"{sub}"].createMaskedFeatureList()
 
     # A for loop just running all subjects using different seeds for train/data split
-    for seed in np.arange(seedStart * testSize, (seedStart + 1) * testSize):
-
-        # Setting random order for test/train split for all subjects for this seed
-
-        for sub in subjects:
-            fClassDict[f"{sub}"].setOrder(seed)
-            fClassDict[f"{sub}"].createMaskedFeatureList()
+    for testNr in np.arange(testSize):
 
         # For loop running pipeline on each subject
         for sub in subjects:  #
-
-            print(f"Starting test of subject:{sub} , seed:{seed}")
+            fClassDict[f"{sub}"].setTestNr(testNr)
+            print(f"Starting test of subject:{sub} , testNr:{testNr}")
 
             # Creating masked feature List using ANOVA/cov Mask
 
@@ -1161,7 +1111,6 @@ def main():
                 mDataList = mixShuffleSplit(
                     fClassDict[f"{sub}"].getMaskedFeatureList(),
                     labels=fClassDict[f"{sub}"].getLabels(),
-                    order=fClassDict[f"{sub}"].getOrder(),
                     featureClass=fClassDict[f"{sub}"],
                     maxCombinationAmount=maxCombinationAmount,
                     bestFeatures=bestFeatures,
@@ -1171,7 +1120,6 @@ def main():
                 mDataList = mixShuffleSplit(
                     fClassDict[f"{sub}"].getFeatureListFlat(),
                     labels=fClassDict[f"{sub}"].getLabels(),
-                    order=fClassDict[f"{sub}"].getOrder(),
                     featureClass=fClassDict[f"{sub}"],
                     maxCombinationAmount=maxCombinationAmount,
                     bestFeatures=bestFeatures,
@@ -1197,8 +1145,27 @@ def main():
                 for data_train, data_test, labels_train, labels_test, name in mDataList
             )
 
-            savearray = np.array(
-                [seed, sub, allResultsPerSubject], dtype=object)
+            # Creating testInfo
+            featureNames = []
+            featCombos = []
+            for feat in fClassDict[f"{sub}"].getFeatureListFlat():
+                featureNames.append(feat[1])
+            for combo in mDataList:
+                featCombos.append(combo[4])
+            if quickTest:
+                clist = [2.5]
+            else:
+                clist = [0.1, 0.5, 1.2, 2.5, 5, 10]
+            kernels = ["linear", "rbf", "sigmoid"]
+
+            hyperParams = [kernels, clist]
+            testInfo = [
+                featureNames,
+                featCombos,
+                hyperParams,  # UseSvm Mets to get hyperParams.
+                paradigm[0],
+            ]
+            savearray = np.array([testInfo, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
@@ -1217,7 +1184,7 @@ def main():
                 os.makedirs(saveDir)
 
             np.save(
-                f"{saveDir}/savedBestSeed-{seed}-Subject-{sub}-Date-{now_string}",
+                f"{saveDir}/savedBest-TestNr-{testNr}-Seed-{seed}-Sub-{sub}-Dt-{now_string}",
                 savearray,
             )
 
@@ -1308,8 +1275,7 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correct")
+            print(f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
@@ -1355,8 +1321,7 @@ def onlyCreateFeaturesFunction(
 
             else:
 
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
+                print(f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1381,59 +1346,9 @@ def onlyCreateFeaturesFunction(
             # print(compute3)
             goodFeatureMaskListList = dask.compute(compute3)
 
-        # for sub in subjects[4:]:
-
-        #     if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
-        #         if useSepSubjFS:
-        #             print("fSelectSepSub Place Used here")
-        #             fSelectUsingSepSubjects(
-        #                 fClassDict,
-        #                 globalSignificanceThreshold,
-        #                 onlyUniqueFeatures,
-        #                 uniqueThresh,
-        #                 paradigm[0],
-        #                 subjects,
-        #             )
-        #             break
-        #         else:
-        #             allSubjFList, allSubjFLabels = combineAllSubjects(
-        #                 fClassDict, subjectLeftOut=sub, onlyTrain=False
-        #             )
-
-        #             # add allSubjFlist and Labels to list
-        #             allSubjFLabelsList.append(allSubjFLabels)
-        #             allSubjFListList.append(allSubjFList)
-        #             subjectsThatNeedFSelect.append(sub)
-
-        #     else:
-
-        #         print(
-        #             f"Feature Mask Already exist for all Features for subject {sub}")
-
-        # if useSepSubjFS is not True:
-        #     goodFeatureMaskListList = []
-        #     for subj, features, labels in zip(
-        #         subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
-        #     ):
-
-        #         # Maybe dp before here
-        #         goodFeatureMaskList = anovaTest(
-        #             features,
-        #             labels,
-        #             globalSignificanceThreshold,
-        #             onlyUniqueFeatures,
-        #             uniqueThresh,
-        #             paradigm[0],
-        #             subj,
-        #         )
-
-        #         goodFeatureMaskListList.append(goodFeatureMaskList)
-
-        #     compute3 = dask.compute(goodFeatureMaskListList)
-        #     # print(compute3)
-        #     goodFeatureMaskListList = dask.compute(compute3)
-
-    return fClassDict, fmetDict, bClassDict
+    del fClassDict, fmetDict, bClassDict
+    print("Done with one loop of onlyCreateFeatures function")
+    return True
 
 
 if __name__ == "__main__":

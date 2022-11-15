@@ -9,6 +9,7 @@ import dataLoader as dl
 import util as ut
 import glob
 import os
+from sklearn.model_selection import StratifiedShuffleSplit
 
 # import re
 # pylint: disable=C0103
@@ -40,7 +41,8 @@ class featureEClass:
         self.labels = None
         self.labelsAux = None
         self.data = None
-        self.order = None
+        self.orderList = None
+        self.testNr = None
         self.createdFeatureList = []
         self.maskedFeatureList = []
         self.globalGoodFeatureMask = None
@@ -214,7 +216,6 @@ class featureEClass:
         self,
         featureList,
         labels,
-        order,
         maxCombinationAmount,
         bestFeatures,
         useBestFeaturesTest,
@@ -298,7 +299,7 @@ class featureEClass:
             nameRow = ""
             dataRo = np.copy(featureList[comb[0]][0])
             labelsRo = np.copy(labels)
-            nameRow = nameRow + "-" + featureList[comb[0]][1]
+            nameRow = nameRow + featureList[comb[0]][1]
 
             for nr in comb[1:]:
 
@@ -306,7 +307,7 @@ class featureEClass:
 
                 dataRo = np.concatenate([dataRo, data], axis=1)
 
-                nameRow = featureList[nr][1] + "-" + nameRow
+                nameRow = featureList[nr][1] + " & " + nameRow
 
             dataList.append(dataRo)
 
@@ -329,7 +330,6 @@ class featureEClass:
                     nDataRow,
                     lData,
                     nameList[x],
-                    order=order,
                 ),
                 dtype=object,
             )
@@ -345,16 +345,18 @@ class featureEClass:
 
         return normShuffledDataList
 
-    def shuffleSplitData(self, data_t, labels_t, name, order):
+    def shuffleSplitData(self, data_t, labels_t, name):
 
         data_s = np.copy(data_t)
         labels_s = np.copy(labels_t)
 
-        data_train = data_s[order[0 : int(labels_s.shape[0] * 0.8)]]
-        data_test = data_s[order[int(labels_s.shape[0] * 0.8) :]]
-        labels_train = labels_s[order[0 : int(labels_s.shape[0] * 0.8)]]
-        labels_test = labels_s[order[int(labels_s.shape[0] * 0.8) :]]
+        data_train = data_s[self.getOrder()[0]]
+        labels_train = labels_s[self.getOrder()[0]]
+        data_test = data_s[self.getOrder()[1]]
+        labels_test = labels_s[self.getOrder()[1]]
 
+        del data_s
+        del labels_s
         return data_train, data_test, labels_train, labels_test, name  # , gdData
 
     # TODO Add a loader for bad data, to use in testing
@@ -374,28 +376,7 @@ class featureEClass:
             paradigms=paradigms,
         )
 
-        if self.paradigmName == "vviiudsep":
-            # print(self.paradigmName)
-            # print(self.labels)
-            self.labels[self.labels > 1] = self.labels[self.labels > 1] - 2
-            # print(self.labels)
-
-        # if self.paradigmName == "vviirl":
-        #     # print(self.paradigmName)
-        #     # print(self.labels)
-        #     self.labels[self.labels > 1] = self.labels[self.labels > 1] - 2
-        #     # for labe in self.labels:
-        #     if labe > 1
-        # self.labels = newLabels
-
-        # print(self.labels)
-        # print(labelsAux)
-        # print(labelsAux[:, 1])  # Class
-        # print(labelsAux[:, 2])  # Cond
-        # print(labelsAux[:, 3])  # Session
-
-        # Make data divisible by chunkAmount
-
+        # Makes the size of the trial a size that is divisible with no remainder by chunkAmount
         while True:
             if self.data.shape[2] % self.chunkAmount != 0:
                 self.data = self.data[:, :, :-1]
@@ -1207,39 +1188,49 @@ class featureEClass:
         tempLabelsAux = dp(self.labelsAux)
         return tempLabelsAux
 
-    def getTrainFeatureList(self):
-        tempFeatureList = dp(self.createdFeatureList)
+    # def getTrainFeatureList(self):
+    #     tempFeatureList = dp(self.createdFeatureList)
 
-        for f in tempFeatureList:
-            f[0] = f[0][self.order[0 : int(self.labels.shape[0] * 0.8)]]
+    #     for f in tempFeatureList:
+    #         f[0] = f[0][self.order[0 : int(self.labels.shape[0] * 0.8)]]
 
-        return tempFeatureList
+    #     return tempFeatureList
 
-    def getTestFeatureList(self):
-        tempFeatureList = dp(self.createdFeatureList)
+    # def getTestFeatureList(self):
+    #     tempFeatureList = dp(self.createdFeatureList)
 
-        for f in tempFeatureList:
-            f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8) :]]
+    #     for f in tempFeatureList:
+    #         f[0] = f[0][self.order[int(self.labels.shape[0] * 0.8) :]]
 
-        return tempFeatureList
+    #     return tempFeatureList
 
-    def getTrainLabels(self):
-        tempLabels = dp(self.labels)
-        return tempLabels[self.order[0 : int(self.labels.shape[0] * 0.8)]]
+    # def getTrainLabels(self):
+    #     tempLabels = dp(self.labels)
+    #     return tempLabels[self.order[0 : int(self.labels.shape[0] * 0.8)]]
 
-    def getTestLabels(self):
-        tempLabels = dp(self.labels)
-        return tempLabels[self.order[int(self.labels.shape[0] * 0.8) :]]
+    # def getTestLabels(self):
+    #     tempLabels = dp(self.labels)
+    #     return tempLabels[self.order[int(self.labels.shape[0] * 0.8) :]]
 
     def getLabels(self):
         tempLabels = dp(self.labels)
         return tempLabels
 
-    def setOrder(self, seed):
+    def setTestNr(self, testNr):
+        self.testNr = testNr
+
+    def setOrder(self, seed, testSize):
         # Set the random order of shuffling for the subject/seed test
-        np.random.seed(seed)
-        self.order = np.arange(self.labels.shape[0])
-        np.random.shuffle(self.order)
+        self.orderList = []
+        sss = StratifiedShuffleSplit(
+            testSize, train_size=0.8, test_size=0.2, random_state=seed
+        )
+
+        for train_index, test_index in sss.split(
+            X=np.zeros(self.labels.shape[0]), y=self.labels
+        ):
+
+            self.orderList.append((train_index, test_index))
 
     def setGlobalGoodFeaturesMask(self, goodFeatures):
         # Needs to loop through feature mask and save them, using their name which is [1] in the list/tuple
@@ -1289,7 +1280,8 @@ class featureEClass:
         return tempFeatureMask
 
     def getOrder(self):
-        return self.order
+        return self.orderList[self.testNr]
+        # return self.order
 
     # def multiLabels(labels):
     #     mlabels = np.zeros([labels.shape[0], 2])
