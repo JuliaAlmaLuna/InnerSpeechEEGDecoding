@@ -77,8 +77,7 @@ class featureEClass:
 
             # If not onlySign is false, send back all features
             if self.onlySign:
-                maskedFeature[0] = self.onlySignData(
-                    feature=feature[0], goodData=mask)
+                maskedFeature[0] = self.onlySignData(feature=feature[0], goodData=mask)
                 if maskedFeature[0] is not None:
                     cleanMaskedFeatureList.append(maskedFeature)
             else:
@@ -243,8 +242,7 @@ class featureEClass:
         combos = []
 
         namesAndIndex = np.array([len(featureList), 2], dtype=object)
-        namesAndIndexBestFeatures = np.zeros(
-            np.array(bestFeatures, dtype=object).shape)
+        namesAndIndexBestFeatures = np.zeros(np.array(bestFeatures, dtype=object).shape)
         bestFeatures = np.array(bestFeatures, dtype=object)
         # print(bestFeatures.shape)
         for index, feature in enumerate(featureList, 0):
@@ -402,7 +400,7 @@ class featureEClass:
         onlyFeature = loadedCorrectFeature[0]
         for splitNr in range(int(ceil(self.chunkAmount / 2))):
             splitFeature = onlyFeature[
-                :, splitNr:: (int(ceil(self.chunkAmount / 2))), :
+                :, splitNr :: (int(ceil(self.chunkAmount / 2))), :
             ]  # Split Channels
             covSplitList.append(ut.fftCovariance(splitFeature))
             # covSplits.append(splitFeature)
@@ -413,43 +411,6 @@ class featureEClass:
             featureNameSaved,
         ]  # dataFFTCV
         return createdFeature
-
-    def averageChannels(self, preAveragedData):
-        groupNames = ["OL", "OZ", "OR", "FL", "FZ",
-                      "FR", "CL", "CZ", "CR", "PZ", "OPZ"]
-        averagedChannelsData = np.zeros(
-            [preAveragedData.shape[0], len(
-                groupNames), preAveragedData.shape[2]]
-        )
-        for avgNr, groupName in enumerate(groupNames):
-            cnNrs = ut.channelNumbersFromGroupName(groupName)
-            chosenChannels = preAveragedData[:, cnNrs, :]
-            averagedChannelsData[:, avgNr, :] = np.mean(chosenChannels, axis=1)
-        return averagedChannelsData
-
-    # This covariance works best for features with time
-    # If they do not have time. Then this is not necessary
-    # I think. Or if they dont have time. Just dont
-    def newCovariance(self, preCovFeature, splits=24):
-        splits = 24
-        postCovFeature = []
-        if splits > 1:
-            averagedData = self.averageChannels(preCovFeature)
-            while True:
-                if averagedData.shape[2] % splits == 0:
-                    break
-                else:
-                    averagedData = averagedData[:, :, :-1]
-            preCovFeature = np.reshape(
-                averagedData,
-                [averagedData.shape[0], averagedData.shape[1] * splits, -1],
-            )
-            print(averagedData.shape[1] * splits)
-        for trial in preCovFeature:
-            postCovFeature.append(np.cov(trial))
-        postCovFeature = np.array(postCovFeature)
-
-        return postCovFeature
 
     # TODO: Add derivative feature. First, second
     # Then derivate CV
@@ -464,497 +425,455 @@ class featureEClass:
                 featureNameSaved = f"{featureName}cn{self.chunkAmount}"
         else:
             featureNameSaved = featureName
-        splitNr = 24
-        if featureName[-2:] == "CV":
-            print(featureName)
-            print(featureName[:-3])
-            preCVFeature = self.loadFeatures(featureName[:-3])[0]
-            createdFeature = [
-                np.array(self.newCovariance(preCVFeature, splits=splitNr)),
-                featureNameSaved,
-            ]
-        else:
-            if featureName == "fftData":
-                absFFT, angleFFT = ut.fftData2(tempData)
-                createdFeature = [absFFT, featureNameSaved]
-                self.saveFeatures(
+
+        if featureName == "fftData":
+            absFFT, angleFFT = ut.fftData2(tempData)
+            createdFeature = [absFFT, featureNameSaved]
+            self.saveFeatures(
+                f"angle{featureNameSaved}",
+                [
+                    angleFFT,
                     f"angle{featureNameSaved}",
-                    [
-                        angleFFT,
-                        f"angle{featureNameSaved}",
-                    ],
-                )
+                ],
+            )
 
-            if featureName == "fftData_BC_ifft":
-                if self.chunk:
-                    # noReshape = True
-                    loadedFFTBC = self.loadFeatures(
-                        f"fftDatacn{self.chunkAmount}BC")
-                    loadedFFTAngle = self.loadFeatures(
-                        f"anglefftDatacn{self.chunkAmount}"
-                    )
+        if featureName == "inverseFFT-BC":
+            if self.chunk:
+                # noReshape = True
+                loadedFFTBC = self.loadFeatures(f"fftDatacn{self.chunkAmount}BC")
+                loadedFFTAngle = self.loadFeatures(f"anglefftDatacn{self.chunkAmount}")
 
-                else:
-                    loadedFFTBC = self.loadFeatures("fftData_BC")
-                    loadedFFTAngle = self.loadFeatures("anglefftData")
-                if loadedFFTBC is not None and loadedFFTAngle is not None:
+            else:
+                loadedFFTBC = self.loadFeatures("fftDataBC")
+                loadedFFTAngle = self.loadFeatures("anglefftData")
+            if loadedFFTBC is not None and loadedFFTAngle is not None:
 
-                    fftdata = loadedFFTBC[0]
-                    fftangledata = loadedFFTAngle[0]
-                    createdFeature = [
-                        np.array(ut.ifftData(fftdata, fftangledata)),
-                        featureNameSaved,
-                    ]
-                else:
-                    return None
-
-            if featureName == "welchData":
-                if self.chunk:
-                    createdFeature = [
-                        ut.welchData(
-                            tempData,
-                            fs=int(256 / self.chunkAmount),
-                            nperseg=int(256 / self.chunkAmount),
-                        ),
-                        featureNameSaved,
-                    ]
-                else:
-                    createdFeature = [
-                        ut.welchData(tempData, fs=256, nperseg=256),
-                        featureNameSaved,
-                    ]
-            if featureName == "stftData":
-                import scipy.signal as signal
-                import math
-                wantedShape = splitNr
-                arLength = tempData.shape[-1]
-                nperseg = math.floor(arLength / (wantedShape - 2))
-
-                stftFeature = abs(signal.stft(tempData, fs=256, window="blackman", boundary="zeros",
-                                              padded=True, noverlap=0, axis=-1, nperseg=nperseg)[2])[:, :, :, :splitNr]
-                print(stftFeature.shape)
-                stftFeatureReshaped = np.reshape(
-                    stftFeature, [stftFeature.shape[0], stftFeature.shape[1], -1])
-                createdFeature = [stftFeatureReshaped, featureNameSaved]
-
-            if featureName == "hilbertData":
-                dataH = hilbert(tempData, axis=2, N=128)
-                # print(dataH.real)
-                createdFeature = [dataH.real, featureNameSaved]  # dataHR
-
-            if featureName == "Powerbands":
-                # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
-                # trialSplit=1).squeeze()
-                # print("Power band data shape: {}".format(data_p.shape))
-                pass
-            if featureName == "Frequency buckets":
-                # #Creating freqBandBuckets
-                # nr_of_buckets = 15
-                # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
-                pass
-            if featureName == "dataFFTCV":
-                fftdata = ut.fftData(tempData)
+                fftdata = loadedFFTBC[0]
+                fftangledata = loadedFFTAngle[0]
                 createdFeature = [
-                    np.array(ut.fftCovariance(fftdata)),
+                    np.array(ut.ifftData(fftdata, fftangledata)),
                     featureNameSaved,
                 ]
-            if featureName == "dataWCV":
-                # welchdata = ut.welchData(tempData, fs=256, nperseg=256)
-                if self.chunk:
-                    welchdata = ut.welchData(
+            else:
+                return None
+
+        if featureName == "welchData":
+            if self.chunk:
+                createdFeature = [
+                    ut.welchData(
                         tempData,
                         fs=int(256 / self.chunkAmount),
                         nperseg=int(256 / self.chunkAmount),
-                    )
-                else:
-                    welchdata = ut.welchData(tempData, fs=256, nperseg=256)
-                createdFeature = [
-                    np.array(ut.fftCovariance(welchdata)),
+                    ),
                     featureNameSaved,
                 ]
-            if featureName == "dataHRCV":
-                dataH = hilbert(tempData, axis=2, N=256)  # dataH
-                dataHR = dataH.real
+            else:
                 createdFeature = [
-                    np.array(ut.fftCovariance(dataHR)),
-                    featureNameSaved,
-                ]  # dataHRCV
-
-            if featureName == "dataGCV":
-                datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
-                createdFeature = [
-                    np.array(ut.fftCovariance(datagauss)),
+                    ut.welchData(tempData, fs=256, nperseg=256),
                     featureNameSaved,
                 ]
+        if featureName == "dataHR":
+            dataH = hilbert(tempData, axis=2, N=128)
+            createdFeature = [dataH.real, featureNameSaved]  # dataHR
+        if featureName == "Powerbands":
+            # data_p =  ut.get_power_array(data[:,:128,:], sampling_rate,
+            # trialSplit=1).squeeze()
+            # print("Power band data shape: {}".format(data_p.shape))
+            pass
+        if featureName == "Frequency buckets":
+            # #Creating freqBandBuckets
+            # nr_of_buckets = 15
+            # buckets = ut.getFreqBuckets(data, nr_of_buckets=nr_of_buckets)
+            pass
+        if featureName == "dataFFTCV":
+            fftdata = ut.fftData(tempData)
+            createdFeature = [
+                np.array(ut.fftCovariance(fftdata)),
+                featureNameSaved,
+            ]
+        if featureName == "dataWCV":
+            # welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+            if self.chunk:
+                welchdata = ut.welchData(
+                    tempData,
+                    fs=int(256 / self.chunkAmount),
+                    nperseg=int(256 / self.chunkAmount),
+                )
+            else:
+                welchdata = ut.welchData(tempData, fs=256, nperseg=256)
+            createdFeature = [
+                np.array(ut.fftCovariance(welchdata)),
+                featureNameSaved,
+            ]
+        if featureName == "dataHRCV":
+            dataH = hilbert(tempData, axis=2, N=256)  # dataH
+            dataHR = dataH.real
+            createdFeature = [
+                np.array(ut.fftCovariance(dataHR)),
+                featureNameSaved,
+            ]  # dataHRCV
 
-            if featureName == "dataGCV2":
-                datagauss2 = ndimage.gaussian_filter1d(tempData, 5, axis=2)
+        if featureName == "dataGCV":
+            datagauss = ndimage.gaussian_filter1d(tempData, 5, axis=2)
+            createdFeature = [
+                np.array(ut.fftCovariance(datagauss)),
+                featureNameSaved,
+            ]
 
-                if self.chunk:
-                    datagauss2 = np.reshape(
-                        datagauss2,
-                        [
-                            datagauss2.shape[0],
-                            -1,
-                            int(datagauss2.shape[2] / self.chunkAmount),
-                        ],
-                    )
+        if featureName == "dataGCV2":
+            datagauss2 = ndimage.gaussian_filter1d(tempData, 5, axis=2)
 
-                createdFeature = [
-                    np.array(ut.fftCovariance(datagauss2)),
-                    featureNameSaved,
-                ]
+            if self.chunk:
+                datagauss2 = np.reshape(
+                    datagauss2,
+                    [
+                        datagauss2.shape[0],
+                        -1,
+                        int(datagauss2.shape[2] / self.chunkAmount),
+                    ],
+                )
 
-            if featureName == "dataCorr1d":
-                weights = np.zeros(shape=[20])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[17:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=2, mode="wrap"),
-                    featureNameSaved,
-                ]
+            createdFeature = [
+                np.array(ut.fftCovariance(datagauss2)),
+                featureNameSaved,
+            ]
 
-            if featureName == "1dataCorr2ax1d":
-                weights = np.zeros(shape=[20])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[17:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
+        if featureName == "dataCorr1d":
+            weights = np.zeros(shape=[20])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[17:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=2, mode="wrap"),
+                featureNameSaved,
+            ]
 
-            if featureName == "05dataCorr2ax1d":
-                channelHop = 7
-                weights = np.zeros(shape=[3 + channelHop + 3])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[channelHop + 3:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
+        if featureName == "1dataCorr2ax1d":
+            weights = np.zeros(shape=[20])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[17:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
 
-            if featureName == "2dataCorr2ax1d":
-                channelHop = 30
-                weights = np.zeros(shape=[3 + channelHop + 3])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[channelHop + 3:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
+        if featureName == "05dataCorr2ax1d":
+            channelHop = 7
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
 
-            if featureName == "3dataCorr2ax1d":
-                channelHop = 50
-                weights = np.zeros(shape=[3 + channelHop + 3])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[channelHop + 3:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
+        if featureName == "2dataCorr2ax1d":
+            channelHop = 30
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
 
-            if featureName == "4dataCorr2ax1d":
-                channelHop = 70
-                weights = np.zeros(shape=[3 + channelHop + 3])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[channelHop + 3:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
-            if featureName == "5dataCorr2ax1d":
-                channelHop = 90
-                weights = np.zeros(shape=[3 + channelHop + 3])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[channelHop + 3:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
-            if featureName == "6dataCorr2ax1d":
-                channelHop = 110
-                weights = np.zeros(shape=[3 + channelHop + 3])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[channelHop + 3:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
+        if featureName == "3dataCorr2ax1d":
+            channelHop = 50
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
 
-            if featureName == "dataCorr2ax1dthree":
-                weights = np.zeros(shape=[58])
-                weights[:3] = [0.25, 0.5, 0.25]
-                weights[55:] = [0.25, 0.5, 0.25]
-                createdFeature = [
-                    ndimage.correlate1d(
-                        tempData, weights=weights, axis=1, mode="wrap"),
-                    featureNameSaved,
-                ]
+        if featureName == "4dataCorr2ax1d":
+            channelHop = 70
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+        if featureName == "5dataCorr2ax1d":
+            channelHop = 90
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+        if featureName == "6dataCorr2ax1d":
+            channelHop = 110
+            weights = np.zeros(shape=[3 + channelHop + 3])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[channelHop + 3 :] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
 
-            if featureName == "dataCorr1d01s":
+        if featureName == "dataCorr2ax1dthree":
+            weights = np.zeros(shape=[58])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[55:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=1, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "dataCorr1d01s":
+            weights = np.zeros(shape=[32])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[29:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=2, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "dataCorr1d02s":
+            weights = np.zeros(shape=[58])
+            weights[:3] = [0.25, 0.5, 0.25]
+            weights[55:] = [0.25, 0.5, 0.25]
+            createdFeature = [
+                ndimage.correlate1d(tempData, weights=weights, axis=2, mode="wrap"),
+                featureNameSaved,
+            ]
+
+        if featureName == "iFFTdataCorr1d01s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
                 weights = np.zeros(shape=[32])
                 weights[:3] = [0.25, 0.5, 0.25]
                 weights[29:] = [0.25, 0.5, 0.25]
                 createdFeature = [
                     ndimage.correlate1d(
-                        tempData, weights=weights, axis=2, mode="wrap"),
+                        onlyFeature, weights=weights, axis=2, mode="wrap"
+                    ),
                     featureNameSaved,
                 ]
+            else:
+                return None
 
-            if featureName == "dataCorr1d02s":
+        if featureName == "iFFTdataCorr1d02s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
                 weights = np.zeros(shape=[58])
                 weights[:3] = [0.25, 0.5, 0.25]
                 weights[55:] = [0.25, 0.5, 0.25]
                 createdFeature = [
                     ndimage.correlate1d(
-                        tempData, weights=weights, axis=2, mode="wrap"),
+                        onlyFeature, weights=weights, axis=2, mode="wrap"
+                    ),
                     featureNameSaved,
                 ]
+            else:
+                return None
 
-            if featureName == "iFFTdataCorr1d01s-BC":
-                loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+        if featureName == "iFFTdataCorr1d005s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
 
-                if loadedCorrectFeature is not None:
-                    onlyFeature = loadedCorrectFeature[0]
-                    weights = np.zeros(shape=[32])
-                    weights[:3] = [0.25, 0.5, 0.25]
-                    weights[29:] = [0.25, 0.5, 0.25]
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
+                weights = np.zeros(shape=[20])
+                weights[:3] = [0.25, 0.5, 0.25]
+                weights[17:] = [0.25, 0.5, 0.25]
+                createdFeature = [
+                    ndimage.correlate1d(
+                        onlyFeature, weights=weights, axis=2, mode="wrap"
+                    ),
+                    featureNameSaved,
+                ]
+            else:
+                return None
+
+        if featureName == "iFFTdataCorr2ax1d005s-BC":
+            loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+
+            if loadedCorrectFeature is not None:
+                onlyFeature = loadedCorrectFeature[0]
+                weights = np.zeros(shape=[20])
+                weights[:3] = [0.25, 0.5, 0.25]
+                weights[17:] = [0.25, 0.5, 0.25]
+                createdFeature = [
+                    ndimage.correlate1d(
+                        onlyFeature, weights=weights, axis=1, mode="wrap"
+                    ),
+                    featureNameSaved,
+                ]
+            else:
+                return None
+
+        if featureName == "dataFFTCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"fftDatacn{self.chunkAmount}BC"
+                )
+
+            else:
+                loadedCorrectFeature = self.loadFeatures("fftDataBC")
+            if loadedCorrectFeature is not None:
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved
+                    )
+                else:
+
+                    fftdata = loadedCorrectFeature[0]
                     createdFeature = [
-                        ndimage.correlate1d(
-                            onlyFeature, weights=weights, axis=2, mode="wrap"
-                        ),
+                        np.array(ut.fftCovariance(fftdata)),
                         featureNameSaved,
-                    ]
-                else:
-                    return None
+                    ]  # dataFFTCV
+            else:
+                return None
 
-            if featureName == "iFFTdataCorr1d02s-BC":
-                loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+        if featureName == "dataFFTCV2-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"fftDatacn{self.chunkAmount}BC"
+                )
 
                 if loadedCorrectFeature is not None:
-                    onlyFeature = loadedCorrectFeature[0]
-                    weights = np.zeros(shape=[58])
-                    weights[:3] = [0.25, 0.5, 0.25]
-                    weights[55:] = [0.25, 0.5, 0.25]
+                    # Part below could be a function for all chunked covariance
+                    # Shape it so that each split has their own channels
+                    # Send in loadedFeature and get back covariance but done with every 3rd/6th channel only
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved
+                    )
+                else:
+                    return None
+            else:
+                return None
+
+        if featureName == "dataWCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"welchDatacn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("welchDataBC")
+            if loadedCorrectFeature is not None:
+
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved
+                    )
+                else:
+                    welchdata = loadedCorrectFeature[0]
                     createdFeature = [
-                        ndimage.correlate1d(
-                            onlyFeature, weights=weights, axis=2, mode="wrap"
-                        ),
+                        np.array(ut.fftCovariance(welchdata)),
                         featureNameSaved,
-                    ]
+                    ]  # dataWCV
+            else:
+                return None
+        if featureName == "dataHRCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"dataHRcn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("dataHRBC")
+            if loadedCorrectFeature is not None:
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved
+                    )
                 else:
-                    return None
-
-            if featureName == "iFFTdataCorr1d005s-BC":
-                loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
-
-                if loadedCorrectFeature is not None:
-                    onlyFeature = loadedCorrectFeature[0]
-                    weights = np.zeros(shape=[20])
-                    weights[:3] = [0.25, 0.5, 0.25]
-                    weights[17:] = [0.25, 0.5, 0.25]
+                    dataHR = loadedCorrectFeature[0]
+                    # dataHR = dataH.real
                     createdFeature = [
-                        ndimage.correlate1d(
-                            onlyFeature, weights=weights, axis=2, mode="wrap"
-                        ),
+                        np.array(ut.fftCovariance(dataHR)),
                         featureNameSaved,
-                    ]
-                else:
-                    return None
+                    ]  # dataHRCV
+            else:
+                return None
 
-            if featureName == "iFFTdataCorr2ax1d005s-BC":
-                loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
-
-                if loadedCorrectFeature is not None:
-                    onlyFeature = loadedCorrectFeature[0]
-                    weights = np.zeros(shape=[20])
-                    weights[:3] = [0.25, 0.5, 0.25]
-                    weights[17:] = [0.25, 0.5, 0.25]
-                    createdFeature = [
-                        ndimage.correlate1d(
-                            onlyFeature, weights=weights, axis=1, mode="wrap"
-                        ),
-                        featureNameSaved,
-                    ]
-                else:
-                    return None
-
-            if featureName == "dataFFTCV-BC":
+        if featureName == "dataGCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"gaussianDatacn{self.chunkAmount}BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
+            if loadedCorrectFeature is not None:
                 if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"fftDatacn{self.chunkAmount}BC"
-                    )
-
-                else:
-                    loadedCorrectFeature = self.loadFeatures("fftDataBC")
-                if loadedCorrectFeature is not None:
-                    if self.chunk:
-                        createdFeature = self.chunkCovariance(
-                            loadedCorrectFeature, featureNameSaved
-                        )
-                    else:
-
-                        fftdata = loadedCorrectFeature[0]
-                        createdFeature = [
-                            np.array(ut.fftCovariance(fftdata)),
-                            featureNameSaved,
-                        ]  # dataFFTCV
-                else:
-                    return None
-
-            if featureName == "dataFFTCV2-BC":
-                if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"fftDatacn{self.chunkAmount}BC"
-                    )
-
-                    if loadedCorrectFeature is not None:
-                        # Part below could be a function for all chunked covariance
-                        # Shape it so that each split has their own channels
-                        # Send in loadedFeature and get back covariance but done with every 3rd/6th channel only
-                        createdFeature = self.chunkCovariance(
-                            loadedCorrectFeature, featureNameSaved
-                        )
-                    else:
-                        return None
-                else:
-                    return None
-
-            if featureName == "dataWCV-BC":
-                if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"welchDatacn{self.chunkAmount}BC"
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved
                     )
                 else:
-                    loadedCorrectFeature = self.loadFeatures("welchDataBC")
-                if loadedCorrectFeature is not None:
-
-                    if self.chunk:
-                        createdFeature = self.chunkCovariance(
-                            loadedCorrectFeature, featureNameSaved
-                        )
-                    else:
-                        welchdata = loadedCorrectFeature[0]
-                        createdFeature = [
-                            np.array(ut.fftCovariance(welchdata)),
-                            featureNameSaved,
-                        ]  # dataWCV
-                else:
-                    return None
-            if featureName == "dataHRCV-BC":
-                if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"dataHRcn{self.chunkAmount}BC"
-                    )
-                else:
-                    loadedCorrectFeature = self.loadFeatures("dataHRBC")
-                if loadedCorrectFeature is not None:
-                    if self.chunk:
-                        createdFeature = self.chunkCovariance(
-                            loadedCorrectFeature, featureNameSaved
-                        )
-                    else:
-                        dataHR = loadedCorrectFeature[0]
-                        # dataHR = dataH.real
-                        createdFeature = [
-                            np.array(ut.fftCovariance(dataHR)),
-                            featureNameSaved,
-                        ]  # dataHRCV
-                else:
-                    return None
-
-            if featureName == "dataGCV-BC":
-                if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"gaussianDatacn{self.chunkAmount}BC"
-                    )
-                else:
-                    loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
-                if loadedCorrectFeature is not None:
-                    if self.chunk:
-                        createdFeature = self.chunkCovariance(
-                            loadedCorrectFeature, featureNameSaved
-                        )
-                    else:
-                        gaussiandata = loadedCorrectFeature[0]
-                        createdFeature = [
-                            np.array(ut.fftCovariance(gaussiandata)),
-                            featureNameSaved,
-                        ]  # dataFFTCV
-                else:
-                    return None
-
-            if featureName == "inverseFFTCV-BC":
-                if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"inverseFFT{self.chunkAmount}-BC"
-                    )
-                else:
-                    loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
-                if loadedCorrectFeature is not None:
-                    if self.chunk:
-                        createdFeature = self.chunkCovariance(
-                            loadedCorrectFeature, featureNameSaved
-                        )
-                    else:
-                        ifftdata = loadedCorrectFeature[0]
-                        createdFeature = [
-                            np.array(ut.fftCovariance(ifftdata)),
-                            featureNameSaved,
-                        ]  # dataFFTCV
-                else:
-                    return None
-            if featureName == "dataGCV2-BC":
-                if self.chunk:
-                    noReshape = True
-                    loadedCorrectFeature = self.loadFeatures(
-                        f"gaussianDatacn{self.chunkAmount}BC"
-                    )
-
-                    if loadedCorrectFeature is not None:
-                        loadedCorrectFeature[0] = np.reshape(
-                            loadedCorrectFeature[0],
-                            [
-                                loadedCorrectFeature[0].shape[0],
-                                -1,
-                                int(
-                                    loadedCorrectFeature[0].shape[2] /
-                                    self.chunkAmount
-                                ),
-                            ],
-                        )
-                else:
-                    loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
-
-                if loadedCorrectFeature is not None:
-
                     gaussiandata = loadedCorrectFeature[0]
                     createdFeature = [
                         np.array(ut.fftCovariance(gaussiandata)),
                         featureNameSaved,
                     ]  # dataFFTCV
-                else:
-                    return None
+            else:
+                return None
 
-            if featureName == "gausData":
+        if featureName == "inverseFFTCV-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"inverseFFT{self.chunkAmount}-BC"
+                )
+            else:
+                loadedCorrectFeature = self.loadFeatures("inverseFFT-BC")
+            if loadedCorrectFeature is not None:
+                if self.chunk:
+                    createdFeature = self.chunkCovariance(
+                        loadedCorrectFeature, featureNameSaved
+                    )
+                else:
+                    ifftdata = loadedCorrectFeature[0]
+                    createdFeature = [
+                        np.array(ut.fftCovariance(ifftdata)),
+                        featureNameSaved,
+                    ]  # dataFFTCV
+            else:
+                return None
+        if featureName == "dataGCV2-BC":
+            if self.chunk:
+                noReshape = True
+                loadedCorrectFeature = self.loadFeatures(
+                    f"gaussianDatacn{self.chunkAmount}BC"
+                )
+
+                if loadedCorrectFeature is not None:
+                    loadedCorrectFeature[0] = np.reshape(
+                        loadedCorrectFeature[0],
+                        [
+                            loadedCorrectFeature[0].shape[0],
+                            -1,
+                            int(loadedCorrectFeature[0].shape[2] / self.chunkAmount),
+                        ],
+                    )
+            else:
+                loadedCorrectFeature = self.loadFeatures("gaussianDataBC")
+
+            if loadedCorrectFeature is not None:
+
+                gaussiandata = loadedCorrectFeature[0]
                 createdFeature = [
-                    ndimage.gaussian_filter1d(tempData, 5, axis=2),
+                    np.array(ut.fftCovariance(gaussiandata)),
                     featureNameSaved,
-                ]
+                ]  # dataFFTCV
+            else:
+                return None
+
+        if featureName == "gaussianData":
+            createdFeature = [
+                ndimage.gaussian_filter1d(tempData, 5, axis=2),
+                featureNameSaved,
+            ]
 
         if self.chunk:
             if noReshape is False:
@@ -966,6 +885,14 @@ class featureEClass:
                         createdFeature[0].shape[1],
                         -1,
                     ],
+                    # Reshape chunks into more channels
+                    # createdFeature[0] =np.reshape(
+                    # createdFeature[0],
+                    # [
+                    #     int(createdFeature[0].shape[0] / self.chunkAmount),
+                    #     -1,
+                    #     createdFeature[0].shape[2],
+                    # ],)
                 )
 
         self.saveFeatures(featureNameSaved, createdFeature)
@@ -997,8 +924,7 @@ class featureEClass:
             if self.chunk:
                 tempData = np.reshape(
                     tempData,
-                    (tempData.shape[0] * self.chunkAmount,
-                     tempData.shape[1], -1),
+                    (tempData.shape[0] * self.chunkAmount, tempData.shape[1], -1),
                 )
 
             if useFeature:
@@ -1010,7 +936,7 @@ class featureEClass:
                     featureName = "welchData"
 
                 if fNr == 3:
-                    featureName = "hilbertData"
+                    featureName = "dataHR"
 
                 if fNr == 4:
                     print("Powerbands")
@@ -1021,133 +947,120 @@ class featureEClass:
                     continue
 
                 if fNr == 6:
-                    featureName = "fftData_CV"
+                    featureName = "dataFFTCV"
 
                 if fNr == 7:
-                    featureName = "welchData_CV"
+                    featureName = "dataWCV"
 
                 if fNr == 8:
-                    featureName = "hilbertData_CV"
+                    featureName = "dataHRCV"
 
                 if fNr == 9:
-                    featureName = "gausData"
+                    featureName = "dataGCV"
 
                 if fNr == 10:
-                    continue
-                # featureName = "dataGCV2"  # Skip - remove it.
+                    featureName = "dataGCV2"
 
                 if fNr == 11:
-                    featureName = "normDatacor2x1"
+                    featureName = "dataCorr1d"
 
                 if fNr == 12:
-                    featureName = "fftData_BC"
+                    featureName = "dataFFTCV-BC"
 
                 if fNr == 13:
-                    featureName = "welchData_BC"
+                    featureName = "dataWCV-BC"
 
                 if fNr == 14:
-                    featureName = "hilbertData_BC"
+                    featureName = "dataHRCV-BC"
 
                 if fNr == 15:
-                    featureName = "fftData_BC_CV"
+                    featureName = "fftDataBC"
 
                 if fNr == 16:
-                    featureName = "welchData_BC_CV"
+                    featureName = "welchDataBC"
 
                 if fNr == 17:
-                    featureName = "hilbertData_BC_CV"
+                    featureName = "dataHRBC"
 
                 if fNr == 18:
-                    featureName = "gausData_CV"
+                    featureName = "gaussianData"
 
                 if fNr == 19:
-                    featureName = "gausData_CV_BC"
+                    featureName = "dataGCVBC"
 
                 if fNr == 20:
-                    featureName = "gausData_BC"
+                    featureName = "gaussianDataBC"
 
                 if fNr == 21:
-                    featureName = "gausData_BC_CV"
+                    featureName = "dataGCV-BC"
 
                 # TODO: ADD BOTH KINDS OF BC. It exists. Just use it!
-                # if fNr == 22:
-                #     featureName = "dataFFTCV2-BC"
+                if fNr == 22:
+                    featureName = "dataFFTCV2-BC"
 
-                # if fNr == 23:
-                #     featureName = "dataGCV2-BC"
+                if fNr == 23:
+                    featureName = "dataGCV2-BC"
 
                 if fNr == 24:
-                    featureName = "normDatacor2x1_BC"
+                    featureName = "dataCorr1dBC"
 
                 if fNr == 25:
-                    featureName = "fftData_BC_ifft"
+                    featureName = "inverseFFT-BC"
 
                 if fNr == 26:
-                    featureName = "normDatacor2x2"
+                    featureName = "dataCorr1d01s"
                 if fNr == 27:
-                    featureName = "normDatacor2x3"
+                    featureName = "dataCorr1d02s"
                 if fNr == 28:
-                    featureName = "fftData_BC_ifft_cor2x1"
+                    featureName = "iFFTdataCorr1d01s-BC"
                 if fNr == 29:
-                    featureName = "fftData_BC_ifft_cor2x2"
+                    featureName = "iFFTdataCorr1d02s-BC"
                 if fNr == 30:
-                    featureName = "fftData_BC_ifft_cor2x3"
+                    featureName = "iFFTdataCorr1d005s-BC"
                 if fNr == 31:
-                    featureName = "normDatacor2x2_BC"
+                    featureName = "dataCorr1d01sBC"
                 if fNr == 32:
-                    featureName = "normDatacor2x3_BC"
+                    featureName = "dataCorr1d02sBC"
                 if fNr == 33:
-                    featureName = "normDatacor1x1"
+                    featureName = "1dataCorr2ax1d"
                 if fNr == 34:
-                    featureName = "fftData_BC_ifft_cor1x1"
+                    featureName = "iFFTdataCorr2ax1d005s-BC"
                 if fNr == 35:
-                    featureName = "normDatacor1x1_BC"
+                    featureName = "1dataCorr2ax1dBC"
                 if fNr == 36:
-                    featureName = "fftData_BC_ifft_CV"
+                    featureName = "inverseFFTCV-BC"
                 if fNr == 37:
                     featureName = "anglefftData"
                 if fNr == 38:
                     featureName = "anglefftDataBC"
                 if fNr == 39:
-                    featureName = "normDatacor2x2"
+                    featureName = "2dataCorr2ax1d"
                 if fNr == 40:
-                    featureName = "normDatacor2x2_BC"
+                    featureName = "2dataCorr2ax1dBC"
                 if fNr == 41:
-                    featureName = "normDatacor2x3"
+                    featureName = "3dataCorr2ax1d"
                 if fNr == 42:
-                    featureName = "normDatacor2x3_BC"
+                    featureName = "3dataCorr2ax1dBC"
                 if fNr == 43:
-                    featureName = "normDatacor2x4"
+                    featureName = "4dataCorr2ax1d"
                 if fNr == 44:
-                    featureName = "normDatacor2x4_BC"
+                    featureName = "4dataCorr2ax1dBC"
                 if fNr == 45:
-                    featureName = "normDatacor2x5"
+                    featureName = "5dataCorr2ax1d"
                 if fNr == 46:
-                    featureName = "normDatacor2x5_BC"
-                # if fNr == 47:
-                #     featureName = "normDatacor2x6"
-                # if fNr == 48:
-                #     featureName = "normDatacor2x6_BC"
-                if fNr == 51:
-                    featureName = "stftData"
-                if fNr == 52:
-                    featureName = "stftData_BC"
-                if fNr == 53:
-                    featureName = "stftData_CV"
-                if fNr == 54:
-                    featureName = "stftData_BC_CV"
-                if fNr == 55:
-                    featureName = "fftData_CV_BC"
-                if fNr == 56:
-                    featureName = "welchData_CV_BC"
-                if fNr == 57:
-                    featureName = "hilbertData_CV_BC"
-                if fNr == 58:
-                    featureName = "stftData_CV_BC"
-
-                if "baseline" in self.paradigmName or "split" in self.paradigmName:
-                    if "BC" in featureName:
-                        continue
+                    featureName = "5dataCorr2ax1dBC"
+                if fNr == 47:
+                    featureName = "6dataCorr2ax1d"
+                if fNr == 48:
+                    featureName = "6dataCorr2ax1dBC"
+                if fNr == 49:
+                    featureName = "05dataCorr2ax1d"
+                if fNr == 50:
+                    featureName = "05dataCorr2ax1dBC"
+                # if fNr == 39:
+                #     featureName = "dataCorr2ax1dall"
+                # if fNr == 40:
+                #     featureName = "dataCorr2ax1dallBC"
 
                 if self.chunk:
                     #  if load(featureName) is not None:
@@ -1184,12 +1097,10 @@ class featureEClass:
                                 )
                         else:
                             if "split" not in self.paradigmName:
-                                print(
-                                    f"FeatureNameCorrectedNotExist {featureName}")
+                                print(f"FeatureNameCorrectedNotExist {featureName}")
                         correctedExists = False
                         continue
                     else:
-
                         createdFeature = self.createFeature(
                             featureName, tempData=tempData
                         )
@@ -1201,7 +1112,6 @@ class featureEClass:
                                 f"CHUNKED Data feature nr {fNr} has shape: {createdFeature[0].shape}"
                             )
                         else:
-                            # print(featureName)
                             print(
                                 f"Data feature nr {fNr} has shape: {createdFeature[0].shape}"
                             )
@@ -1283,8 +1193,7 @@ class featureEClass:
 
         for feature, mask in zip(self.getFeatureList(), goodFeatures):
 
-            self.saveAnovaMask(
-                feature[1], f"sign{self.globalSignificance}", mask)
+            self.saveAnovaMask(feature[1], f"sign{self.globalSignificance}", mask)
 
         self.globalGoodFeatureMask = goodFeatures
 
@@ -1305,8 +1214,7 @@ class featureEClass:
             # print("hola")
             for feature in self.getFeatureList():
                 if (
-                    self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
                     is None
                 ):
                     print(feature[1])
@@ -1316,8 +1224,7 @@ class featureEClass:
                     return None
 
                 goodFeatures.append(
-                    self.loadAnovaMask(
-                        feature[1], f"sign{self.globalSignificance}")
+                    self.loadAnovaMask(feature[1], f"sign{self.globalSignificance}")
                 )
 
             self.globalGoodFeatureMask = goodFeatures

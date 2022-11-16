@@ -14,7 +14,8 @@ import cProfile
 import pstats
 import io
 import time
-from numpy import float32  # Reduces size of arrays. Float64 precision not always needd.
+# Reduces size of arrays. Float64 precision not always needd.
+from numpy import float32
 import glob
 import os
 import dask
@@ -178,7 +179,7 @@ def delayedAnovaPart(
         printProcess(f"subj{subject}output", goodfeature.shape)
         goodData = np.zeros(goodData.shape)
     else:
-        # TODO: Only part after here needs to be dasked. It needs goodfeature, indexList and goodData,
+        # TODO Only part after here needs to be dasked. It needs goodfeature, indexList and goodData,
         # and returns new goodData. It can
         # be used in this way: Send in featurename as well. Return goodData and featureName.
         # Use this to save it correctly afterwards
@@ -268,7 +269,8 @@ def anovaTest(
 
             # Running the ANOVA Test
             # Try selectFWE or selectFPR as well maybe.
-            f_statistic, p_values = feature_selection.f_classif(flatfeature, labels)
+            f_statistic, p_values = feature_selection.f_classif(
+                flatfeature, labels)
 
             varSelect = feature_selection.VarianceThreshold(0.01)
             varSelect.fit(flatfeature)
@@ -519,16 +521,16 @@ def createChunkFeatures(
             uniqueThresh=uniqueThresh,
             useSepSubjFS=useSepSubjFS,
         )
-
-        print(f"Creating chunk features for subject:{sub}")
-        createdFeatureList, labels, correctedExists = fClassDict2[f"{sub}"].getFeatures(
-            paradigms=paradigm[1],
-            subject=sub,
+        fClassDict2[f"{sub}"].loadData(
             t_min=t_min,
             t_max=t_max,
             sampling_rate=sampling_rate,
             twoDLabels=False,
-            maxCombinationAmount=2,
+            paradigms=paradigm[1],
+        )
+
+        print(f"Creating chunk features for subject:{sub}")
+        createdFeatureList, labels, correctedExists = fClassDict2[f"{sub}"].getFeatures(
             featureList=featureList,
             verbose=True,
         )
@@ -565,13 +567,6 @@ def createChunkFeatures(
             createdFeatureList, labels, correctedExists = fClassDict2[
                 f"{sub}"
             ].getFeatures(
-                paradigms=paradigm[1],
-                subject=sub,
-                t_min=t_min,
-                t_max=t_max,
-                sampling_rate=sampling_rate,
-                twoDLabels=False,
-                maxCombinationAmount=2,
                 featureList=featureList,
                 verbose=True,
             )
@@ -579,123 +574,111 @@ def createChunkFeatures(
     bClassDict2 = None
     return fClassDict2
 
-    # Instead, just loop through all subjects, doing Anova on each one.
-    # Saving it as something not used in testing
-    # then for each subject, take all of the other subjects saved ones and add them together.
-    # Tomorrow. Stop work now!
-
 
 def main():
 
+    ##############################################################
+    # Testloop parameters
+    paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
+    subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
-
-    # TODO
-    # Here, wrap all in another for loop that tests:
-    # signAll, SignSolo, thresholds, paradigms, and saves them all in separateFolders
-    # Fix soloSignThreshold ( Make sure it is correct)
-    # Fix a timer for each loop of this for loop, as well as for each subject
-    # and seed in the other two for loops. Save all times in a separate folder
-
+    validationRepetition = True
+    repetitionName = "thisWorksma"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{26}{repetitionName}"
+    maxCombinationAmount = 1
+    useAllFeatures = True
+    chunkFeatures = False
+    # When increasing combination amount by one each test.
+    useBestFeaturesTest = True
+    bestFeaturesSaveFile = "top2udrli.npy"
+    quickTest = False
+    ##############################################################
     # Loading parameters, what part of the trials to load and test
     t_min = 1.8
     t_max = 3
     sampling_rate = 256
-
-    # Parameters for ANOVA test and ANOVA Feature Mask
-    # Does ANOVA on all subjects except the one tested and uses as mask
-    signAll = True
-    # 0.1 seems best, 0.05 a little faster
-    # if useSepSubFS then this is also used for them
-    # If set to 1. Then it is basically not used. All features allowed through.
-    globalSignificanceThreshold = 0.05
-    useSepSubjFS = False  # Does not seem to help at all.
-    # Not noticably. And seems slower
-    if useSepSubjFS:
-        # Harder limit when solo sep Subj, otherwise. They are too big!
-        globalSignificanceThreshold = 0.05
-
-    # Does ANOVA on training set of each subject by itself and uses as mask
-    signSolo = False
-    soloSignificanceThreshold = 0.005  # Not really used anymore!
-    useAda = False  # For 1 feauture combo amount actually hurts.
-    userndF = False  # For 1 feauture combo amount actually hurts.
-    useMLP = False  # For 1 feauture combo amount actually hurts
-
+    ##############################################################
+    # Feature selection parameters
     onlyUniqueFeatures = True
     uniqueThresh = 0.8
-
-    # Tolerance for SVM SVC
+    signAll = True
+    globalSignificanceThreshold = 0.05  # 0.1  #
+    signSolo = False
+    soloSignificanceThreshold = 0.005
+    # Does not seem to help at all. Could be useful for really individual features.
+    useSepSubjFS = False
+    if useSepSubjFS:
+        globalSignificanceThreshold = 0.05
+    ################################################################
+    # Sklearn/TestTrain parameters
+    useAda = False  # Using ADA
+    userndF = False  # Sklearn random forest, works a little worse and a little slower than SVM at this point
+    useMLP = False  # Sklearn MLP, not made good yet. Works ok
     tolerance = 0.001  # Untested
-
-    # Name for this test, what it is saved as
-    validationRepetition = True
-    repetitionName = "newStraSplitTest"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{4}{repetitionName}"
-    maxCombinationAmount = 2
-    chunkFeatures = False
+    ################################################################
+    # Feature creation/extraction parameters
     chunkAmount = 3
-    quickTest = True  # For testing best Feature. Works well enough
-    # Run test using all features except "BadFeatures"
-    useAllFeatures = True
-    badFeatures = [
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        18,
-        21,
-        22,
-        23,
-        26,
-        27,
-        33,
-        37,
-        39,
-        40,
-        41,
-        43,
-        45,
-        47,
-        49,
-    ]  # 26, 27, 28, 29, 30, 31, 32
-    # badFeatures = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-    #                16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30]
-    # Using numbering in list below
-
-    # Settings when using running a loop to create all features.
     onlyCreateFeatures = False
     nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 7  # Multiplied by nrFCOT, First features to start creating
+    featIndex = 19  # Multiplied by nrFCOT, First features to start creating
+    usefeaturesToTestList = True
+    featuresToTestDict = dict()
 
-    # Best feature Combo allow in function only needs to done once! Then which combos that are okay
-    # Can be saved. Like index of them.
-    useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top4udrli.npy"
-    bestFeatures = np.load(f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
-    if useBestFeaturesTest:
-        print(bestFeatures)
-        print(bestFeatures.shape)
-    # How many features that are maximally combined and tested together
+    featuresToTestDict["fftFeatures"] = [
+        1,  # fftData,
+        6,  # fftData_CV
+        12,  # fftData_BC
+        15,  # fftData_BC_CV
+        55,  # fftData_CV_BC
 
-    # All the subjects that are tested, and used to create ANOVA Mask
-    subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]  # 2,
+    ]
+    featuresToTestDict["stftFeatures"] = [
+        51,  # stftData,
+        52,  # stftData_BC
+        53,  # stftData_CV
+        54,  # stftData_BC_CV
+        58,  # stftData_CV_BC
+    ]
+    # featuresToTestDict["inversefftFeatures"] = [
+    #     25,  # fftData_BC_ifft
+    #     28,  # fftData_BC_ifft_cor2x1
+    #     29,  # fftData_BC_ifft_cor2x2
+    #     30,  # fftData_BC_ifft_cor2x3
+    #     34,  # fftData_BC_ifft_cor1x1
+    #     36,  # fftData_BC_ifft_CV
+    # ]
+    featuresToTestDict["welchFeatures"] = [
+        2,  # welchData
+        7,  # welchData_CV
+        13,  # welchData_BC
+        16,  # welchData_BC_CV
+        56,  # welchData_CV_BC
+    ]
+    featuresToTestDict["hilbertFeatures"] = [
+        3,  # hilbertData,
+        8,  # hilbertData_CV
+        14,  # hilbertData_BC
+        17,  # hilbertData_BC_CV
+        57,  # hilbertData_CV_BC
+    ]
+    featuresToTestDict["gaussianFeatures"] = [
+        9,  # "gausData"
+        # 10,  # dataGCV2
+        18,  # gausData_CV
+        19,  # gausData_CV_BC
+        20,  # gaussianData_BC
+        21,  # gausData_BC_CV
+    ]
 
-    # Rare to see increase in more than 1-2% accuracy without it.
-    # Runs less hyperparameters, currently only C =  2.5
+    featuresToTestList = []
+    for featGroupName, featGroup in featuresToTestDict.items():
+        print(featGroupName)
+        featuresToTestList.extend(featGroup)
 
-    # What paradigm to test
-    # paradigm = paradigmSetting.upDownInnerSpecialPlot()
-    # paradigm = paradigmSetting.upDownInnerSpecialTest2()
-    # paradigm = paradigmSetting.upDownVisSpecialPlot()
-    # paradigm = paradigmSetting.upDownRightLeftVisSpecialPlot()
-    # paradigm = paradigmSetting.rightLeftInnerSpecialPlot()
-    # paradigm = paradigmSetting.rightLeftVisSpecialPlot()
-    paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
+    for ind, featureI in enumerate(featuresToTestList):
+        featuresToTestList[ind] = featureI - 1
+
     # What features that are created and tested
     featureList = [
         False,  # FFT 1
@@ -721,7 +704,6 @@ def main():
         True,  # dataGCV-BC       21      -BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         False,  # dataGCV2-BC 23 SKIP
-        # With more channels. Only useful for chunks For 3 chunks.
         True,  # 24 Correlate1dBC005s
         False,  # 25 inverseFFT-BC
         False,  # 26 corr01s
@@ -749,23 +731,30 @@ def main():
         False,  # 48 6dataCorr2ax1dBC
         False,  # 49 05dataCorr2ax1d
         False,  # 50 05dataCorr2ax1dBC
+        False,  # 51 stftData
+        False,  # 52 stftData_BC
+        False,  # 53 stftData_CV
+        False,  # 54 stftData_BC_CV
+        False,  # 55 fftData_CV_BC
+        False,  # 56 welchData_CV_BC
+        False,  # 57 hilbertData_CV_BC
+        False,  # 58 stftData_CV_BC
         # True,  # FFT BC IFFT 24
         # More to be added
     ]
 
-    # Features that aren´t tested when using useAllFeatures
-
-    goodFeatures = []  # To be implemented. Opposite way with only good features tested
+    ###############################################################
+    bestFeatures = np.load(
+        f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+    if useBestFeaturesTest:
+        print(bestFeatures)
+        print(bestFeatures.shape)
 
     # For loops to fit with numbering from 0 to len()-1 instead of 1 to len()
-    for ind, fea in enumerate(badFeatures):
-        badFeatures[ind] = fea - 1
+    # for ind, fea in enumerate(badFeatures):
+    #     badFeatures[ind] = fea - 1
 
-    for featureGroup in goodFeatures:
-        for ind, fea in enumerate(featureGroup):
-            goodFeatures[ind] = fea - 1
-
-    print(badFeatures)
+    # print(badFeatures)
 
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
@@ -781,18 +770,18 @@ def main():
                 featIndex = len(featureList) - (nrFCOT + 1)
 
             for featureI in featureListIndex[
-                featIndex * nrFCOT : (featIndex + 1) * nrFCOT
+                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
             ]:
                 featureList[featureI] = True
 
-            featureList[3] = False  # 4
-            featureList[4] = False  # 5
-            featureList[5] = False  # 6
-            featureList[6] = False  # 7
-            featureList[7] = False  # 8
-            featureList[9] = False  # 10
-            featureList[21] = False  # 22
-            featureList[22] = False  # 23
+            featureList[10] = False  # 11
+            # featureList[4] = False  # 5
+            # featureList[5] = False  # 6
+            # featureList[6] = False  # 7
+            # featureList[7] = False  # 8
+            # featureList[9] = False  # 10
+            # featureList[21] = False  # 22
+            # featureList[22] = False  # 23
             # featureList[24] = False  # 25
             # featureList[25] = False  # 26
             # featureList[26] = False  # 27
@@ -860,7 +849,7 @@ def main():
                     featIndex = len(featureList) - (nrFCOT + 1)
 
                 for featureI in featureListIndex[
-                    featIndex * nrFCOT : (featIndex + 1) * nrFCOT
+                    featIndex * nrFCOT: (featIndex + 1) * nrFCOT
                 ]:
                     featureList[featureI] = True
                 featureList[3] = False  # 4
@@ -926,10 +915,16 @@ def main():
         for featureI in featureListIndex:
             featureList[featureI] = False
 
+        # for featureI in featureListIndex:
+        #     if featureI in badFeatures:
+        #         continue
+        #     featureList[featureI] = True
+
+    if usefeaturesToTestList:
         for featureI in featureListIndex:
-            if featureI in badFeatures:
-                continue
-            featureList[featureI] = True
+            featureList[featureI] = False
+            if featureI in featuresToTestList:
+                featureList[featureI] = True
 
     print(f"FeatureList so far: {featureList}")
     # Creating the features for each subject and putting them in a dict
@@ -948,6 +943,14 @@ def main():
             uniqueThresh=0.8,
             useSepSubjFS=useSepSubjFS,
         )
+        fClassDict[f"{sub}"].loadData(
+            t_min=t_min,
+            t_max=t_max,
+            sampling_rate=sampling_rate,
+            twoDLabels=False,
+            paradigms=paradigm[1],
+        )
+
         fmetDict[f"{sub}"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
@@ -958,25 +961,16 @@ def main():
         )
         print(f"Creating features for subject:{sub}")
         createdFeatureList, labels, correctedExists = fClassDict[f"{sub}"].getFeatures(
-            paradigms=paradigm[1],
-            subject=sub,
-            t_min=t_min,
-            t_max=t_max,
-            sampling_rate=sampling_rate,
-            twoDLabels=False,
-            maxCombinationAmount=maxCombinationAmount,
             featureList=featureList,
             verbose=True,
         )
 
-        # time.sleep(2000)
         print(len(createdFeatureList))
         print(f"Printing features created so far for subject {sub}")
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
 
-        # correctedExists = False
         if correctedExists is False:
 
             bClassDict[f"{sub}"] = baseLineCorrection(
@@ -1001,17 +995,12 @@ def main():
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(f"Creating features for subject:{sub} after baseline correction")
+            print(
+                f"Creating features for subject:{sub} after baseline correction")
+
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
-                paradigms=paradigm[1],
-                subject=sub,
-                t_min=t_min,
-                t_max=t_max,
-                sampling_rate=sampling_rate,
-                twoDLabels=False,
-                maxCombinationAmount=maxCombinationAmount,
                 featureList=featureList,
                 verbose=True,
             )
@@ -1047,7 +1036,8 @@ def main():
                     subjectsThatNeedFSelect.append(sub)
 
             else:
-                print(f"Feature Mask Already exist for all Features for subject {sub}")
+                print(
+                    f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []
@@ -1079,6 +1069,13 @@ def main():
             paradigm=paradigm,
             uniqueThresh=uniqueThresh,
             useSepSubjFS=useSepSubjFS,
+            allFeaturesList=featureList,
+            featuresToTestList=featuresToTestList,
+            useAllFeatures=useAllFeatures,
+            subjects=subjects,
+            t_min=t_min,
+            t_max=t_max,
+            sampling_rate=sampling_rate,
         )[0]
 
         for sub in subjects:
@@ -1129,7 +1126,7 @@ def main():
             # For loop of each combination of features
             # Training a SVM using each one and then saving the result
 
-            allResultsPerSubject = Parallel(n_jobs=4, verbose=10)(
+            allResultsPerSubject = Parallel(n_jobs=10, verbose=10)(
                 delayed(testLoop)(
                     data_train,
                     data_test,
@@ -1156,7 +1153,12 @@ def main():
                 clist = [2.5]
             else:
                 clist = [0.1, 0.5, 1.2, 2.5, 5, 10]
-            kernels = ["linear", "rbf", "sigmoid"]
+            if useAda:
+                kernels = ["adaBoost"]
+            elif useMLP:
+                kernels = ["MLP"]
+            else:
+                kernels = ["linear", "rbf", "sigmoid"]
 
             hyperParams = [kernels, clist]
             testInfo = [
@@ -1165,7 +1167,8 @@ def main():
                 hyperParams,  # UseSvm Mets to get hyperParams.
                 paradigm[0],
             ]
-            savearray = np.array([testInfo, sub, allResultsPerSubject], dtype=object)
+            savearray = np.array(
+                [testInfo, sub, allResultsPerSubject], dtype=object)
 
             # Saving the results
             from datetime import datetime
@@ -1224,6 +1227,13 @@ def onlyCreateFeaturesFunction(
             uniqueThresh=0.8,
             useSepSubjFS=useSepSubjFS,
         )
+        fClassDict[f"{sub}"].loadData(
+            t_min=t_min,
+            t_max=t_max,
+            sampling_rate=sampling_rate,
+            twoDLabels=False,
+            paradigms=paradigm[1],
+        )
         fmetDict[f"{sub}"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
@@ -1234,13 +1244,6 @@ def onlyCreateFeaturesFunction(
         )
         print(f"Creating features for subject:{sub}")
         createdFeatureList, labels, correctedExists = fClassDict[f"{sub}"].getFeatures(
-            paradigms=paradigm[1],
-            subject=sub,
-            t_min=t_min,
-            t_max=t_max,
-            sampling_rate=sampling_rate,
-            twoDLabels=False,
-            maxCombinationAmount=maxCombinationAmount,
             featureList=featureList,
             verbose=True,
         )
@@ -1275,17 +1278,11 @@ def onlyCreateFeaturesFunction(
                 fClassDict[f"{sub}"].paradigmName,
             )
 
-            print(f"Creating features for subject:{sub} after baseline correct")
+            print(
+                f"Creating features for subject:{sub} after baseline correct")
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
-                paradigms=paradigm[1],
-                subject=sub,
-                t_min=t_min,
-                t_max=t_max,
-                sampling_rate=sampling_rate,
-                twoDLabels=False,
-                maxCombinationAmount=maxCombinationAmount,
                 featureList=featureList,
                 verbose=True,
             )
@@ -1321,7 +1318,8 @@ def onlyCreateFeaturesFunction(
 
             else:
 
-                print(f"Feature Mask Already exist for all Features for subject {sub}")
+                print(
+                    f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
             goodFeatureMaskListList = []

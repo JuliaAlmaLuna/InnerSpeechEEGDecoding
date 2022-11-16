@@ -1,6 +1,6 @@
 import dataLoader as dl
 from copy import deepcopy as dp
-from feature_extraction import featureEClass
+from feature_extractionClean import featureEClass
 import numpy as np
 
 
@@ -8,12 +8,11 @@ class baseLineCorrection(featureEClass):
     def __init__(
         self,
         subject,
-        chunkAmount,
-        session,  # Unsure if needed, here that is
+        chunkAmount,  # Unsure if needed, here that is
         paradigmName="baseline",
         globalSignificance="0.5",  # Doesn't matter
         sampling_rate=256,
-        featureFolder="WorkingBaselineFeatures",
+        featureFolder="WorkingBaselineFeaturesNew",
         chunk=False,
     ):
         print(
@@ -27,7 +26,6 @@ class baseLineCorrection(featureEClass):
             chunk=chunk,
             chunkAmount=chunkAmount,
         )
-        self.session = session
         self.baseLineFeatures = []
         self.baseLineData = None
         self.avgBaselineFeatureList = None
@@ -67,8 +65,10 @@ class baseLineCorrection(featureEClass):
             self.data = self.getBaselineData()[
                 :, :, x * trialSampleAmount : (x + 1) * trialSampleAmount
             ]
-            super().getFeatures(self.subject, featureList=featureList)
-            baselineFeatureListList.append(self.getFeatureList())
+            super().getFeatures(featureList=featureList, verbose=True)
+            baselineFeatureListList.append(
+                self.getFeatureList(),
+            )
             # print(len(self.getFeatureList())) # 8
 
         justFeatureArraysList = []
@@ -83,7 +83,7 @@ class baseLineCorrection(featureEClass):
         avgFEATURESlist = []
         for featURE, unAvgFeature in zip(justFeatureArraysList, self.getFeatureList()):
             tempArray = np.asarray(featURE)
-            print(tempArray.shape)
+            # print(tempArray.shape)
             avgFeature = np.mean(tempArray, axis=0)
             # Here, if chunked And one of the features not CV, then avg all chunks as well
             if self.chunk:
@@ -105,9 +105,8 @@ class baseLineCorrection(featureEClass):
                     # np.concatenate(
                     #     [avgFeature3, avgFeature3, avgFeature3], axis=2
                     # )
-            print("Heyyo")
+
             avgFEATURESlist.append(avgFeature)
-            print(avgFeature.shape)
 
         self.avgBaselineFeatureList = self.getFeatureList()
         for featURE, avgBaselineFeature in zip(
@@ -122,6 +121,7 @@ class baseLineCorrection(featureEClass):
         tempData = dp(self.baseLineData)
         return tempData
 
+    # Todo: Make it so that all are saved. And loaded based on names in featureList to be corrected.
     def getAvgBaselineFeatureList(self):
         tempData = dp(self.avgBaselineFeatureList)
         return tempData
@@ -153,16 +153,16 @@ class baseLineCorrection(featureEClass):
                     # if self.chunk:
                     #     cfeature[1] = f"{cfeature[1]}cn{self.chunkAmount}"
 
-                    cfeature[1] = f"{cfeature[1]}BC"
+                    cfeature[1] = f"{cfeature[1]}_BC"
                     # print(cfeature[0][0][0][0])
                     print(paradigmName2)
                     print(self.paradigmName)
                     print(cfeature[1])
-                    print(f"{cfeature[1]}BC")
-                    self.featureFolder = "SavedFeatures"
+                    print(f"{cfeature[1]}_BC")
+                    self.featureFolder = "SavedFeaturesNew"
                     self.paradigmName = f"{paradigmName2}"
                     self.saveFeatures(f"{cfeature[1]}", cfeature)
-                    self.featureFolder = ("WorkingBaselineFeatures",)
+                    self.featureFolder = ("WorkingBaselineFeaturesNew",)
         self.correctedFeaturesList = correctedFeatureList
 
         return correctedFeatureList
