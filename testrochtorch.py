@@ -35,6 +35,7 @@ for dirname, _, filenames in os.walk(path_normal):
 for dirname, _, filenames in os.walk(path_potholes):
     for filename in tqdm(filenames):
         try:
+            print(filename)
             img = cv2.imread(os.path.join(
                 path_potholes, filename), cv2.IMREAD_GRAYSCALE)
             img = cv2.resize(img, (50, 50))

@@ -120,7 +120,7 @@ class featureEClass:
 
     def saveFeatures(self, name, array):
 
-        saveDir = f"F:/PythonProjects/NietoExcercise-1/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
+        saveDir = f"{os.getcwd()}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
 
@@ -130,7 +130,7 @@ class featureEClass:
         )
 
     def loadFeatures(self, name):
-        svpath = f"F:/PythonProjects/NietoExcercise-1/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
+        svpath = f"{os.getcwd()}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         path = glob.glob(svpath + f"/{name}.npy")
         if len(path) > 0:
             savedFeatures = np.load(path[0], allow_pickle=True)
@@ -143,7 +143,7 @@ class featureEClass:
         if self.onlyUniqueFeatures:
             name = f"{name}u{self.uniqueThresh}"
 
-        saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         path = glob.glob(saveDir + f"/{name}.npy")
         # print(saveDir)
         # print(name)
@@ -160,7 +160,7 @@ class featureEClass:
         if self.onlyUniqueFeatures:
             name = f"{name}u{self.uniqueThresh}"
 
-        saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
 

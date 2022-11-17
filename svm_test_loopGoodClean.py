@@ -20,8 +20,6 @@ import glob
 import os
 import dask
 
-# Added in linux
-
 
 def testLoop(
     data_train,
@@ -107,10 +105,12 @@ def mixShuffleSplit(
     )
     return mDataList
 
-
+# Added to test linux github
 # This class prints to separate files for each subject when using dask multiprocessing.
+
+
 def printProcess(processName, printText):
-    with open(f"processOutputs/{processName}Output.txt", "a") as f:
+    with open(f"{os.getcwd()}/processOutputs/{processName}Output.txt", "a") as f:
         print(printText, file=f)
 
 
@@ -121,7 +121,7 @@ def loadAnovaMaskNoClass(
     if onlyUniqueFeatures:
         name = f"{name}u{uniqueThresh}"
 
-    saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
+    saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
     path = glob.glob(saveDir + f"/{name}.npy")
     if len(path) > 0:
         savedAnovaMask = np.load(path[0], allow_pickle=True)
@@ -144,7 +144,7 @@ def saveAnovaMaskNoClass(
     if onlyUniqueFeatures:
         name = f"{name}u{uniqueThresh}"
 
-    saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
+    saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
     if os.path.exists(saveDir) is not True:
         os.makedirs(saveDir)
 
@@ -586,13 +586,13 @@ def main():
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    repetitionName = "thisWorksma"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{26}{repetitionName}"
+    repetitionName = "torchTest"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{27}{repetitionName}"
     maxCombinationAmount = 1
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
-    useBestFeaturesTest = True
+    useBestFeaturesTest = False
     bestFeaturesSaveFile = "top2udrli.npy"
     quickTest = False
     ##############################################################
@@ -616,7 +616,7 @@ def main():
     # Sklearn/TestTrain parameters
     useAda = False  # Using ADA
     userndF = False  # Sklearn random forest, works a little worse and a little slower than SVM at this point
-    useMLP = False  # Sklearn MLP, not made good yet. Works ok
+    useMLP = True  # Sklearn MLP, not made good yet. Works ok
     tolerance = 0.001  # Untested
     ################################################################
     # Feature creation/extraction parameters
@@ -635,13 +635,13 @@ def main():
         55,  # fftData_CV_BC
 
     ]
-    featuresToTestDict["stftFeatures"] = [
-        51,  # stftData,
-        52,  # stftData_BC
-        53,  # stftData_CV
-        54,  # stftData_BC_CV
-        58,  # stftData_CV_BC
-    ]
+    # featuresToTestDict["stftFeatures"] = [
+    #     51,  # stftData,
+    #     52,  # stftData_BC
+    #     53,  # stftData_CV
+    #     54,  # stftData_BC_CV
+    #     58,  # stftData_CV_BC
+    # ]
     # featuresToTestDict["inversefftFeatures"] = [
     #     25,  # fftData_BC_ifft
     #     28,  # fftData_BC_ifft_cor2x1
@@ -650,28 +650,28 @@ def main():
     #     34,  # fftData_BC_ifft_cor1x1
     #     36,  # fftData_BC_ifft_CV
     # ]
-    featuresToTestDict["welchFeatures"] = [
-        2,  # welchData
-        7,  # welchData_CV
-        13,  # welchData_BC
-        16,  # welchData_BC_CV
-        56,  # welchData_CV_BC
-    ]
-    featuresToTestDict["hilbertFeatures"] = [
-        3,  # hilbertData,
-        8,  # hilbertData_CV
-        14,  # hilbertData_BC
-        17,  # hilbertData_BC_CV
-        57,  # hilbertData_CV_BC
-    ]
-    featuresToTestDict["gaussianFeatures"] = [
-        9,  # "gausData"
-        # 10,  # dataGCV2
-        18,  # gausData_CV
-        19,  # gausData_CV_BC
-        20,  # gaussianData_BC
-        21,  # gausData_BC_CV
-    ]
+    # featuresToTestDict["welchFeatures"] = [
+    #     2,  # welchData
+    #     7,  # welchData_CV
+    #     13,  # welchData_BC
+    #     16,  # welchData_BC_CV
+    #     56,  # welchData_CV_BC
+    # ]
+    # featuresToTestDict["hilbertFeatures"] = [
+    #     3,  # hilbertData,
+    #     8,  # hilbertData_CV
+    #     14,  # hilbertData_BC
+    #     17,  # hilbertData_BC_CV
+    #     57,  # hilbertData_CV_BC
+    # ]
+    # featuresToTestDict["gaussianFeatures"] = [
+    #     9,  # "gausData"
+    #     # 10,  # dataGCV2
+    #     18,  # gausData_CV
+    #     19,  # gausData_CV_BC
+    #     20,  # gaussianData_BC
+    #     21,  # gausData_BC_CV
+    # ]
 
     featuresToTestList = []
     for featGroupName, featGroup in featuresToTestDict.items():
@@ -1128,7 +1128,12 @@ def main():
             # For loop of each combination of features
             # Training a SVM using each one and then saving the result
 
-            allResultsPerSubject = Parallel(n_jobs=10, verbose=10)(
+            if useMLP:
+                nr_jobs = 1
+            else:
+                nr_jobs = 10
+
+            allResultsPerSubject = Parallel(n_jobs=nr_jobs, verbose=10)(
                 delayed(testLoop)(
                     data_train,
                     data_test,
@@ -1184,7 +1189,7 @@ def main():
 
             if validationRepetition:
                 foldername = f"{foldername}-{repetitionValue}"
-            saveDir = f"F:/PythonProjects/NietoExcercise-1/SavedResults/{foldername}"
+            saveDir = f"{os.getcwd()}/SavedResults/{foldername}"
             if os.path.exists(saveDir) is not True:
                 os.makedirs(saveDir)
 
