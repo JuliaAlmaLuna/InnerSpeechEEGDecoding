@@ -16,7 +16,7 @@ else:
 
 device = "cuda"
 
-
+print(os.getcwd())
 normal_images = []
 potholes_images = []
 path_normal = f'{os.getcwd()}/normal/'
@@ -50,10 +50,14 @@ for img in normal_images:
     t = torch.LongTensor(1)
     t[0] = 0
     img = torch.FloatTensor(img)
+    img = torch.flatten(img)
+    img = torch.FloatTensor(img)
     processed_data.append([img / 255, t])
 for img in potholes_images:
     t = torch.LongTensor(1)
     t[0] = 1
+    img = torch.FloatTensor(img)
+    img = torch.flatten(img)
     img = torch.FloatTensor(img)
     processed_data.append([img / 255, t])
 
@@ -65,16 +69,27 @@ test_data = processed_data[0:70]
 
 print(f"size of training data {len(train_data)}")
 print(f"size of testing data {len(test_data)}")
+print(train_data[0][0].shape)
+print(train_data[0][1].shape)
+print(train_data[0][1])
 
 
-class Net(nn.Module):
-    def __init__(self):
+class Net(nn.Module, ):
+    def __init__(self, featureSize=50*50):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 32, 5)
-        self.conv2 = nn.Conv2d(32, 64, 5)
-        self.conv3 = nn.Conv2d(64, 128, 5)
-
-        x = torch.rand(1, 50, 50).view(-1, 1, 50, 50)
+        # self.conv1 = nn.Conv2d(1, 32, 2)
+        # self.conv2 = nn.Conv2d(32, 64, 2)
+        # self.conv3 = nn.Conv2d(64, 128, 2)
+        # nn.Conv2d(1,32,5,)
+        # nn.Conv1d(1,32,1,1)
+        # nn.Conv1d
+        self.conv1 = nn.Conv1d(1, 32, 4, 2)
+        self.conv2 = nn.Conv1d(32, 64, 4, 2)
+        self.conv3 = nn.Conv1d(64, 128, 4, 2)
+        self.lin1 = nn.LazyLinear(32)
+        self.lin2 = nn.LazyLinear(64)
+        self.lin3 = nn.LazyLinear(32)
+        x = torch.rand(1, featureSize).view(-1, 1, featureSize)
         self.linear_in = None
         self.convs(x)
 
@@ -82,12 +97,19 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(512, 2)
 
     def convs(self, x):
-        x = F.max_pool2d(F.relu(self.conv1(x)), (2, 2))
-        x = F.max_pool2d(F.relu(self.conv2(x)), (2, 2))
-        x = F.max_pool2d(F.relu(self.conv3(x)), (2, 2))
+        #x = F.relu(self.conv1(x))
+        # x = F.relu(self.lin1(x))
+        # x = F.relu(self.conv2(x))
+        # x = F.relu(self.conv3(x))
+        x = F.relu(self.lin1(x))
+        x = F.relu(self.lin2(x))
+        x = F.relu(self.lin3(x))
+        # x = F.max_pool2d(F.relu(self.conv1(x)), (2, 2))
+        # x = F.max_pool2d(F.relu(self.conv2(x)), (2, 2))
+        # x = F.max_pool2d(F.relu(self.conv3(x)), (2, 2))
 
         if self.linear_in == None:
-            self.linear_in = x[0].shape[0] * x[0].shape[1] * x[0].shape[2]
+            self.linear_in = x[0].shape[0] * x[0].shape[1]  # * x[0].shape[2]
         else:
             return x
 
@@ -103,31 +125,31 @@ net = Net()
 net.to(device)
 
 
-def train_model(Net, train_data):
+def train_model(net, train_data, device, batchSize=10, trainSize=610, featureSize=50*50):
     optimizer = optim.Adam(net.parameters(), lr=0.001)
     loss_function = nn.CrossEntropyLoss()
 
     for epoch in tqdm(range(30)):
-        for i in (range(0, 610, 10)):
-            batch = train_data[i:i+10]
-            batch_x = torch.cuda.FloatTensor(10, 1, 50, 50)
-            batch_y = torch.cuda.LongTensor(10, 1)
+        for i in (range(0, trainSize, batchSize)):
+            batch = train_data[i:i + batchSize]
+            batch_x = torch.cuda.FloatTensor(batchSize, 1, featureSize)
+            batch_y = torch.cuda.LongTensor(batchSize, 1)
 
-            for i in range(10):
+            for i in range(batchSize):
                 batch_x[i] = batch[i][0]
                 batch_y[i] = batch[i][1]
             batch_x.to(device)
             batch_y.to(device)
             net.zero_grad()
-            outputs = net(batch_x.view(-1, 1, 50, 50))
-            batch_y = batch_y.view(10)
+            outputs = net(batch_x.view(-1, 1, featureSize))
+            batch_y = batch_y.view(batchSize)
             loss = F.nll_loss(outputs, batch_y)
             loss.backward()
             optimizer.step()
         print(f"epoch : {epoch}  loss : {loss}")
 
 
-def test_model(Net, test_data):
+def test_model(Net, test_data, featureSize=50*50):
     correct = 0
     total = 0
 
@@ -136,7 +158,7 @@ def test_model(Net, test_data):
             x = torch.FloatTensor(data[0])
             y = torch.LongTensor(data[1])
 
-            x = x.view(-1, 1, 50, 50)
+            x = x.view(-1, 1, featureSize)
             x = x.to(device)
             output = net(x)
             output = output.view(2)
@@ -150,7 +172,8 @@ def test_model(Net, test_data):
         return round(correct/total, 5)
 
 
-train_model(net, train_data)
+# print(train_data[2].shape)
+train_model(net, train_data, device=device, batchSize=10, trainSize=610)
 
 acc = test_model(net, test_data)
 print(acc)

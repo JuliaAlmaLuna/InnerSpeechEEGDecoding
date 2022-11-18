@@ -586,13 +586,13 @@ def main():
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    repetitionName = "torchTest"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{27}{repetitionName}"
-    maxCombinationAmount = 1
+    repetitionName = "normalTest3"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{34}{repetitionName}"
+    maxCombinationAmount = 3
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
-    useBestFeaturesTest = False
+    useBestFeaturesTest = True
     bestFeaturesSaveFile = "top2udrli.npy"
     quickTest = False
     ##############################################################
@@ -616,62 +616,62 @@ def main():
     # Sklearn/TestTrain parameters
     useAda = False  # Using ADA
     userndF = False  # Sklearn random forest, works a little worse and a little slower than SVM at this point
-    useMLP = True  # Sklearn MLP, not made good yet. Works ok
+    useMLP = False  # Sklearn MLP, not made good yet. Works ok
     tolerance = 0.001  # Untested
     ################################################################
     # Feature creation/extraction parameters
     chunkAmount = 3
     onlyCreateFeatures = False
-    nrFCOT = 3  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 19  # Multiplied by nrFCOT, First features to start creating
+    nrFCOT = 1  # nrOfFeaturesToCreateAtOneTime
+    featIndex = 35  # Multiplied by nrFCOT, First features to start creating
     usefeaturesToTestList = True
     featuresToTestDict = dict()
 
     featuresToTestDict["fftFeatures"] = [
-        1,  # fftData,
-        6,  # fftData_CV
+        # 1,  # fftData,
+        # 6,  # fftData_CV
         12,  # fftData_BC
         15,  # fftData_BC_CV
         55,  # fftData_CV_BC
 
     ]
-    # featuresToTestDict["stftFeatures"] = [
-    #     51,  # stftData,
-    #     52,  # stftData_BC
-    #     53,  # stftData_CV
-    #     54,  # stftData_BC_CV
-    #     58,  # stftData_CV_BC
-    # ]
-    # featuresToTestDict["inversefftFeatures"] = [
-    #     25,  # fftData_BC_ifft
-    #     28,  # fftData_BC_ifft_cor2x1
-    #     29,  # fftData_BC_ifft_cor2x2
-    #     30,  # fftData_BC_ifft_cor2x3
-    #     34,  # fftData_BC_ifft_cor1x1
-    #     36,  # fftData_BC_ifft_CV
-    # ]
-    # featuresToTestDict["welchFeatures"] = [
-    #     2,  # welchData
-    #     7,  # welchData_CV
-    #     13,  # welchData_BC
-    #     16,  # welchData_BC_CV
-    #     56,  # welchData_CV_BC
-    # ]
-    # featuresToTestDict["hilbertFeatures"] = [
-    #     3,  # hilbertData,
-    #     8,  # hilbertData_CV
-    #     14,  # hilbertData_BC
-    #     17,  # hilbertData_BC_CV
-    #     57,  # hilbertData_CV_BC
-    # ]
-    # featuresToTestDict["gaussianFeatures"] = [
-    #     9,  # "gausData"
-    #     # 10,  # dataGCV2
-    #     18,  # gausData_CV
-    #     19,  # gausData_CV_BC
-    #     20,  # gaussianData_BC
-    #     21,  # gausData_BC_CV
-    # ]
+    featuresToTestDict["stftFeatures"] = [
+        # 51,  # stftData,
+        52,  # stftData_BC
+        # 53,  # stftData_CV
+        54,  # stftData_BC_CV
+        58,  # stftData_CV_BC
+    ]
+    featuresToTestDict["inversefftFeatures"] = [
+        25,  # fftData_BC_ifft
+        # 28,  # fftData_BC_ifft_cor2x1
+        # 29,  # fftData_BC_ifft_cor2x2
+        # 30,  # fftData_BC_ifft_cor2x3
+        # 34,  # fftData_BC_ifft_cor1x1
+        36,  # fftData_BC_ifft_CV
+    ]
+    featuresToTestDict["welchFeatures"] = [
+        # 2,  # welchData
+        # 7,  # welchData_CV
+        13,  # welchData_BC
+        16,  # welchData_BC_CV
+        56,  # welchData_CV_BC
+    ]
+    featuresToTestDict["hilbertFeatures"] = [
+        # 3,  # hilbertData,
+        # 8,  # hilbertData_CV
+        14,  # hilbertData_BC
+        17,  # hilbertData_BC_CV
+        57,  # hilbertData_CV_BC
+    ]
+    featuresToTestDict["gaussianFeatures"] = [
+        # 9,  # "gausData"
+        # # 10,  # dataGCV2
+        # 18,  # gausData_CV
+        19,  # gausData_CV_BC
+        20,  # gaussianData_BC
+        21,  # gausData_BC_CV
+    ]
 
     featuresToTestList = []
     for featGroupName, featGroup in featuresToTestDict.items():
