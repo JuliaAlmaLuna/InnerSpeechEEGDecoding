@@ -526,7 +526,7 @@ class featureEClass:
             if featureName == "stftData":
                 import scipy.signal as signal
                 import math
-                wantedShape = splitNr
+                wantedShape = 12
                 arLength = tempData.shape[-1]
                 nperseg = math.floor(arLength / (wantedShape - 2))
 
@@ -1207,6 +1207,8 @@ class featureEClass:
                             )
                     self.createdFeatureList.append(createdFeature)
 
+        createdFeature = None
+
         return self.createdFeatureList, self.labels, correctedExists
 
     def getOrigData(self):
@@ -1330,23 +1332,3 @@ class featureEClass:
 
     def getOrder(self):
         return self.orderList[self.testNr]
-        # return self.order
-
-    # def multiLabels(labels):
-    #     mlabels = np.zeros([labels.shape[0], 2])
-    #     for ind, label in enumerate(labels):
-    #         if label > 3 and label < 8:
-    #             mlabels[ind, 1] = 1
-    #             mlabels[ind, 0] = label - 4
-    #         if label < 4:
-    #             mlabels[ind, 1] = 0
-    #         if label > 7:
-    #             mlabels[ind, 1] = 2
-    #             mlabels[ind, 0] = label - 8
-    #     labels = mlabels
-    #     return labels
-    #     # Getting Freq Data
-    #     # data_f = ut.data_into_freq_buckets(data[:,:128,:],
-    #     # nr_of_buckets, buckets)
-    #     # print("Freq band bucket separated data shape: \
-    #     # {}".format(data_f.shape))

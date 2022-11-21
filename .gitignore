@@ -18,6 +18,11 @@ newhstackBaselineFeatures**
 newnewBaselineFeatures**
 newtestingHstackBaselineFeatures**
 workingBaseLine**
+normal**
+potholes**
+WorkingBaseLineFeatures**
+WorkingBaselineFeaturesNew**
+SavedResults**
 
 eeg-imagined-speech-nieto/derivatives/sub-01/ses-01/sub-01_ses-01_baseline-epo.fif
 eeg-imagined-speech-nieto/derivatives/sub-01/ses-01/sub-01_ses-01_eeg-epo.fif
@@ -268,3 +273,9 @@ saved_model/my_modelgood4/saved_model.pb
 saved_model/my_modelgood4/variables/variables.data-00000-of-00001
 saved_model/my_modelgood4/variables/variables.index
 makeTables.ipynb
+normal/1.jpg
+WorkingBaselineFeaturesNew/sub-1-par-split1/anglefftData.npy
+__pycache__/dataLoader.cpython-38.pyc
+eeg-imagined-speech-nieto/CHANGES
+eeg-imagined-speech-nieto/dataset_description.json
+eeg-imagined-speech-nieto/README

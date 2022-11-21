@@ -263,7 +263,7 @@ def anovaTest(
         )
 
         if loadedMask is None:
-
+            # collect garbage on all workers
             flatfeature = np.reshape(feature[0], [feature[0].shape[0], -1])
 
             scaler.fit(flatfeature)
@@ -290,12 +290,14 @@ def anovaTest(
             goodData = f_statistic * p_values * varMask
 
             remainingNrOfFeatures = np.count_nonzero(goodData)
-            if remainingNrOfFeatures > 12000:
-                ratioKeep = int(12000 / len(goodData) * 100)
+            if remainingNrOfFeatures > 17000:
+                ratioKeep = int(17000 / len(goodData) * 100)
+                # keepThresh = np.percentile(goodData, round(ratioKeep))
                 bestPercentile = feature_selection.SelectPercentile(
                     feature_selection.f_classif, percentile=ratioKeep
                 )
                 bestPercentile.fit(flatfeature, labels)
+                # goodData[goodData < keepThresh] = 0
                 goodData = bestPercentile.get_support() * 1
 
             f_statistic = None
@@ -586,13 +588,13 @@ def main():
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    repetitionName = "normalTest3"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{34}{repetitionName}"
-    maxCombinationAmount = 3
+    repetitionName = "normalTest2"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{36}{repetitionName}"
+    maxCombinationAmount = 2
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
-    useBestFeaturesTest = True
+    useBestFeaturesTest = False
     bestFeaturesSaveFile = "top2udrli.npy"
     quickTest = False
     ##############################################################
@@ -621,9 +623,9 @@ def main():
     ################################################################
     # Feature creation/extraction parameters
     chunkAmount = 3
-    onlyCreateFeatures = False
-    nrFCOT = 1  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 35  # Multiplied by nrFCOT, First features to start creating
+    onlyCreateFeatures = True
+    nrFCOT = 2  # nrOfFeaturesToCreateAtOneTime
+    featIndex = 2  # Multiplied by nrFCOT, First features to start creating
     usefeaturesToTestList = True
     featuresToTestDict = dict()
 
@@ -636,9 +638,9 @@ def main():
 
     ]
     featuresToTestDict["stftFeatures"] = [
-        # 51,  # stftData,
+        51,  # stftData,
         52,  # stftData_BC
-        # 53,  # stftData_CV
+        53,  # stftData_CV
         54,  # stftData_BC_CV
         58,  # stftData_CV_BC
     ]
@@ -763,20 +765,23 @@ def main():
 
         while True:
 
-            for featureI in featureListIndex:
-                featureList[featureI] = False
+            if usefeaturesToTestList:
+                for featureI in featureListIndex:
+                    featureList[featureI] = False
+                    if featureI in featuresToTestList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                        featureList[featureI] = True
+            else:
+                for featureI in featureListIndex:
+                    featureList[featureI] = False
+                    if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                        featureList[featureI] = True
 
-            if (featIndex * nrFCOT) > len(featureList) - 1:
+            if (featIndex * nrFCOT) > (len(featureList) - 2):
                 break
-            if featIndex > len(featureList) - (nrFCOT + 1):
+            if (featIndex * nrFCOT) > len(featureList) - (nrFCOT + 1):
                 featIndex = len(featureList) - (nrFCOT + 1)
 
-            for featureI in featureListIndex[
-                featIndex * nrFCOT: (featIndex + 1) * nrFCOT
-            ]:
-                featureList[featureI] = True
-
-            featureList[10] = False  # 11
+            # featureList[10] = False  # 11
             # featureList[4] = False  # 5
             # featureList[5] = False  # 6
             # featureList[6] = False  # 7
@@ -1329,6 +1334,7 @@ def onlyCreateFeaturesFunction(
                     f"Feature Mask Already exist for all Features for subject {sub}")
 
         if useSepSubjFS is not True:
+
             goodFeatureMaskListList = []
             for subj, features, labels in zip(
                 subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
