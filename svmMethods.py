@@ -174,8 +174,8 @@ class SvmMets:
         predictions = clf.predict(ndata_test)
         correct = np.zeros(labels_test.shape)
         correctamount = 0
-        print(f"Labels test : {labels_test}")
-        print(f"Predictions test : {predictions}")
+        # print(f"Labels test : {labels_test}")
+        # print(f"Predictions test : {predictions}")
         for nr, pred in enumerate(predictions, 0):
             if pred == labels_test[nr]:
                 correct[nr] = 1

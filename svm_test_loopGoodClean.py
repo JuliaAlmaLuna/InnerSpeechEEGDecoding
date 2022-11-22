@@ -110,7 +110,8 @@ def mixShuffleSplit(
 
 
 def printProcess(processName, printText):
-    with open(f"{os.getcwd()}/processOutputs/{processName}Output.txt", "a") as f:
+    saveFolderName = "peak"
+    with open(f"{os.getcwd()}/{saveFolderName}/processOutputs/{processName}Output.txt", "a") as f:
         print(printText, file=f)
 
 
@@ -120,8 +121,8 @@ def loadAnovaMaskNoClass(
     name = f"{featurename}{maskname}"
     if onlyUniqueFeatures:
         name = f"{name}u{uniqueThresh}"
-
-    saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
+    saveFolderName = "peak"
+    saveDir = f"{os.getcwd()}/{saveFolderName}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
     path = glob.glob(saveDir + f"/{name}.npy")
     if len(path) > 0:
         savedAnovaMask = np.load(path[0], allow_pickle=True)
@@ -143,8 +144,8 @@ def saveAnovaMaskNoClass(
 
     if onlyUniqueFeatures:
         name = f"{name}u{uniqueThresh}"
-
-    saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
+    saveFolderName = "peak"
+    saveDir = f"{os.getcwd()}/{saveFolderName}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
     if os.path.exists(saveDir) is not True:
         os.makedirs(saveDir)
 
@@ -583,35 +584,37 @@ def main():
 
     ##############################################################
     # Testloop parameters
-    paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
+    # paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
+    paradigm = paradigmSetting.upDownVisFixedWorse()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    repetitionName = "debugg"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{21}{repetitionName}"
-    maxCombinationAmount = 1
+    repetitionName = "peak2"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{87}{repetitionName}"
+    maxCombinationAmount = 2
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
     useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top2udrli.npy"
-    quickTest = False
+    bestFeaturesSaveFile = "top2udv.npy"
+    quickTest = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
-    t_min = 1.8
-    t_max = 3
+    t_min = 1.1
+    t_max = 2.3
     sampling_rate = 256
     ##############################################################
     # Feature selection parameters
     onlyUniqueFeatures = True
-    uniqueThresh = 0.8
+    uniqueThresh = 0.9
     signAll = True
-    globalSignificanceThreshold = 0.05  # 0.1  #
+    globalSignificanceThreshold = 0.1  # 0.1  #
     signSolo = False
     soloSignificanceThreshold = 0.005
     # Does not seem to help at all. Could be useful for really individual features.
-    useSepSubjFS = False
+    useSepSubjFS = True
+    saveFolderName = "peak"
     if useSepSubjFS:
         globalSignificanceThreshold = 0.05
     ################################################################
@@ -625,59 +628,60 @@ def main():
     chunkAmount = 3
     onlyCreateFeatures = False
     nrFCOT = 2  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 1  # Multiplied by nrFCOT, First features to start creating
+    featIndex = 2  # Multiplied by nrFCOT, First features to start creating
     usefeaturesToTestList = True
     featuresToTestDict = dict()
-
+    stftSplit = 8
     featuresToTestDict["fftFeatures"] = [
         1,  # fftData,
-        # 6,  # fftData_CV
-        # 12,  # fftData_BC
-        # 15,  # fftData_BC_CV
-        # 55,  # fftData_CV_BC
+        6,  # fftData_CV
+        12,  # fftData_BC
+        15,  # fftData_BC_CV
+        55,  # fftData_CV_BC
 
     ]
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
-        # 52,  # stftData_BC
+        52,  # stftData_BC
         53,  # stftData_CV
-        # 54,  # stftData_BC_CV
-        # 58,  # stftData_CV_BC
+        54,  # stftData_BC_CV
+        58,  # stftData_CV_BC
     ]
-    # featuresToTestDict["inversefftFeatures"] = [
-    #     25,  # fftData_BC_ifft
-    #     # 28,  # fftData_BC_ifft_cor2x1
-    #     # 29,  # fftData_BC_ifft_cor2x2
-    #     # 30,  # fftData_BC_ifft_cor2x3
-    #     # 34,  # fftData_BC_ifft_cor1x1
-    #     36,  # fftData_BC_ifft_CV
-    # ]
+
+    featuresToTestDict["inversefftFeatures"] = [
+        25,  # fftData_BC_ifft
+        # 28,  # fftData_BC_ifft_cor2x1
+        # 29,  # fftData_BC_ifft_cor2x2
+        # 30,  # fftData_BC_ifft_cor2x3
+        # 34,  # fftData_BC_ifft_cor1x1
+        36,  # fftData_BC_ifft_CV
+    ]
     # featuresToTestDict["welchFeatures"] = [
     #     # 2,  # welchData
     #     # 7,  # welchData_CV
     #     13,  # welchData_BC
     #     16,  # welchData_BC_CV
     #     56,  # welchData_CV_BC
-    # ]
-    # featuresToTestDict["hilbertFeatures"] = [
-    #     # 3,  # hilbertData,
-    #     # 8,  # hilbertData_CV
-    #     14,  # hilbertData_BC
-    #     17,  # hilbertData_BC_CV
-    #     57,  # hilbertData_CV_BC
-    # ]
-    # featuresToTestDict["gaussianFeatures"] = [
-    #     # 9,  # "gausData"
-    #     # # 10,  # dataGCV2
-    #     # 18,  # gausData_CV
-    #     # 19,  # gausData_CV_BC
-    #     # 20,  # gaussianData_BC
-    #     # 21,  # gausData_BC_CV
-    # ]
-
-    featuresToTestDict["corrFeatures"] = [
-        33,  # dataCorr2ax1d
+    # # ]
+    featuresToTestDict["hilbertFeatures"] = [
+        3,  # hilbertData,
+        8,  # hilbertData_CV
+        14,  # hilbertData_BC
+        17,  # hilbertData_BC_CV
+        57,  # hilbertData_CV_BC
     ]
+    featuresToTestDict["gaussianFeatures"] = [
+        9,  # "gausData"
+        # 10,  # dataGCV2
+        18,  # gausData_CV
+        19,  # gausData_CV_BC
+        20,  # gaussianData_BC
+        21,  # gausData_BC_CV
+    ]
+
+    # featuresToTestDict["corrFeatures"] = [
+    #     33,  # dataCorr2ax1d
+    # ]
 
     featuresToTestList = []
     for featGroupName, featGroup in featuresToTestDict.items():
@@ -780,10 +784,10 @@ def main():
                     if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
                         featureList[featureI] = True
 
-            if (featIndex * nrFCOT) > (len(featureList) - 2):
+            if (featIndex * nrFCOT) > (len(featuresToTestList) - 1):
                 break
-            if (featIndex * nrFCOT) > len(featureList) - (nrFCOT + 1):
-                featIndex = len(featureList) - (nrFCOT + 1)
+            # if (featIndex * nrFCOT) > len(featureList) - 1 - (nrFCOT):
+            #     featIndex = len(featureList) - (nrFCOT)
 
             # featureList[10] = False  # 11
             # featureList[4] = False  # 5
@@ -839,6 +843,7 @@ def main():
                 maxCombinationAmount,
                 featureList,
                 useSepSubjFS,
+                stftSplit=stftSplit,
             )
 
             featIndex = featIndex + 1
@@ -917,6 +922,7 @@ def main():
                     maxCombinationAmount,
                     featureList,
                     useSepSubjFS,
+                    stftSplit=stftSplit,
                 )
 
                 featIndex = featIndex + 1
@@ -951,8 +957,9 @@ def main():
             chunk=False,
             chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
             onlyUniqueFeatures=onlyUniqueFeatures,
-            uniqueThresh=0.8,
+            uniqueThresh=uniqueThresh,
             useSepSubjFS=useSepSubjFS,
+            stftSplit=stftSplit,
         )
         fClassDict[f"{sub}"].loadData(
             t_min=t_min,
@@ -1144,7 +1151,7 @@ def main():
             print(f"Starting test of subject:{sub} , testNr:{testNr}")
 
             # Creating masked feature List using ANOVA/cov Mask
-            signAll = True
+            # signAll = True
             # Then only create new combos containing that best combos + 1 or 2 more features
             if signAll:
                 print(fClassDict[f"{sub}"].getLabels())
@@ -1230,7 +1237,8 @@ def main():
 
             if validationRepetition:
                 foldername = f"{foldername}-{repetitionValue}"
-            saveDir = f"{os.getcwd()}/SavedResults/{foldername}"
+            saveFolderName = "peak"
+            saveDir = f"{os.getcwd()}/{saveFolderName}/SavedResults/{foldername}"
             if os.path.exists(saveDir) is not True:
                 os.makedirs(saveDir)
 
@@ -1257,6 +1265,7 @@ def onlyCreateFeaturesFunction(
     maxCombinationAmount,
     featureList,
     useSepSubjFS,
+    stftSplit,
 ):
 
     # Creating the features for each subject and putting them in a dict
@@ -1272,8 +1281,9 @@ def onlyCreateFeaturesFunction(
             chunk=chunkFeatures,
             chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
             onlyUniqueFeatures=onlyUniqueFeatures,
-            uniqueThresh=0.8,
+            uniqueThresh=uniqueThresh,
             useSepSubjFS=useSepSubjFS,
+            stftSplit=stftSplit,
         )
         fClassDict[f"{sub}"].loadData(
             t_min=t_min,

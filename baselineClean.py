@@ -25,6 +25,8 @@ class baseLineCorrection(featureEClass):
             globalSignificance=globalSignificance,
             chunk=chunk,
             chunkAmount=chunkAmount,
+            uniqueThresh=0.8,
+            stftSplit=8
         )
         self.baseLineFeatures = []
         self.baseLineData = None
@@ -158,19 +160,34 @@ class baseLineCorrection(featureEClass):
             for ufeature, cfeature in zip(unCorrectedFeatureList, correctedFeatureList):
                 # print(ufeature[0].shape)
                 # print(cfeature[0].shape)
+                sameDaySameLabel = 0
+                samdDayDiffLabel = 0
                 if ufeature[1] == featureName:
                     corrFeature = []
+                    print(labelsAux)
+                    # tempLabelsAux = np.roll(labelsAux, 1)
+                    # print(np.sort(tempLabelsAux, axis=0))
+                    # labelsAux[::, labelsAux[0,].argsort()[::-1]]
+                    sameDaySameLabel = 0
+                    samdDayDiffLabel = 0
                     for trial, labelAux in zip(ufeature[0], labelsAux):
                         session = labelAux[3]
                         # print(labelAux)
-                        print(labelAux)
-
+                        # print(labelAux)
+                        # print(session)
+                        if labelAux[1] == labelAux[3]:
+                            sameDaySameLabel = sameDaySameLabel + 1
+                        else:
+                            samdDayDiffLabel = samdDayDiffLabel + 1
                         corrTrial = trial - bfeature[0][session - 1]
 
                         # featureEClass.plotHeatMaps(corrTrial)
                         # print(f"SUBJECT ABOVE {self.subject}")
                         # print(labelAux)
                         corrFeature.append(corrTrial)
+                    # print(sameDaySameLabel)
+                    # print(samdDayDiffLabel)
+                    # print(samdDayDiffLabel / (samdDayDiffLabel + sameDaySameLabel))
                     corrFeature = np.array(corrFeature)
 
                     # featureEClass.plotHeatMaps(corrFeature[0])

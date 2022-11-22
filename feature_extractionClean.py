@@ -22,9 +22,10 @@ class featureEClass:
         paradigmName,
         globalSignificance,
         chunkAmount,
+        uniqueThresh,
+        stftSplit,
         signAll=True,
         signSolo=False,
-        uniqueThresh=0.8,
         featureFolder="SavedFeaturesNew",
         chunk=False,
         onlyUniqueFeatures=False,
@@ -56,7 +57,8 @@ class featureEClass:
         self.signAll = signAll
         self.signSolo = signSolo
         self.useSepSubjFS = useSepSubjFS
-
+        self.saveFolderName = "peak"
+        self.stftSplit = stftSplit
         if self.signAll or self.signSolo:
             self.onlySign = True
         else:
@@ -120,7 +122,7 @@ class featureEClass:
 
     def saveFeatures(self, name, array):
 
-        saveDir = f"{os.getcwd()}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
+        saveDir = f"{os.getcwd()}/{self.saveFolderName}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
 
@@ -130,7 +132,7 @@ class featureEClass:
         )
 
     def loadFeatures(self, name):
-        svpath = f"{os.getcwd()}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
+        svpath = f"{os.getcwd()}/{self.saveFolderName}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         path = glob.glob(svpath + f"/{name}.npy")
         if len(path) > 0:
             savedFeatures = np.load(path[0], allow_pickle=True)
@@ -143,11 +145,12 @@ class featureEClass:
         if self.onlyUniqueFeatures:
             name = f"{name}u{self.uniqueThresh}"
 
-        saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        saveDir = f"{os.getcwd()}/{self.saveFolderName}/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         path = glob.glob(saveDir + f"/{name}.npy")
         # print(saveDir)
         # print(name)
         # print(path)
+
         if len(path) > 0:
             savedAnovaMask = np.load(path[0], allow_pickle=True)
             return savedAnovaMask
@@ -160,7 +163,7 @@ class featureEClass:
         if self.onlyUniqueFeatures:
             name = f"{name}u{self.uniqueThresh}"
 
-        saveDir = f"{os.getcwd()}/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
+        saveDir = f"{os.getcwd()}/{self.saveFolderName}/SavedAnovaMask/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
 
@@ -526,7 +529,8 @@ class featureEClass:
             if featureName == "stftData":
                 import scipy.signal as signal
                 import math
-                wantedShape = 12
+                wantedShape = 8  # self.stftSplit
+                # featureNameSaved = f"{featureNameSaved}sp{self.stftSplit}"
                 arLength = tempData.shape[-1]
                 nperseg = math.floor(arLength / (wantedShape - 2))
 
@@ -1100,7 +1104,7 @@ class featureEClass:
                     featureName = "normDatacor2x3_BC"
                 if fNr == 33:
                     featureName = "normDatacor1x1"
-                    
+
                 if fNr == 34:
                     featureName = "fftData_BC_ifft_cor1x1"
                 if fNr == 35:
@@ -1303,7 +1307,7 @@ class featureEClass:
 
         oldparadigmName = self.paradigmName
         if self.useSepSubjFS:
-            self.paradigmName = f"{self.paradigmName}usingSoloFSubs"
+            self.paradigmName = f"{self.paradigmName}usingSoloFsubs"
 
         if self.globalGoodFeatureMask is None:
             print("InGlobalGoodFeatures")

@@ -95,7 +95,9 @@ def load_data(
     # Transform data and keep only the trials of interest
     if datatype != "baseline":
         X, Y, Y_AUX = Transform_for_classificator(X, Y, Classes, Conditions)
+        # print(f"Julia3{Y_AUX}")
         Y_AUX = np.reshape(Y_AUX, [-1, 4])
+        # print(f"Julia4{Y_AUX}")
         print("Final labels2 shape")
 
         print(Y_AUX.shape)

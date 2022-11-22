@@ -297,6 +297,19 @@ def upDownVis():
             ],
         ],
     )
+   
+    
+def upDownVisFixedWorse():
+    return (
+        "vvudFW",
+        [
+            [["Visualized"], ["Visualized"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
 
 
 def upDownVisSpecialPlot():
