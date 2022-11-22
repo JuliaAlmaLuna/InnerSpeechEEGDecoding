@@ -172,9 +172,10 @@ class SvmMets:
 
         clf.fit(ndata_train, labels_train)
         predictions = clf.predict(ndata_test)
-
         correct = np.zeros(labels_test.shape)
         correctamount = 0
+        print(f"Labels test : {labels_test}")
+        print(f"Predictions test : {predictions}")
         for nr, pred in enumerate(predictions, 0):
             if pred == labels_test[nr]:
                 correct[nr] = 1
@@ -196,7 +197,11 @@ class SvmMets:
 
         ndata_train = scaler.transform(data_train)
         ndata_test = scaler.transform(data_test)
-
+        # print("Shuffling")
+        # np.random.shuffle(labels_train)
+        # print(labels_train.shape)
+        # print("here")
+        # labels_train = np.random.shuffle(labels_train)
         allResults = []
         if self.quickTest:
             clist = [2.5]
@@ -339,7 +344,7 @@ class SvmMets:
             kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
             degree (int, optional): Degree of SVM pipeline. Defaults to 3.
             gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
-            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.shape
             coefs (_type_, optional): When SelectKBest is used, these are its coefficients
             . Defaults to None.
 

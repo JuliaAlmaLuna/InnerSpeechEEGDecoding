@@ -339,12 +339,12 @@ class featureEClass:
             # # Normalizing data, if standardization is wanted. Use other function called standardizeData
             # # THIS might be unnecessary since Standardscaler is used later
             # # It does help it seems. Even tho it takes time
-            sDataRow[0], sDataRow[1] = self.normalizeData(
-                trainData=sDataRow[0], testData=sDataRow[1]
-            )
+            # sDataRow[0], sDataRow[1] = self.normalizeData(
+            #     trainData=sDataRow[0], testData=sDataRow[1]
+            # )
 
             normShuffledDataList.append(sDataRow)
-
+        print("Skipping NORMALIZING")
         return normShuffledDataList
 
     def shuffleSplitData(self, data_t, labels_t, name):
@@ -615,7 +615,7 @@ class featureEClass:
                     featureNameSaved,
                 ]
 
-            if featureName == "1dataCorr2ax1d":
+            if featureName == "normDatacor1x1":  # 1dataCorr2ax1d
                 weights = np.zeros(shape=[20])
                 weights[:3] = [0.25, 0.5, 0.25]
                 weights[17:] = [0.25, 0.5, 0.25]
@@ -979,12 +979,14 @@ class featureEClass:
         featureList,
         verbose,
     ):
-
+        # print("before here?")
         if self.data is None:  # Really should load this separately
             raise Exception("Data should not be None")
-
+        # print("ohiMark")
+        # print(featureEClass.plotHeatMaps(self.data[0]))
         self.createdFeatureList = []
         tempData = np.copy(self.data)
+
         correctedExists = True
 
         for fNr, useFeature in enumerate(featureList, 1):
@@ -1098,6 +1100,7 @@ class featureEClass:
                     featureName = "normDatacor2x3_BC"
                 if fNr == 33:
                     featureName = "normDatacor1x1"
+                    
                 if fNr == 34:
                     featureName = "fftData_BC_ifft_cor1x1"
                 if fNr == 35:

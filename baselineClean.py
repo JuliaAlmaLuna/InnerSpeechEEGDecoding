@@ -61,16 +61,21 @@ class baseLineCorrection(featureEClass):
         print(f"Baseline batches : {baselineBatches}")
         baselineFeatureListList = []
         for x in range(baselineBatches):
+
             self.paradigmName = f"split{x+1}"
             self.data = self.getBaselineData()[
-                :, :, x * trialSampleAmount : (x + 1) * trialSampleAmount
+                :, :, x * trialSampleAmount: (x + 1) * trialSampleAmount
             ]
+            # print(featureEClass.plotHeatMaps(self.data[0]))
             super().getFeatures(featureList=featureList, verbose=True)
+
             baselineFeatureListList.append(
                 self.getFeatureList(),
-            )
-            # print(len(self.getFeatureList())) # 8
 
+            )
+
+            # print(len(self.getFeatureList())) # 8
+        print(len(baselineFeatureListList))
         justFeatureArraysList = []
         # iterates through amount of features creating empty lists
         for x in range(len(baselineFeatureListList[0])):
@@ -79,12 +84,21 @@ class baseLineCorrection(featureEClass):
         for baselineSplit in baselineFeatureListList:
             for featNr, feat in enumerate(baselineSplit):  # Feature
                 justFeatureArraysList[featNr].append(feat[0])
-
+        print(len(justFeatureArraysList))
+        # print(np.array(justFeatureArraysList).shape)
         avgFEATURESlist = []
+        # print("JULIANO")
+        # print(justFeatureArraysList)
+        # print("JULIANO")
+        # print(self.getFeatureList())
+
         for featURE, unAvgFeature in zip(justFeatureArraysList, self.getFeatureList()):
             tempArray = np.asarray(featURE)
             # print(tempArray.shape)
+            print(tempArray.shape)
+            print("JULIA")
             avgFeature = np.mean(tempArray, axis=0)
+            print(avgFeature.shape)
             # Here, if chunked And one of the features not CV, then avg all chunks as well
             if self.chunk:
                 if "CV" not in unAvgFeature[1]:
@@ -99,7 +113,8 @@ class baseLineCorrection(featureEClass):
                     )
                     # Now session * channels * averagedSpecificDataPerChunk
                     avgFeature3 = np.mean(avgFeature2, axis=2)
-                    avgFeature = np.tile(avgFeature3, reps=[1, 1, self.chunkAmount])
+                    avgFeature = np.tile(avgFeature3, reps=[
+                                         1, 1, self.chunkAmount])
                     # np.repeat(
                     #     avgFeature3, repeats=self.chunkAmount, axis=0)
                     # np.concatenate(
@@ -135,17 +150,32 @@ class baseLineCorrection(featureEClass):
         correctedFeatureList = dp(unCorrectedFeatureList)
         for bfeature in bfeatures:
             featureName = bfeature[1]
+            # print(bfeature.shape)
+
             # if self.chunk:
             #     featureName = f"{featureName}cn{self.chunkAmount}"
-            print(featureName)
+            # print(featureName)
             for ufeature, cfeature in zip(unCorrectedFeatureList, correctedFeatureList):
+                # print(ufeature[0].shape)
+                # print(cfeature[0].shape)
                 if ufeature[1] == featureName:
                     corrFeature = []
                     for trial, labelAux in zip(ufeature[0], labelsAux):
                         session = labelAux[3]
+                        # print(labelAux)
+                        print(labelAux)
+
                         corrTrial = trial - bfeature[0][session - 1]
+
+                        # featureEClass.plotHeatMaps(corrTrial)
+                        # print(f"SUBJECT ABOVE {self.subject}")
+                        # print(labelAux)
                         corrFeature.append(corrTrial)
                     corrFeature = np.array(corrFeature)
+
+                    # featureEClass.plotHeatMaps(corrFeature[0])
+                    # print(f"SUBJECT ABOVE {self.subject}")
+                    # print(labelAux)
                     # print(cfeature[0][0][0][0])
                     # print("ada")
                     cfeature[0] = corrFeature

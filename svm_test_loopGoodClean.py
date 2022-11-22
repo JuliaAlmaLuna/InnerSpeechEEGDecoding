@@ -588,9 +588,9 @@ def main():
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    repetitionName = "normalTest2"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{36}{repetitionName}"
-    maxCombinationAmount = 2
+    repetitionName = "debugg"  # "udrliplotnoAda1hyperparams"
+    repetitionValue = f"{21}{repetitionName}"
+    maxCombinationAmount = 1
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
@@ -623,56 +623,60 @@ def main():
     ################################################################
     # Feature creation/extraction parameters
     chunkAmount = 3
-    onlyCreateFeatures = True
+    onlyCreateFeatures = False
     nrFCOT = 2  # nrOfFeaturesToCreateAtOneTime
-    featIndex = 2  # Multiplied by nrFCOT, First features to start creating
+    featIndex = 1  # Multiplied by nrFCOT, First features to start creating
     usefeaturesToTestList = True
     featuresToTestDict = dict()
 
     featuresToTestDict["fftFeatures"] = [
-        # 1,  # fftData,
+        1,  # fftData,
         # 6,  # fftData_CV
-        12,  # fftData_BC
-        15,  # fftData_BC_CV
-        55,  # fftData_CV_BC
+        # 12,  # fftData_BC
+        # 15,  # fftData_BC_CV
+        # 55,  # fftData_CV_BC
 
     ]
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
-        52,  # stftData_BC
+        # 52,  # stftData_BC
         53,  # stftData_CV
-        54,  # stftData_BC_CV
-        58,  # stftData_CV_BC
+        # 54,  # stftData_BC_CV
+        # 58,  # stftData_CV_BC
     ]
-    featuresToTestDict["inversefftFeatures"] = [
-        25,  # fftData_BC_ifft
-        # 28,  # fftData_BC_ifft_cor2x1
-        # 29,  # fftData_BC_ifft_cor2x2
-        # 30,  # fftData_BC_ifft_cor2x3
-        # 34,  # fftData_BC_ifft_cor1x1
-        36,  # fftData_BC_ifft_CV
-    ]
-    featuresToTestDict["welchFeatures"] = [
-        # 2,  # welchData
-        # 7,  # welchData_CV
-        13,  # welchData_BC
-        16,  # welchData_BC_CV
-        56,  # welchData_CV_BC
-    ]
-    featuresToTestDict["hilbertFeatures"] = [
-        # 3,  # hilbertData,
-        # 8,  # hilbertData_CV
-        14,  # hilbertData_BC
-        17,  # hilbertData_BC_CV
-        57,  # hilbertData_CV_BC
-    ]
-    featuresToTestDict["gaussianFeatures"] = [
-        # 9,  # "gausData"
-        # # 10,  # dataGCV2
-        # 18,  # gausData_CV
-        19,  # gausData_CV_BC
-        20,  # gaussianData_BC
-        21,  # gausData_BC_CV
+    # featuresToTestDict["inversefftFeatures"] = [
+    #     25,  # fftData_BC_ifft
+    #     # 28,  # fftData_BC_ifft_cor2x1
+    #     # 29,  # fftData_BC_ifft_cor2x2
+    #     # 30,  # fftData_BC_ifft_cor2x3
+    #     # 34,  # fftData_BC_ifft_cor1x1
+    #     36,  # fftData_BC_ifft_CV
+    # ]
+    # featuresToTestDict["welchFeatures"] = [
+    #     # 2,  # welchData
+    #     # 7,  # welchData_CV
+    #     13,  # welchData_BC
+    #     16,  # welchData_BC_CV
+    #     56,  # welchData_CV_BC
+    # ]
+    # featuresToTestDict["hilbertFeatures"] = [
+    #     # 3,  # hilbertData,
+    #     # 8,  # hilbertData_CV
+    #     14,  # hilbertData_BC
+    #     17,  # hilbertData_BC_CV
+    #     57,  # hilbertData_CV_BC
+    # ]
+    # featuresToTestDict["gaussianFeatures"] = [
+    #     # 9,  # "gausData"
+    #     # # 10,  # dataGCV2
+    #     # 18,  # gausData_CV
+    #     # 19,  # gausData_CV_BC
+    #     # 20,  # gaussianData_BC
+    #     # 21,  # gausData_BC_CV
+    # ]
+
+    featuresToTestDict["corrFeatures"] = [
+        33,  # dataCorr2ax1d
     ]
 
     featuresToTestList = []
@@ -1101,17 +1105,49 @@ def main():
 
     # A for loop just running all subjects using different seeds for train/data split
     for testNr in np.arange(testSize):
+        # newMaskedFeats = []
+        # newLabelsList = []
+        # for sub in subjects:
+        #     maskedFeat = fClassDict[f"{sub}"].getFeatureListFlat()
+        #     newLabels = fClassDict[f"{sub}"].getLabels()
 
+        #     print(maskedFeat)
+        #     print(maskedFeat[0][1])
+        #     print("yes")
+        #     print(maskedFeat[0][0])
+        #     print(maskedFeat[1][1])
+        #     print(maskedFeat[0][0].shape)
+        #     for sub2 in subjects:
+        #         if sub2 == sub:
+        #             continue
+        #         maskedFeat2 = fClassDict[f"{sub2}"].getFeatureListFlat()
+        #         labels2 = fClassDict[f"{sub2}"].getLabels()
+        #         newLabels = np.concatenate([newLabels, labels2])
+        #         print(maskedFeat2[0][0].shape)
+        #         # if maskedFeat2[0][0].shape[1] > maskedFeat[0][0].shape[1]:
+
+        #         for fnr, feature in enumerate(maskedFeat2):
+        #             maskedFeat[fnr][0] = np.concatenate(
+        #                 [maskedFeat[fnr][0], feature[0]], axis=0)
+        #     newLabelsList.append(newLabels)
+
+        #     newMaskedFeats.append(maskedFeat)
+        # for sub, maskedFeat, newLabels in zip(subjects, newMaskedFeats, newLabelsList):
+        #     # print(newMaskedFeats.shape)
+        #     fClassDict[f"{sub}"].maskedFeatureList = maskedFeat
+        #     fClassDict[f"{sub}"].labels = newLabels
+        #     print(fClassDict[f"{sub}"].labels.shape)
+        # signAll = False
         # For loop running pipeline on each subject
         for sub in subjects:  #
             fClassDict[f"{sub}"].setTestNr(testNr)
             print(f"Starting test of subject:{sub} , testNr:{testNr}")
 
             # Creating masked feature List using ANOVA/cov Mask
-
+            signAll = True
             # Then only create new combos containing that best combos + 1 or 2 more features
             if signAll:
-
+                print(fClassDict[f"{sub}"].getLabels())
                 mDataList = mixShuffleSplit(
                     fClassDict[f"{sub}"].getMaskedFeatureList(),
                     labels=fClassDict[f"{sub}"].getLabels(),
