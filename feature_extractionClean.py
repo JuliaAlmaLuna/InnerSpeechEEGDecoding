@@ -24,6 +24,7 @@ class featureEClass:
         chunkAmount,
         uniqueThresh,
         stftSplit,
+        saveFolderName,
         signAll=True,
         signSolo=False,
         featureFolder="SavedFeaturesNew",
@@ -57,7 +58,7 @@ class featureEClass:
         self.signAll = signAll
         self.signSolo = signSolo
         self.useSepSubjFS = useSepSubjFS
-        self.saveFolderName = "peak"
+        self.saveFolderName = saveFolderName
         self.stftSplit = stftSplit
         if self.signAll or self.signSolo:
             self.onlySign = True
@@ -125,7 +126,7 @@ class featureEClass:
         saveDir = f"{os.getcwd()}/{self.saveFolderName}/{self.featureFolder}/sub-{self.subject}-par-{self.paradigmName}"
         if os.path.exists(saveDir) is not True:
             os.makedirs(saveDir)
-
+        print(f"Saving feature{name} in {saveDir}")
         np.save(
             f"{saveDir}/{name}",
             array,
@@ -267,7 +268,11 @@ class featureEClass:
         # Sen ta all combinations, of them and all other values
 
         if useBestFeaturesTest:
-            maxCombinationAmount = maxCombinationAmount - bestFeatures.shape[1]
+            if bestFeatures.ndim > 1:
+                maxCombinationAmount = maxCombinationAmount - \
+                    bestFeatures.shape[1]
+            else:
+                maxCombinationAmount = 1
 
         if maxCombinationAmount < 1:
             for row in namesAndIndexBestFeatures:
@@ -381,6 +386,17 @@ class featureEClass:
             paradigms=paradigms,
         )
 
+        # print(self.labelsAux)
+        # print(self.labels)
+        timeSort = np.argsort(self.labelsAux[:, 0], axis=0)
+        tSortedlabelsAux = self.labelsAux[timeSort]
+        print(tSortedlabelsAux)
+        print("okay")
+        self.data = self.data[timeSort]
+        self.labels = self.labels[timeSort]
+        print(self.labels)
+
+        # Todo remove this. AND the .92 parts in the winfeat thingy
         # Makes the size of the trial a size that is divisible with no remainder by chunkAmount
         while True:
             if self.data.shape[2] % self.chunkAmount != 0:
@@ -434,7 +450,7 @@ class featureEClass:
     # If they do not have time. Then this is not necessary
     # I think. Or if they dont have time. Just dont
     def newCovariance(self, preCovFeature, splits=24):
-        splits = 24
+        splits = 26
         postCovFeature = []
         if splits > 1:
             averagedData = self.averageChannels(preCovFeature)
@@ -471,11 +487,12 @@ class featureEClass:
         if featureName[-2:] == "CV":
             print(featureName)
             print(featureName[:-3])
-            preCVFeature = self.loadFeatures(featureName[:-3])[0]
-            createdFeature = [
-                np.array(self.newCovariance(preCVFeature, splits=splitNr)),
-                featureNameSaved,
-            ]
+            if self.loadFeatures(featureName[:-3]) is not None:
+                preCVFeature = self.loadFeatures(featureName[:-3])[0]
+                createdFeature = [
+                    np.array(self.newCovariance(preCVFeature, splits=splitNr)),
+                    featureNameSaved,
+                ]
         else:
             if featureName == "fftData":
                 absFFT, angleFFT = ut.fftData2(tempData)
@@ -528,14 +545,15 @@ class featureEClass:
                     ]
             if featureName == "stftData":
                 import scipy.signal as signal
-                import math
-                wantedShape = 8  # self.stftSplit
+                # import math
+                # wantedShape = 8  # self.stftSplit
                 # featureNameSaved = f"{featureNameSaved}sp{self.stftSplit}"
                 arLength = tempData.shape[-1]
-                nperseg = math.floor(arLength / (wantedShape - 2))
+                # nperseg = math.floor(arLength / (wantedShape - 2))
 
                 stftFeature = abs(signal.stft(tempData, fs=256, window="blackman", boundary="zeros",
-                                              padded=True, noverlap=0, axis=-1, nperseg=nperseg)[2])[:, :, :, :splitNr]
+                                              padded=True, axis=-1, nperseg=arLength // 6)[2])  # [:, :, :, :splitNr]
+                stftFeature = np.swapaxes(stftFeature, -1, -2)
                 print(stftFeature.shape)
                 stftFeatureReshaped = np.reshape(
                     stftFeature, [stftFeature.shape[0], stftFeature.shape[1], -1])
@@ -971,8 +989,8 @@ class featureEClass:
                         -1,
                     ],
                 )
-
-        self.saveFeatures(featureNameSaved, createdFeature)
+        if createdFeature is not None:
+            self.saveFeatures(featureNameSaved, createdFeature)
         return createdFeature
 
     def insert_cn(self, string, index=-2):
@@ -1225,6 +1243,11 @@ class featureEClass:
     def getFeatureList(self):
         tempFeatureList = dp(self.createdFeatureList)
         return tempFeatureList
+
+    def addNameFeat(self, name):
+        for feat in self.createdFeatureList:
+            feat[1] = f"{feat[1]}{name}"
+        print(f"addedName {name} to featureNames")
 
     def getFeatureListFlat(self):
 

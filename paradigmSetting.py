@@ -130,6 +130,19 @@ def upDownInner():
     )
 
 
+def upDownInnerFixed():
+    return (
+        "iiudfixed",
+        [
+            [["Inner"], ["Inner"]],
+            [
+                ["Up"],
+                ["Down"],
+            ],
+        ],
+    )
+
+
 def upDownInnerSpecial():
     return (
         "iiudspec",
@@ -297,8 +310,8 @@ def upDownVis():
             ],
         ],
     )
-   
-    
+
+
 def upDownVisFixedWorse():
     return (
         "vvudFW",

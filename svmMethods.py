@@ -313,7 +313,7 @@ class SvmMets:
         res = correctamount / labels_test.shape[0]  # , coefs
 
         allResults.append([name, res, kernel, c])
-        allResults.append([name, res, kernel, c])
+        # allResults.append([name, res, kernel, c])
 
         if name not in self.featCombos:
             self.featCombos.append(name)

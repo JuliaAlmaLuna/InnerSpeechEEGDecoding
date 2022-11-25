@@ -42,15 +42,15 @@ class baseLineCorrection(featureEClass):
     def loadBaselineData(self):
 
         bdata, blabels = dl.load_data(
-            "baseline",
+            "eeg",
             sampling_rate=self.sampling_rate,
             subject_nr=self.subject,
-            t_start=0,
-            t_end=15,
+            t_start=4,
+            t_end=4.5,
             verbose=True,
         )
 
-        self.baseLineData = bdata[:, :128]
+        self.baseLineData = bdata  # [:, :128]
         self.baseLineLabels = blabels
 
     def getBaselineFeatures(
@@ -147,75 +147,56 @@ class baseLineCorrection(featureEClass):
         return tempData
 
     def baselineCorrect(
-        self, unCorrectedFeatureList, labelsAux, paradigmName2
+        self, unCorrectedFeatureList, baseLineFeatureList, paradigmName2, saveFolderName,
     ):  # Correct before creating Features of real data
         # or after, or both. Probably correct FFT, Welch, and Hilbert after creating them
         # And no correction using covariance for now. Create new fClasses for corrected?
-        bfeatures = self.getAvgBaselineFeatureList()
+
+        bfeatures = baseLineFeatureList
         correctedFeatureList = dp(unCorrectedFeatureList)
         for bfeature in bfeatures:
             featureName = bfeature[1]
-            # print(bfeature.shape)
-
-            # if self.chunk:
-            #     featureName = f"{featureName}cn{self.chunkAmount}"
-            # print(featureName)
             for ufeature, cfeature in zip(unCorrectedFeatureList, correctedFeatureList):
-                # print(ufeature[0].shape)
-                # print(cfeature[0].shape)
-                sameDaySameLabel = 0
-                samdDayDiffLabel = 0
                 if ufeature[1] == featureName:
                     corrFeature = []
-                    # print(labelsAux)
-                    # tempLabelsAux = np.roll(labelsAux, 1)
-                    # print(np.sort(tempLabelsAux, axis=0))
-                    # labelsAux[::, labelsAux[0,].argsort()[::-1]]
-                    sameDaySameLabel = 0
-                    samdDayDiffLabel = 0
-                    for trial, labelAux in zip(ufeature[0], labelsAux):
-                        session = labelAux[3]
-                        # print(labelAux)
-                        # print(labelAux)
-                        # print(session)
-                        if labelAux[1] == labelAux[3]:
-                            sameDaySameLabel = sameDaySameLabel + 1
-                        else:
-                            samdDayDiffLabel = samdDayDiffLabel + 1
-                        corrTrial = trial - bfeature[0][session - 1]
+                    bfeature[0] = np.roll(bfeature[0], shift=0, axis=0)
+                    # tempval = 0
+                    for trial, btrial in zip(ufeature[0], bfeature[0]):
+                        corrTrial = trial - btrial
 
-                        # featureEClass.plotHeatMaps(corrTrial)
-                        # print(f"SUBJECT ABOVE {self.subject}")
-                        # print(labelAux)
                         corrFeature.append(corrTrial)
-                    # print(sameDaySameLabel)
-                    # print(samdDayDiffLabel)
-                    # print(samdDayDiffLabel / (samdDayDiffLabel + sameDaySameLabel))
-                    corrFeature = np.array(corrFeature)
+                        # if tempval % 12 == 0:
+                        #     featureEClass.plotHeatMaps(trial)
+                        #     featureEClass.plotHeatMaps(btrial)
+                        #     featureEClass.plotHeatMaps(corrTrial)
+                        # tempval = tempval + 1
 
-                    # featureEClass.plotHeatMaps(corrFeature[0])
-                    # print(f"SUBJECT ABOVE {self.subject}")
-                    # print(labelAux)
-                    # print(cfeature[0][0][0][0])
-                    # print("ada")
+                    # featureEClass.plotHeatMaps(trial)
+                    # featureEClass.plotHeatMaps(btrial)
+                    # featureEClass.plotHeatMaps(corrTrial)
+                    corrFeature = np.array(corrFeature)
+                    # import time
+                    # time.sleep(5)
                     cfeature[0] = corrFeature
 
-                    # if self.chunk:
-                    #     cfeature[1] = f"{cfeature[1]}cn{self.chunkAmount}"
-
                     cfeature[1] = f"{cfeature[1]}_BC"
-                    # print(cfeature[0][0][0][0])
+
                     print(paradigmName2)
                     print(self.paradigmName)
                     print(cfeature[1])
                     print(f"{cfeature[1]}_BC")
                     self.featureFolder = "SavedFeaturesNew"
                     self.paradigmName = f"{paradigmName2}"
+                    oldFolderName = self.saveFolderName
+                    self.saveFolderName = saveFolderName
                     self.saveFeatures(f"{cfeature[1]}", cfeature)
+                    self.saveFolderName = oldFolderName
                     self.featureFolder = ("WorkingBaselineFeaturesNew",)
         self.correctedFeaturesList = correctedFeatureList
-
-        return correctedFeatureList
+        correctedFeatureList = None
+        if self.correctedFeaturesList is None:
+            raise Exception("Nogood")
+        return self.correctedFeaturesList
 
 
 if __name__ == "__main__":

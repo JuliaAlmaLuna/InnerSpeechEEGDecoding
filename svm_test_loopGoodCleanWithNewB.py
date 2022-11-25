@@ -5,7 +5,8 @@ from joblib import Parallel, delayed
 from copy import deepcopy as dp
 import numpy as np
 import feature_extractionClean as fclass
-from baselineClean import baseLineCorrection
+# from baselineClean import baseLineCorrection
+from baseCorrectWithEnd import baseLineCorrection
 import svmMethods as svmMet
 from sklearn import feature_selection
 from sklearn.preprocessing import StandardScaler
@@ -149,7 +150,10 @@ def saveAnovaMaskNoClass(
 
     saveDir = f"{os.getcwd()}/{saveFolderName}/SavedAnovaMask/sub-{subject}-par-{paradigmName}"
     if os.path.exists(saveDir) is not True:
-        os.makedirs(saveDir)
+        import random as rand
+        time.sleep(rand.random() * 10)
+        if os.path.exists(saveDir) is not True:
+            os.makedirs(saveDir)
 
     np.save(
         f"{saveDir}/{name}",
@@ -604,21 +608,25 @@ def main():
     ##############################################################
     # Testloop parameters
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
+    # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.upDownVisFixedWorse()
-    paradigm = paradigmSetting.upDownInnerFixed()
+    # paradigm = paradigmSetting.upDownInnerFixed()
+    paradigm = paradigmSetting.upDownInnerSpecial()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    repetitionName = "peak3-const3-i-ud-global-05-2c"  # "udrliplotnoAda1hyperparams"
-    repetitionValue = f"{38}{repetitionName}"
+    # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
+    repetitionName = "debuggingOnlyCurrthreeAv2Correct"
+    repetitionValue = f"{111}{repetitionName}"
     maxCombinationAmount = 2
+    onlyCreateFeatures = False
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
     useBestFeaturesTest = False
     bestFeaturesSaveFile = "top2udi.npy"
-    quickTest = True
+    quickTest = False
     ##############################################################
     # Loading parameters, what part of the trials to load and test
     # saveFolderName = "peakTime2"
@@ -629,14 +637,14 @@ def main():
     # useWinFeat = True
     # t_min2 = 1.7
     # t_max2 = 2.9
-    saveFolderName = "peakTime3"
+    saveFolderName = "peakTime4Sorted13"
     t_min = 1.1
     t_max = 1.6
     sampling_rate = 256
-    saveFolderName2 = "constTime3"
+    saveFolderName2 = "constTimeSorted13"
     useWinFeat = True
     t_min2 = 1.6
-    t_max2 = 2.6
+    t_max2 = 2.1
     # saveFolderName2 = "baseLineTime"
     # useWinFeat2 = True
     # t_min2 = 4.0
@@ -646,7 +654,7 @@ def main():
     onlyUniqueFeatures = True
     uniqueThresh = 0.9
     signAll = True
-    globalSignificanceThreshold = 0.05  # 0.1  #
+    globalSignificanceThreshold = 0.1  # 0.1  #
     signSolo = False
     soloSignificanceThreshold = 0.005
     # Does not seem to help at all. Could be useful for really individual features.
@@ -662,7 +670,6 @@ def main():
     ################################################################
     # Feature creation/extraction parameters
     chunkAmount = 3
-    onlyCreateFeatures = False
     nrFCOT = 2  # nrOfFeaturesToCreateAtOneTime
     featIndex = 0  # Multiplied by nrFCOT, First features to start creating
     usefeaturesToTestList = True
@@ -692,13 +699,13 @@ def main():
         # 34,  # fftData_BC_ifft_cor1x1
         36,  # fftData_BC_ifft_CV
     ]
-    # featuresToTestDict["welchFeatures"] = [
-    #     2,  # welchData
-    #     7,  # welchData_CV
-    #     13,  # welchData_BC
-    #     16,  # welchData_BC_CV
-    #     56,  # welchData_CV_BC
-    # ]
+    # # featuresToTestDict["welchFeatures"] = [
+    # #     2,  # welchData
+    # #     7,  # welchData_CV
+    # #     13,  # welchData_BC
+    # #     16,  # welchData_BC_CV
+    # #     56,  # welchData_CV_BC
+    # # ]
     featuresToTestDict["hilbertFeatures"] = [
         3,  # hilbertData,
         8,  # hilbertData_CV
@@ -706,6 +713,7 @@ def main():
         17,  # hilbertData_BC_CV
         57,  # hilbertData_CV_BC
     ]
+
     featuresToTestDict["gaussianFeatures"] = [
         9,  # "gausData"
         # 10,  # dataGCV2
@@ -808,7 +816,6 @@ def main():
     if onlyCreateFeatures:
 
         while True:
-
             if usefeaturesToTestList:
                 for featureI in featureListIndex:
                     featureList[featureI] = False
@@ -954,6 +961,7 @@ def main():
     fClassDict = dict()
     fmetDict = dict()
     bClassDict = dict()
+    bFeatClassDict = dict()
     for sub in subjects:  #
 
         fClassDict[f"{sub}"] = fclass.featureEClass(
@@ -996,52 +1004,49 @@ def main():
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
 
-        if correctedExists is False:
-            # Here instead. Create a winFeat for baseline data. Get features from it. Use those for baselinecorrection.
-            # Should be exactly the same features.
-            # bClassDict[f"{sub}"] = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
-            #                           globalSignificanceThreshold=globalSignificanceThreshold,
-            #                           onlyUniqueFeatures=onlyUniqueFeatures,
-            #                           uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-            #                           saveFolderName="afterBaseline",
-            #                           t_min=4, t_max=4.5,
-            #                           sampling_rate=sampling_rate,
-            #                           soloSignificanceThreshold=soloSignificanceThreshold,
-            #                           signAll=signAll,
-            #                           signSolo=signSolo, tolerance=tolerance, quickTest=quickTest
-            #                           )
+        # correctedExists = True
+        # if correctedExists is False:
+        #     # Here instead. Create a winFeat for baseline data.
+        #     # Get features from it. Use those for baselinecorrection.
+        #     # Should be exactly the same features.
 
-            bClassDict[f"{sub}"] = baseLineCorrection(
-                subject=sub,
-                sampling_rate=sampling_rate,
-                chunk=False,
-                chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
-            )
+        #     bClassDict[f"{sub}"] = baseLineCorrection(
+        #         subject=sub,
+        #         sampling_rate=sampling_rate,
+        #         chunk=False,
+        #         chunkAmount=chunkAmount,
+        #         saveFolderName="afterBaseline"   # Doesn't matter if chunk = False
+        #     )
 
-            bClassDict[f"{sub}"].loadBaselineData()
+        #     bFeatClassDict = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
+        #                                      globalSignificanceThreshold=globalSignificanceThreshold,
+        #                                      onlyUniqueFeatures=onlyUniqueFeatures,
+        #                                      uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+        #                                      saveFolderName="afterBaseline",
+        #                                      t_min=4, t_max=4.5,
+        #                                      sampling_rate=sampling_rate,
+        #                                      soloSignificanceThreshold=soloSignificanceThreshold,
+        #                                      signAll=signAll,
+        #                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest
+        #                                      )
 
-            bClassDict[f"{sub}"].getBaselineFeatures(
-                trialSampleAmount=fClassDict[f"{sub}"].getOrigData().shape[2],
-                featureList=featureList,
-            )
+        #     fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
+        #         f"{sub}"
+        #     ].baselineCorrect(
+        #         fClassDict[f"{sub}"].getFeatureList(),
+        #         bFeatClassDict[f"{sub}"].getFeatureList(),
+        #         fClassDict[f"{sub}"].paradigmName,
+        #     )
 
-            fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
-                f"{sub}"
-            ].baselineCorrect(
-                fClassDict[f"{sub}"].getFeatureList(),
-                fClassDict[f"{sub}"].getLabelsAux(),
-                fClassDict[f"{sub}"].paradigmName,
-            )
+        #     print(
+        #         f"Creating features for subject:{sub} after baseline correction")
 
-            print(
-                f"Creating features for subject:{sub} after baseline correction")
-
-            createdFeatureList, labels, correctedExists = fClassDict[
-                f"{sub}"
-            ].getFeatures(
-                featureList=featureList,
-                verbose=True,
-            )
+        #     createdFeatureList, labels, correctedExists = fClassDict[
+        #         f"{sub}"
+        #     ].getFeatures(
+        #         featureList=featureList,
+        #         verbose=True,
+        #     )
 
     if signAll:
         if useSepSubjFS is not True:
@@ -1110,8 +1115,7 @@ def main():
                                       t_min=t_min2, t_max=t_max2,
                                       sampling_rate=sampling_rate, soloSignificanceThreshold=soloSignificanceThreshold,
                                       signAll=signAll,
-                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest
-                                      )
+                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest)
 
         for sub in subjects:
             fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
@@ -1300,7 +1304,7 @@ def main():
 
 def winFeatFunction(featureList, subjects, paradigm, globalSignificanceThreshold,
                     onlyUniqueFeatures, uniqueThresh, useSepSubjFS, saveFolderName, t_min, t_max, sampling_rate,
-                    soloSignificanceThreshold, signAll, signSolo, tolerance, quickTest):
+                    soloSignificanceThreshold, signAll, signSolo, tolerance, quickTest, baselineF=False):
     print(f"FeatureList so far: {featureList}")
     # Creating the features for each subject and putting them in a dict
     fClassDict2 = dict()
@@ -1348,41 +1352,43 @@ def winFeatFunction(featureList, subjects, paradigm, globalSignificanceThreshold
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
 
-        if correctedExists is False:
+        # if correctedExists is False:
 
-            bClassDict2[f"{sub}"] = baseLineCorrection(
-                subject=sub,
-                sampling_rate=sampling_rate,
-                chunk=False,
-                chunkAmount=1,  # Doesn't matter if chunk = False
-            )
+        #     bClassDict2[f"{sub}"] = baseLineCorrection(
+        #         subject=sub,
+        #         sampling_rate=sampling_rate,
+        #         chunk=False,
+        #         chunkAmount=1,
+        #         # Doesn't matter if chunk = False
+        #     )
 
-            bClassDict2[f"{sub}"].loadBaselineData()
+        #     bClassDict2[f"{sub}"].loadBaselineData()
 
-            bClassDict2[f"{sub}"].getBaselineFeatures(
-                trialSampleAmount=fClassDict2[f"{sub}"].getOrigData().shape[2],
-                featureList=featureList,
-            )
+        #     bClassDict2[f"{sub}"].getBaselineFeatures(
+        #         trialSampleAmount=fClassDict2[f"{sub}"].getOrigData(
+        #         ).shape[2],
+        #         featureList=featureList,
+        #     )
 
-            fClassDict2[f"{sub}"].correctedFeatureList = bClassDict2[
-                f"{sub}"
-            ].baselineCorrect(
-                fClassDict2[f"{sub}"].getFeatureList(),
-                fClassDict2[f"{sub}"].getLabelsAux(),
-                fClassDict2[f"{sub}"].paradigmName,
-            )
+        #     fClassDict2[f"{sub}"].correctedFeatureList = bClassDict2[
+        #         f"{sub}"
+        #     ].baselineCorrect(
+        #         fClassDict2[f"{sub}"].getFeatureList(),
+        #         fClassDict2[f"{sub}"].getLabelsAux(),
+        #         fClassDict2[f"{sub}"].paradigmName,
+        #     )
 
-            print(
-                f"Creating features for subject:{sub} after baseline correction")
+        #     print(
+        #         f"Creating features for subject:{sub} after baseline correction")
 
-            createdFeatureList, labels, correctedExists = fClassDict2[
-                f"{sub}"
-            ].getFeatures(
-                featureList=featureList,
-                verbose=True,
-            )
-    if "baseline" not in saveFolderName:
+        #     createdFeatureList, labels, correctedExists = fClassDict2[
+        #         f"{sub}"
+        #     ].getFeatures(
+        #         featureList=featureList,
+        #         verbose=True,
+        #         )
 
+    if baselineF is not True:
         if signAll:
             if useSepSubjFS is not True:
                 allSubjFListList = []
@@ -1471,6 +1477,7 @@ def onlyCreateFeaturesFunction(
     fClassDict = dict()
     fmetDict = dict()
     bClassDict = dict()
+    bFeatClassDict = dict()
     for sub in subjects:  #
 
         fClassDict[f"{sub}"] = fclass.featureEClass(
@@ -1517,34 +1524,135 @@ def onlyCreateFeaturesFunction(
             bClassDict[f"{sub}"] = baseLineCorrection(
                 subject=sub,
                 sampling_rate=sampling_rate,
-                chunk=chunkFeatures,
+                chunk=False,
                 chunkAmount=chunkAmount,
-                saveFolderName=saveFolderName,  # Doesn't matter if chunk = False
+                saveFolderName="afterBaselineSorted13"  # Doesn't matter if chunk = False
             )
 
-            bClassDict[f"{sub}"].loadBaselineData()
+            bFeatClassDict = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
+                                             globalSignificanceThreshold=globalSignificanceThreshold,
+                                             onlyUniqueFeatures=onlyUniqueFeatures,
+                                             uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                             saveFolderName="afterBaselineSorted13",
+                                             t_min=4, t_max=4.492,
+                                             sampling_rate=sampling_rate,
+                                             soloSignificanceThreshold=soloSignificanceThreshold,
+                                             signAll=signAll,
+                                             signSolo=signSolo, tolerance=0.1, quickTest=True,
+                                             baselineF=True)
 
-            bClassDict[f"{sub}"].getBaselineFeatures(
-                trialSampleAmount=fClassDict[f"{sub}"].getOrigData().shape[2],
-                featureList=featureList,
-            )
+            # bFeatClassDict2 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
+            #                                   globalSignificanceThreshold=globalSignificanceThreshold,
+            #                                   onlyUniqueFeatures=onlyUniqueFeatures,
+            #                                   uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+            #                                   saveFolderName="afterBaseline2Sorted6",
+            #                                   t_min=3.1, t_max=3.592,
+            #                                   sampling_rate=sampling_rate,
+            #                                   soloSignificanceThreshold=soloSignificanceThreshold,
+            #                                   signAll=signAll,
+            #                                   signSolo=signSolo, tolerance=0.1, quickTest=True,
+            #                                   baselineF=True)
 
+            features4045 = bFeatClassDict[f"{sub}"].getFeatureList()
+            # features3136 = bFeatClassDict2f"{sub}"].getFeatureList()
+            features4045Two = bFeatClassDict[f"{sub}"].getFeatureList()
+            # features3136Two = bFeatClassDict2[f"{sub}"].getFeatureList()
+            # zip(features4045, features4045Two):
+            for fInd, feat in enumerate(features4045):
+
+                for ind, trial in enumerate(feat[0][:-1], 0):
+
+                    onlytrial1 = features4045Two[fInd][0][ind - 1]
+                    # onlytrial2 = features4045Two[fInd][0][ind]
+                    onlytrial3 = features4045Two[fInd][0][ind + 1]
+
+                    # onlytrial1x = features3136Two[fInd][0][ind - 1]
+                    # onlytrial2x = features3136Two[fInd][0][ind]
+                    # onlytrial3x = features3136Two[fInd][0][ind + 1]
+
+                    print(feat[0].shape)
+                    onlytrial1 = np.expand_dims(onlytrial1, axis=0)
+                    # onlytrial2 = np.expand_dims(onlytrial2, axis=0)
+                    onlytrial3 = np.expand_dims(onlytrial3, axis=0)
+                    # onlytrial1x = np.expand_dims(onlytrial1x, axis=0)
+                    # onlytrial2x = np.expand_dims(onlytrial2x, axis=0)
+                    # onlytrial3x = np.expand_dims(onlytrial3x, axis=0)
+                    print(onlytrial1.shape)
+                    together = np.concatenate(
+                        [onlytrial1, onlytrial3], axis=0)  # o onlytrial3
+                    print(together.shape)
+                    avgBaselineTrial = np.mean(together, axis=0)
+                    print(avgBaselineTrial.shape)
+                    feat[0][ind] = avgBaselineTrial
+                    print(feat[0][ind].shape)
+                    print("HeyJulia")
+                print(feat[0].shape)
+
+            # for index, feat in  enumerate(features4045,0)  #  zip(features4045, features4045Two):
+            #     onlyfeat1, onlyfeat2 = feat1[0], feat2[0]
+            #     print(feat1[0].shape)
+            #     onlyfeat1 = np.expand_dims(onlyfeat1, axis=0)
+            #     onlyfeat2 = np.expand_dims(onlyfeat2, axis=0)
+            #     print(onlyfeat1.shape)
+            #     together = np.concatenate([onlyfeat1, onlyfeat2], axis=0)
+            #     print(together.shape)
+            #     avgBaseline = np.mean(together, axis=0)
+            #     print(avgBaseline.shape)
+            #     feat1[0] = avgBaseline
+            #     print(feat1[0].shape)
+            #     print("HeyJulia")
+
+            # bClassDict[f"{sub}"].saveFolderName = saveFolderName
             fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
                 f"{sub}"
             ].baselineCorrect(
                 fClassDict[f"{sub}"].getFeatureList(),
-                fClassDict[f"{sub}"].getLabelsAux(),
+                features4045,
                 fClassDict[f"{sub}"].paradigmName,
+                saveFolderName
             )
 
             print(
-                f"Creating features for subject:{sub} after baseline correct")
+                f"Creating features for subject:{sub} after baseline correction")
+
             createdFeatureList, labels, correctedExists = fClassDict[
                 f"{sub}"
             ].getFeatures(
                 featureList=featureList,
                 verbose=True,
             )
+
+            # bClassDict[f"{sub}"] = baseLineCorrection(
+            #     subject=sub,
+            #     sampling_rate=sampling_rate,
+            #     chunk=chunkFeatures,
+            #     chunkAmount=chunkAmount,
+            #     saveFolderName=saveFolderName,  # Doesn't matter if chunk = False
+            # )
+
+            # bClassDict[f"{sub}"].loadBaselineData()
+
+            # bClassDict[f"{sub}"].getBaselineFeatures(
+            #     trialSampleAmount=fClassDict[f"{sub}"].getOrigData().shape[2],
+            #     featureList=featureList,
+            # )
+
+            # fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
+            #     f"{sub}"
+            # ].baselineCorrect(
+            #     fClassDict[f"{sub}"].getFeatureList(),
+            #     fClassDict[f"{sub}"].getLabelsAux(),
+            #     fClassDict[f"{sub}"].paradigmName,
+            # )
+
+            # print(
+            #     f"Creating features for subject:{sub} after baseline correct")
+            # createdFeatureList, labels, correctedExists = fClassDict[
+            #     f"{sub}"
+            # ].getFeatures(
+            #     featureList=featureList,
+            #     verbose=True,
+            # )
 
     if signAll:
         if useSepSubjFS is not True:
