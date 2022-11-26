@@ -104,6 +104,8 @@ def mixShuffleSplit(
         bestFeatures=bestFeatures,
         useBestFeaturesTest=useBestFeaturesTest,
     )
+    tempLabels = None
+    tempFeatureList = None
     return mDataList
 
 # Added to test linux github
@@ -617,16 +619,17 @@ def main():
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
     # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
-    repetitionName = "debuggingOnlyCurrthreeAv2Correct"
-    repetitionValue = f"{111}{repetitionName}"
+    # Currently the best. Try with lower fselect threshold and usesepsubjects
+    repetitionName = "2cOnlySepOnlyCurr05th"
+    repetitionValue = f"{123}{repetitionName}"
     maxCombinationAmount = 2
     onlyCreateFeatures = False
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
     useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top2udi.npy"
-    quickTest = False
+    bestFeaturesSaveFile = "top3udi.npy"
+    quickTest = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
     # saveFolderName = "peakTime2"
@@ -637,14 +640,18 @@ def main():
     # useWinFeat = True
     # t_min2 = 1.7
     # t_max2 = 2.9
-    saveFolderName = "peakTime4Sorted13"
+    saveFolderName = "peakTime4SortedSep13"
     t_min = 1.1
     t_max = 1.6
     sampling_rate = 256
-    saveFolderName2 = "constTimeSorted13"
+    saveFolderName2 = "constTimeSortedSep13"
     useWinFeat = True
     t_min2 = 1.6
     t_max2 = 2.1
+    saveFolderName3 = "lateTimeSortedSep13"
+    useWinFeat2 = True
+    t_min3 = 2.1
+    t_max3 = 2.6
     # saveFolderName2 = "baseLineTime"
     # useWinFeat2 = True
     # t_min2 = 4.0
@@ -658,7 +665,7 @@ def main():
     signSolo = False
     soloSignificanceThreshold = 0.005
     # Does not seem to help at all. Could be useful for really individual features.
-    useSepSubjFS = False
+    useSepSubjFS = True
     if useSepSubjFS:
         globalSignificanceThreshold = 0.05
     ################################################################
@@ -676,19 +683,19 @@ def main():
     featuresToTestDict = dict()
     stftSplit = 8  # Not used
     featuresToTestDict["fftFeatures"] = [
-        1,  # fftData,
-        6,  # fftData_CV
+        # 1,  # fftData,
+        # 6,  # fftData_CV
         12,  # fftData_BC
         15,  # fftData_BC_CV
-        55,  # fftData_CV_BC
+        # 55,  # fftData_CV_BC
 
     ]
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
         52,  # stftData_BC
-        53,  # stftData_CV
+        # 53,  # stftData_CV
         54,  # stftData_BC_CV
-        58,  # stftData_CV_BC
+        # 58,  # stftData_CV_BC
     ]
 
     featuresToTestDict["inversefftFeatures"] = [
@@ -707,20 +714,20 @@ def main():
     # #     56,  # welchData_CV_BC
     # # ]
     featuresToTestDict["hilbertFeatures"] = [
-        3,  # hilbertData,
-        8,  # hilbertData_CV
+        # 3,  # hilbertData,
+        # 8,  # hilbertData_CV
         14,  # hilbertData_BC
         17,  # hilbertData_BC_CV
-        57,  # hilbertData_CV_BC
+        # 57,  # hilbertData_CV_BC
     ]
 
     featuresToTestDict["gaussianFeatures"] = [
-        9,  # "gausData"
-        # 10,  # dataGCV2
-        18,  # gausData_CV
+        # 9,  # "gausData"
+        # # 10,  # dataGCV2
+        # 18,  # gausData_CV
         19,  # gausData_CV_BC
         20,  # gaussianData_BC
-        21,  # gausData_BC_CV
+        # 21,  # gausData_BC_CV
     ]
 
     # featuresToTestDict["corrFeatures"] = [
@@ -898,6 +905,48 @@ def main():
                 featIndex = featIndex + 1
                 # print(feature)
 
+        if useWinFeat2:
+            featIndex = 0
+            # Turn it off to create None chunk features as well
+            while True:
+                if usefeaturesToTestList:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featuresToTestList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+                else:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+
+                if (featIndex * nrFCOT) > (len(featuresToTestList) - 1):
+                    break
+
+                print(featureList)
+                onlyCreateFeaturesFunction(
+                    subjects,
+                    paradigm,
+                    signAll,
+                    signSolo,
+                    soloSignificanceThreshold,
+                    globalSignificanceThreshold,
+                    chunkFeatures,
+                    chunkAmount,
+                    onlyUniqueFeatures,
+                    uniqueThresh,
+                    t_min3,
+                    t_max3,
+                    sampling_rate,
+                    maxCombinationAmount,
+                    featureList,
+                    useSepSubjFS,
+                    stftSplit=stftSplit,
+                    saveFolderName=saveFolderName3
+                )
+
+                featIndex = featIndex + 1
+                # print(feature)
         # if useWinFeat2:
         #     featIndex = 0
         #     # Turn it off to create None chunk features as well
@@ -1003,6 +1052,8 @@ def main():
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
+        createdFeatureList = None
+        createdFeature = None
 
         # correctedExists = True
         # if correctedExists is False:
@@ -1131,6 +1182,30 @@ def main():
                 )
         fClassDict2 = None
 
+    if useWinFeat2:
+        fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
+                                      globalSignificanceThreshold=globalSignificanceThreshold,
+                                      onlyUniqueFeatures=onlyUniqueFeatures,
+                                      uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                      saveFolderName=saveFolderName3,
+                                      t_min=t_min3, t_max=t_max3,
+                                      sampling_rate=sampling_rate, soloSignificanceThreshold=soloSignificanceThreshold,
+                                      signAll=signAll,
+                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest)
+
+        for sub in subjects:
+            fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+            # fClassDict[f"{sub}"].addNameFeat(saveFolderName)
+            fClassDict2[f"{sub}"].addNameFeat(saveFolderName3)
+
+            fClassDict[f"{sub}"].extendFeatureList(
+                fClassDict2[f"{sub}"].getFeatureList()
+            )
+            if signAll:
+                fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
+                    fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                )
+        fClassDict2 = None
     # if useWinFeat2:
     #     fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
     #                                   globalSignificanceThreshold=globalSignificanceThreshold,
@@ -1234,7 +1309,7 @@ def main():
             if useMLP:
                 nr_jobs = 1
             else:
-                nr_jobs = 10
+                nr_jobs = 3
 
             allResultsPerSubject = Parallel(n_jobs=nr_jobs, verbose=10)(
                 delayed(testLoop)(
@@ -1255,7 +1330,7 @@ def main():
             # Creating testInfo
             featureNames = []
             featCombos = []
-            for feat in fClassDict[f"{sub}"].getFeatureListFlat():
+            for feat in fClassDict[f"{sub}"].getMaskedFeatureList():
                 featureNames.append(feat[1])
             for combo in mDataList:
                 featCombos.append(combo[4])
@@ -1526,14 +1601,14 @@ def onlyCreateFeaturesFunction(
                 sampling_rate=sampling_rate,
                 chunk=False,
                 chunkAmount=chunkAmount,
-                saveFolderName="afterBaselineSorted13"  # Doesn't matter if chunk = False
+                saveFolderName="afterBaselineSortedSep13"  # Doesn't matter if chunk = False
             )
 
             bFeatClassDict = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
                                              globalSignificanceThreshold=globalSignificanceThreshold,
                                              onlyUniqueFeatures=onlyUniqueFeatures,
                                              uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                             saveFolderName="afterBaselineSorted13",
+                                             saveFolderName="afterBaselineSortedSep13",
                                              t_min=4, t_max=4.492,
                                              sampling_rate=sampling_rate,
                                              soloSignificanceThreshold=soloSignificanceThreshold,
@@ -1558,35 +1633,35 @@ def onlyCreateFeaturesFunction(
             features4045Two = bFeatClassDict[f"{sub}"].getFeatureList()
             # features3136Two = bFeatClassDict2[f"{sub}"].getFeatureList()
             # zip(features4045, features4045Two):
-            for fInd, feat in enumerate(features4045):
+            # for fInd, feat in enumerate(features4045):
 
-                for ind, trial in enumerate(feat[0][:-1], 0):
+            #     for ind, trial in enumerate(feat[0][:-1], 0):
 
-                    onlytrial1 = features4045Two[fInd][0][ind - 1]
-                    # onlytrial2 = features4045Two[fInd][0][ind]
-                    onlytrial3 = features4045Two[fInd][0][ind + 1]
+            #         onlytrial1 = features4045Two[fInd][0][ind - 1]
+            #         # onlytrial2 = features4045Two[fInd][0][ind]
+            #         onlytrial3 = features4045Two[fInd][0][ind + 1]
 
-                    # onlytrial1x = features3136Two[fInd][0][ind - 1]
-                    # onlytrial2x = features3136Two[fInd][0][ind]
-                    # onlytrial3x = features3136Two[fInd][0][ind + 1]
+            #         # onlytrial1x = features3136Two[fInd][0][ind - 1]
+            #         # onlytrial2x = features3136Two[fInd][0][ind]
+            #         # onlytrial3x = features3136Two[fInd][0][ind + 1]
 
-                    print(feat[0].shape)
-                    onlytrial1 = np.expand_dims(onlytrial1, axis=0)
-                    # onlytrial2 = np.expand_dims(onlytrial2, axis=0)
-                    onlytrial3 = np.expand_dims(onlytrial3, axis=0)
-                    # onlytrial1x = np.expand_dims(onlytrial1x, axis=0)
-                    # onlytrial2x = np.expand_dims(onlytrial2x, axis=0)
-                    # onlytrial3x = np.expand_dims(onlytrial3x, axis=0)
-                    print(onlytrial1.shape)
-                    together = np.concatenate(
-                        [onlytrial1, onlytrial3], axis=0)  # o onlytrial3
-                    print(together.shape)
-                    avgBaselineTrial = np.mean(together, axis=0)
-                    print(avgBaselineTrial.shape)
-                    feat[0][ind] = avgBaselineTrial
-                    print(feat[0][ind].shape)
-                    print("HeyJulia")
-                print(feat[0].shape)
+            #         print(feat[0].shape)
+            #         onlytrial1 = np.expand_dims(onlytrial1, axis=0)
+            #         # onlytrial2 = np.expand_dims(onlytrial2, axis=0)
+            #         onlytrial3 = np.expand_dims(onlytrial3, axis=0)
+            #         # onlytrial1x = np.expand_dims(onlytrial1x, axis=0)
+            #         # onlytrial2x = np.expand_dims(onlytrial2x, axis=0)
+            #         # onlytrial3x = np.expand_dims(onlytrial3x, axis=0)
+            #         print(onlytrial1.shape)
+            #         together = np.concatenate(
+            #             [onlytrial1, onlytrial3], axis=0)  # o onlytrial3
+            #         print(together.shape)
+            #         avgBaselineTrial = np.mean(together, axis=0)
+            #         print(avgBaselineTrial.shape)
+            #         feat[0][ind] = avgBaselineTrial
+            #         print(feat[0][ind].shape)
+            #         print("HeyJulia")
+            #     print(feat[0].shape)
 
             # for index, feat in  enumerate(features4045,0)  #  zip(features4045, features4045Two):
             #     onlyfeat1, onlyfeat2 = feat1[0], feat2[0]

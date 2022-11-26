@@ -10,7 +10,6 @@ import util as ut
 import glob
 import os
 from sklearn.model_selection import StratifiedShuffleSplit
-
 # import re
 # pylint: disable=C0103
 
@@ -88,6 +87,9 @@ class featureEClass:
                 maskedFeature[0] = self.flattenAllExceptTrial(feature[0])
                 cleanMaskedFeatureList.append(maskedFeature)
 
+        self.createdFeatureList = None
+        self.globalGoodFeatureMask = None
+        self.data = None
         self.maskedFeatureList = cleanMaskedFeatureList
 
     def getMaskedFeatureList(self):
@@ -119,6 +121,8 @@ class featureEClass:
             onlySignificantFeatures = flatFdata[:, np.where(goodData2 != 0)[0]]
             # ndata_test = ndata_test[:, np.where(goodData2 != 0)[0]]
 
+        onlySignificantFeatures = np.array(
+            onlySignificantFeatures, dtype=np.float32)
         return onlySignificantFeatures
 
     def saveFeatures(self, name, array):
@@ -315,7 +319,8 @@ class featureEClass:
 
                 data = np.copy(featureList[nr][0])
 
-                dataRo = np.concatenate([dataRo, data], axis=1)
+                dataRo = np.concatenate(
+                    [dataRo, data], axis=1, dtype=np.float32)
 
                 nameRow = featureList[nr][1] + "_&_" + nameRow
 
@@ -352,6 +357,8 @@ class featureEClass:
             # )
 
             normShuffledDataList.append(sDataRow)
+        dataList = None
+
         print("Skipping NORMALIZING")
         return normShuffledDataList
 
