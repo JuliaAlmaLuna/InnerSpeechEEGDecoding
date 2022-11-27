@@ -382,7 +382,7 @@ class featureEClass:
             normShuffledDataList.append(sDataRow)
         dataList = None
 
-        print("Skipping NORMALIZING")
+        # print("Skipping NORMALIZING")
         return normShuffledDataList
 
     def shuffleSplitData(self, data_t, labels_t, name):
@@ -427,18 +427,18 @@ class featureEClass:
         #     if labe > 1
         # self.labels = newLabels
 
-        print(self.labels)
-        print("asdasd")
+        # print(self.labels)
+        # print("asdasd")
 
         # print(self.labelsAux)
         # print(self.labels)
         timeSort = np.argsort(self.labelsAux[:, 0], axis=0)
         tSortedlabelsAux = self.labelsAux[timeSort]
-        print(tSortedlabelsAux)
-        print("okay")
+        # print(tSortedlabelsAux)
+        # print("okay")
         self.data = self.data[timeSort]
         self.labels = self.labels[timeSort]
-        print(self.labels)
+        # print(self.labels)
 
         # Todo remove this. AND the .92 parts in the winfeat thingy
         # Makes the size of the trial a size that is divisible with no remainder by chunkAmount
@@ -507,7 +507,7 @@ class featureEClass:
                 averagedData,
                 [averagedData.shape[0], averagedData.shape[1] * splits, -1],
             )
-            print(averagedData.shape[1] * splits)
+            # print(averagedData.shape[1] * splits)
         for trial in preCovFeature:
             postCovFeature.append(np.cov(trial))
         postCovFeature = np.array(postCovFeature)
@@ -529,8 +529,8 @@ class featureEClass:
             featureNameSaved = featureName
         splitNr = 24
         if featureName[-2:] == "CV":
-            print(featureName)
-            print(featureName[:-3])
+            # print(featureName)
+            # print(featureName[:-3])
             if self.loadFeatures(featureName[:-3]) is not None:
                 preCVFeature = self.loadFeatures(featureName[:-3])[0]
                 createdFeature = [
@@ -598,7 +598,7 @@ class featureEClass:
                 stftFeature = abs(signal.stft(tempData, fs=256, window="blackman", boundary="zeros",
                                               padded=True, axis=-1, nperseg=arLength // 6)[2])  # [:, :, :, :splitNr]
                 stftFeature = np.swapaxes(stftFeature, -1, -2)
-                print(stftFeature.shape)
+                # print(stftFeature.shape)
                 stftFeatureReshaped = np.reshape(
                     stftFeature, [stftFeature.shape[0], stftFeature.shape[1], -1])
                 createdFeature = [stftFeatureReshaped, featureNameSaved]

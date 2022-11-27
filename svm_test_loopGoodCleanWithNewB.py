@@ -38,7 +38,7 @@ def testLoop(
     # If else statements that swap between different train/test models.
     if useAda:
 
-        allResults = fmetDict[f"{sub}"].testSuiteAda(
+        allResults = fmetDict["allSame"].testSuiteAda(
             data_train,
             data_test,
             labels_train,
@@ -48,7 +48,7 @@ def testLoop(
             kernels=["linear", "sigmoid", "rbf"],  #
         )
     elif userndF:
-        allResults = fmetDict[f"{sub}"].testSuiteForest(
+        allResults = fmetDict["allSame"].testSuiteForest(
             data_train,
             data_test,
             labels_train,
@@ -58,7 +58,7 @@ def testLoop(
             kernels=["linear", "sigmoid", "rbf"],  #
         )
     elif useMLP:
-        allResults = fmetDict[f"{sub}"].testSuiteMLP(
+        allResults = fmetDict["allSame"].testSuiteMLP(
             data_train,
             data_test,
             labels_train,
@@ -68,7 +68,7 @@ def testLoop(
             kernels=["linear", "sigmoid", "rbf"],  #
         )
     else:
-        allResults = fmetDict[f"{sub}"].testSuite(
+        allResults = fmetDict["allSame"].testSuite(
             data_train,
             data_test,
             labels_train,
@@ -621,23 +621,24 @@ def main():
     # paradigm = paradigmSetting.upDownInnerFixed()
     # paradigm = paradigmSetting.upDownInnerSpecial()
     # paradigm = paradigmSetting.upDownVisInnersep()
-    # vparadigm = paradigmSetting.upDownVis()
-    paradigm = paradigmSetting.upDownRightLeftVis()
+    # paradigm = paradigmSetting.upDownVis()
+    paradigm = paradigmSetting.rightLeftInner()
+    # paradigm = paradigmSetting.upDownRightLeftVis()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 5  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
     # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    repetitionName = "udrlV1cOnlySepOnlyCurr05th"
-    repetitionValue = f"{126}{repetitionName}"
-    maxCombinationAmount = 1
-    onlyCreateFeatures = True
+    repetitionName = "rlI3cOnlySepOnlyCurr05th"
+    repetitionValue = f"{129}{repetitionName}"
+    maxCombinationAmount = 3
+    onlyCreateFeatures = False
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
-    useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top2udrlv.npy"
+    useBestFeaturesTest = True
+    bestFeaturesSaveFile = "top2rli.npy"
     quickTest = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
@@ -994,7 +995,7 @@ def main():
             paradigms=paradigm[1],
         )
 
-        fmetDict[f"{sub}"] = svmMet.SvmMets(
+        fmetDict["allSame"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
             signSolo=signSolo,
@@ -1015,6 +1016,7 @@ def main():
         print(f"Corrected Exists = {correctedExists}")
         createdFeatureList = None
         createdFeature = None
+        fClassDict[f"{sub}"].data = None
 
     if signAll:
         if useSepSubjFS is not True:
@@ -1124,11 +1126,11 @@ def main():
                     fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
                 )
             fClassDict2[f"{sub}"] = None
+            fClassDict[f"{sub}"].createMaskedFeatureList()
         fClassDict2 = None
 
     for sub in subjects:
         fClassDict[f"{sub}"].setOrder(seed, testSize)
-        fClassDict[f"{sub}"].createMaskedFeatureList()
 
     # A for loop just running all subjects using different seeds for train/data split
     for testNr in np.arange(testSize):
@@ -1166,7 +1168,7 @@ def main():
             if useMLP:
                 nr_jobs = 1
             else:
-                nr_jobs = 3
+                nr_jobs = 9
 
             allResultsPerSubject = Parallel(n_jobs=nr_jobs, verbose=10)(
                 delayed(testLoop)(
@@ -1194,7 +1196,7 @@ def main():
             if quickTest:
                 clist = [2.5]
             else:
-                clist = [0.1, 0.5, 1.2, 2.5, 5, 10]
+                clist = [0.1, 1, 10, 100, 1000]
             if useAda:
                 kernels = ["adaBoost"]
             elif useMLP:
@@ -1277,7 +1279,7 @@ def winFeatFunction(featureList, subjects, paradigm, globalSignificanceThreshold
             featureList=featureList,
             verbose=True,
         )
-
+        fClassDict2[f"{sub}"].data = None
         print(len(createdFeatureList))
         print(f"Printing features created so far for subject {sub}")
         for createdFeature in createdFeatureList:
@@ -1395,7 +1397,7 @@ def onlyCreateFeaturesFunction(
             twoDLabels=False,
             paradigms=paradigm[1],
         )
-        fmetDict[f"{sub}"] = svmMet.SvmMets(
+        fmetDict["allSame"] = svmMet.SvmMets(
             significanceThreshold=soloSignificanceThreshold,
             signAll=signAll,
             signSolo=signSolo,

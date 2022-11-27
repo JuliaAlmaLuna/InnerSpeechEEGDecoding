@@ -181,10 +181,10 @@ class baseLineCorrection(featureEClass):
 
                     cfeature[1] = f"{cfeature[1]}_BC"
 
-                    print(paradigmName2)
-                    print(self.paradigmName)
-                    print(cfeature[1])
-                    print(f"{cfeature[1]}_BC")
+                    # print(paradigmName2)
+                    # print(self.paradigmName)
+                    # print(cfeature[1])
+                    # print(f"{cfeature[1]}_BC")
                     self.featureFolder = "SavedFeaturesNew"
                     self.paradigmName = f"{paradigmName2}"
                     oldFolderName = self.saveFolderName

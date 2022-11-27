@@ -207,7 +207,7 @@ class SvmMets:
         if self.quickTest:
             clist = [2.5]
         else:
-            clist = [0.1, 0.5, 1.2, 2.5, 5, 10]
+            clist = [0.1, 1, 10, 100, 1000]
             # Regularization parameter.
             # The strength of the regularization is inversely proportional to C.
             # Must be strictly positive. The penalty is a squared l2 penalty.
