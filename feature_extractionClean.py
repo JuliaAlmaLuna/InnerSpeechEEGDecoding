@@ -141,6 +141,7 @@ class featureEClass:
         path = glob.glob(svpath + f"/{name}.npy")
         if len(path) > 0:
             savedFeatures = np.load(path[0], allow_pickle=True)
+            savedFeatures[0] = np.array(savedFeatures[0], dtype=np.float32)
             return savedFeatures
         else:
             return None
@@ -158,6 +159,8 @@ class featureEClass:
 
         if len(path) > 0:
             savedAnovaMask = np.load(path[0], allow_pickle=True)
+            savedAnovaMask[savedAnovaMask != 0] = 1
+            savedAnovaMask = np.array(savedAnovaMask, dtype=int)
             return savedAnovaMask
         else:
             return None
@@ -242,7 +245,7 @@ class featureEClass:
             list normShufflesDataList: List of all mixes of features that have
             been normalized, shuffled and split into training test datasets
         """
-
+        onlyBest = False
         print("Mixing Data")
         dataList = []
         nameList = []
@@ -270,43 +273,63 @@ class featureEClass:
 
         # create All combinations of bestFeatures, dvs bara dem
         # Sen ta all combinations, of them and all other values
-
-        if useBestFeaturesTest:
-            if bestFeatures.ndim > 1:
-                maxCombinationAmount = maxCombinationAmount - \
-                    bestFeatures.shape[1]
-            else:
-                maxCombinationAmount = 1
-
-        if maxCombinationAmount < 1:
+        if onlyBest:
             for row in namesAndIndexBestFeatures:
                 combos.append(np.array(row))
+
+            # combos = np.array(combos, dtype=object)
         else:
-            if maxCombinationAmount > len(dataNrs):
-                maxCombinationAmount = len(dataNrs)
-            for L in range(1, maxCombinationAmount + 1):
-                for subsetNr in itertools.combinations(dataNrs, L):
-                    if useBestFeaturesTest:
-                        for row in namesAndIndexBestFeatures:
-                            if all(nr not in row for nr in subsetNr):
-                                # if subsetNr not in row:
-                                combos.append(
-                                    np.array(
-                                        np.concatenate(
-                                            [np.array(row), cp(subsetNr)], axis=0
-                                        ),
-                                        dtype=int,
+            if useBestFeaturesTest:
+                if bestFeatures.ndim > 1:
+                    maxCombinationAmount = maxCombinationAmount - \
+                        bestFeatures.shape[1]
+                else:
+                    maxCombinationAmount = 1
+
+            if maxCombinationAmount < 1:
+                for row in namesAndIndexBestFeatures:
+                    combos.append(np.array(row))
+            else:
+                if maxCombinationAmount > len(dataNrs):
+                    maxCombinationAmount = len(dataNrs)
+                for L in range(1, maxCombinationAmount + 1):
+                    for subsetNr in itertools.combinations(dataNrs, L):
+                        if useBestFeaturesTest:
+                            for row in namesAndIndexBestFeatures:
+                                if all(nr not in row for nr in subsetNr):
+                                    # if subsetNr not in row:
+                                    combos.append(
+                                        np.array(
+                                            np.concatenate(
+                                                [np.array(row), cp(subsetNr)], axis=0
+                                            ),
+                                            dtype=int,
+                                        )
                                     )
-                                )
-                    else:
-                        combos.append(cp(subsetNr))
+                        else:
+                            combos.append(cp(subsetNr))
 
-        print(f"Nr of combinations = {len(combos)}")
+            print(f"Nr of combinations = {len(combos)}")
 
-        if maxCombinationAmount < 1:
-            combos = np.array(combos, dtype=int)
+            if maxCombinationAmount < 1:
+                combos = np.array(combos, dtype=int)
+            badIndexes = np.zeros([len(combos)])
 
-        combos = np.array(combos, dtype=object)
+            for ind, combo in enumerate(combos):
+                if badIndexes[ind] == 1:
+                    continue
+                for ind2, combo2 in enumerate(combos):
+                    if ind == ind2:
+                        continue
+                    if sorted(combo) == sorted(combo2):
+                        badIndexes[ind2] = 1
+            newCombos = []
+            for ind, combo in enumerate(combos):
+                if badIndexes[ind] == 0:
+                    newCombos.append(combo)
+            combos = newCombos
+
+            combos = np.array(combos, dtype=object)
 
         for comb in combos:  # 10000
 
@@ -392,6 +415,20 @@ class featureEClass:
             twoDLabels=twoDLabels,
             paradigms=paradigms,
         )
+
+        if self.paradigmName == "vviiudsep":
+            self.labels[self.labels > 1] = self.labels[self.labels > 1] - 2
+
+        # if self.paradigmName == "vviirl":
+        #     # print(self.paradigmName)
+        #     # print(self.labels)
+        #     self.labels[self.labels > 1] = self.labels[self.labels > 1] - 2
+        #     # for labe in self.labels:
+        #     if labe > 1
+        # self.labels = newLabels
+
+        print(self.labels)
+        print("asdasd")
 
         # print(self.labelsAux)
         # print(self.labels)
@@ -1240,7 +1277,7 @@ class featureEClass:
                     self.createdFeatureList.append(createdFeature)
 
         createdFeature = None
-
+        tempData = None
         return self.createdFeatureList, self.labels, correctedExists
 
     def getOrigData(self):
@@ -1265,6 +1302,8 @@ class featureEClass:
         return tempFeatureList
 
     def extendFeatureList(self, additionList):
+        self.data = None
+
         self.createdFeatureList.extend(additionList)
         # tempFeatureList = dp(self.createdFeatureList)
         # return tempFeatureList

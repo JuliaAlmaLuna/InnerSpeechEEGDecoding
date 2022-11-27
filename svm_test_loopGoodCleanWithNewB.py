@@ -130,6 +130,8 @@ def loadAnovaMaskNoClass(
     path = glob.glob(saveDir + f"/{name}.npy")
     if len(path) > 0:
         savedAnovaMask = np.load(path[0], allow_pickle=True)
+        # TODO make this into a boolean mask
+        savedAnovaMask = np.array(savedAnovaMask, dtype=float32)
         return savedAnovaMask
     else:
         return None
@@ -606,29 +608,36 @@ def createChunkFeatures(
 
 
 def main():
-
+    import psutil
+    p = psutil.Process()
+    p.cpu_affinity(list(np.arange(18)))
+    p.cpu_affinity()
     ##############################################################
     # Testloop parameters
     # paradigm = paradigmSetting.upDownRightLeftInnerSpecialPlot()
+    # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownRightLeftVis()
     # paradigm = paradigmSetting.upDownVisFixedWorse()
     # paradigm = paradigmSetting.upDownInnerFixed()
-    paradigm = paradigmSetting.upDownInnerSpecial()
+    # paradigm = paradigmSetting.upDownInnerSpecial()
+    # paradigm = paradigmSetting.upDownVisInnersep()
+    # vparadigm = paradigmSetting.upDownVis()
+    paradigm = paradigmSetting.upDownRightLeftVis()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    testSize = 10  # Nr of seed iterations until stopping
+    testSize = 5  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
     # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    repetitionName = "2cOnlySepOnlyCurr05th"
-    repetitionValue = f"{123}{repetitionName}"
-    maxCombinationAmount = 2
-    onlyCreateFeatures = False
+    repetitionName = "udrlV1cOnlySepOnlyCurr05th"
+    repetitionValue = f"{126}{repetitionName}"
+    maxCombinationAmount = 1
+    onlyCreateFeatures = True
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
     useBestFeaturesTest = False
-    bestFeaturesSaveFile = "top3udi.npy"
+    bestFeaturesSaveFile = "top2udrlv.npy"
     quickTest = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
@@ -683,8 +692,8 @@ def main():
     featuresToTestDict = dict()
     stftSplit = 8  # Not used
     featuresToTestDict["fftFeatures"] = [
-        # 1,  # fftData,
-        # 6,  # fftData_CV
+        1,  # fftData,
+        6,  # fftData_CV
         12,  # fftData_BC
         15,  # fftData_BC_CV
         # 55,  # fftData_CV_BC
@@ -693,9 +702,9 @@ def main():
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
         52,  # stftData_BC
-        # 53,  # stftData_CV
+        53,  # stftData_CV
         54,  # stftData_BC_CV
-        # 58,  # stftData_CV_BC
+        58,  # stftData_CV_BC
     ]
 
     featuresToTestDict["inversefftFeatures"] = [
@@ -714,20 +723,20 @@ def main():
     # #     56,  # welchData_CV_BC
     # # ]
     featuresToTestDict["hilbertFeatures"] = [
-        # 3,  # hilbertData,
-        # 8,  # hilbertData_CV
+        3,  # hilbertData,
+        8,  # hilbertData_CV
         14,  # hilbertData_BC
         17,  # hilbertData_BC_CV
-        # 57,  # hilbertData_CV_BC
+        57,  # hilbertData_CV_BC
     ]
 
     featuresToTestDict["gaussianFeatures"] = [
-        # 9,  # "gausData"
-        # # 10,  # dataGCV2
-        # 18,  # gausData_CV
+        9,  # "gausData"
+        # 10,  # dataGCV2
+        18,  # gausData_CV
         19,  # gausData_CV_BC
         20,  # gaussianData_BC
-        # 21,  # gausData_BC_CV
+        21,  # gausData_BC_CV
     ]
 
     # featuresToTestDict["corrFeatures"] = [
@@ -946,58 +955,10 @@ def main():
                 )
 
                 featIndex = featIndex + 1
-                # print(feature)
-        # if useWinFeat2:
-        #     featIndex = 0
-        #     # Turn it off to create None chunk features as well
-        #     while True:
-        #         if usefeaturesToTestList:
-        #             for featureI in featureListIndex:
-        #                 featureList[featureI] = False
-        #                 if featureI in featuresToTestList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
-        #                     featureList[featureI] = True
-        #         else:
-        #             for featureI in featureListIndex:
-        #                 featureList[featureI] = False
-        #                 if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
-        #                     featureList[featureI] = True
-
-        #         if (featIndex * nrFCOT) > (len(featuresToTestList) - 1):
-        #             break
-
-        #         print(featureList)
-        #         onlyCreateFeaturesFunction(
-        #             subjects,
-        #             paradigm,
-        #             signAll,
-        #             signSolo,
-        #             soloSignificanceThreshold,
-        #             globalSignificanceThreshold,
-        #             chunkFeatures,
-        #             chunkAmount,
-        #             onlyUniqueFeatures,
-        #             uniqueThresh,
-        #             t_min2,
-        #             t_max2,
-        #             sampling_rate,
-        #             maxCombinationAmount,
-        #             featureList,
-        #             useSepSubjFS,
-        #             stftSplit=stftSplit,
-        #             saveFolderName=saveFolderName2
-        #         )
-
-        #         featIndex = featIndex + 1
-                # print(feature)
 
     if useAllFeatures:
         for featureI in featureListIndex:
             featureList[featureI] = False
-
-        # for featureI in featureListIndex:
-        #     if featureI in badFeatures:
-        #         continue
-        #     featureList[featureI] = True
 
     if usefeaturesToTestList:
         for featureI in featureListIndex:
@@ -1054,50 +1015,6 @@ def main():
         print(f"Corrected Exists = {correctedExists}")
         createdFeatureList = None
         createdFeature = None
-
-        # correctedExists = True
-        # if correctedExists is False:
-        #     # Here instead. Create a winFeat for baseline data.
-        #     # Get features from it. Use those for baselinecorrection.
-        #     # Should be exactly the same features.
-
-        #     bClassDict[f"{sub}"] = baseLineCorrection(
-        #         subject=sub,
-        #         sampling_rate=sampling_rate,
-        #         chunk=False,
-        #         chunkAmount=chunkAmount,
-        #         saveFolderName="afterBaseline"   # Doesn't matter if chunk = False
-        #     )
-
-        #     bFeatClassDict = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
-        #                                      globalSignificanceThreshold=globalSignificanceThreshold,
-        #                                      onlyUniqueFeatures=onlyUniqueFeatures,
-        #                                      uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-        #                                      saveFolderName="afterBaseline",
-        #                                      t_min=4, t_max=4.5,
-        #                                      sampling_rate=sampling_rate,
-        #                                      soloSignificanceThreshold=soloSignificanceThreshold,
-        #                                      signAll=signAll,
-        #                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest
-        #                                      )
-
-        #     fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
-        #         f"{sub}"
-        #     ].baselineCorrect(
-        #         fClassDict[f"{sub}"].getFeatureList(),
-        #         bFeatClassDict[f"{sub}"].getFeatureList(),
-        #         fClassDict[f"{sub}"].paradigmName,
-        #     )
-
-        #     print(
-        #         f"Creating features for subject:{sub} after baseline correction")
-
-        #     createdFeatureList, labels, correctedExists = fClassDict[
-        #         f"{sub}"
-        #     ].getFeatures(
-        #         featureList=featureList,
-        #         verbose=True,
-        #     )
 
     if signAll:
         if useSepSubjFS is not True:
@@ -1180,6 +1097,7 @@ def main():
                 fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
                     fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
                 )
+            fClassDict2[f"{sub}"] = None
         fClassDict2 = None
 
     if useWinFeat2:
@@ -1205,68 +1123,7 @@ def main():
                 fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
                     fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
                 )
-        fClassDict2 = None
-    # if useWinFeat2:
-    #     fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
-    #                                   globalSignificanceThreshold=globalSignificanceThreshold,
-    #                                   onlyUniqueFeatures=onlyUniqueFeatures,
-    #                                   uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-    #                                   saveFolderName=saveFolderName3,
-    #                                   t_min=t_min2, t_max=t_max2,
-    #                                   sampling_rate=sampling_rate,
-    #                                   soloSignificanceThreshold=soloSignificanceThreshold,
-    #                                   signAll=signAll,
-    #                                   signSolo=signSolo, tolerance=tolerance, quickTest=quickTest
-    #                                   )
-    #     import baseCorrectWithEnd as newBC
-
-    #     # Needs to be done once per saveFolder? Or just once for all? Once per savefolder.
-    #     for sub in subjects:
-    #         unCorrectedFeatures = fClassDict[f"{sub}"].getFeatureList()
-
-    #         newBCClass = newBC.baseLineCorrection(sub,2,saveFolderName=saveFolderName)
-    #         newBCClass.baselineCorrect()
-
-    #         fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-    #         fClassDict[f"{sub}"].addNameFeat(saveFolderName)
-    #         fClassDict2[f"{sub}"].addNameFeat(saveFolderName2)
-
-    #         fClassDict[f"{sub}"].extendFeatureList(
-    #             fClassDict2[f"{sub}"].getFeatureList()
-    #         )
-    #         if signAll:
-    #             fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-    #                 fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-    #             )
-    #     fClassDict2 = None
-
-    if chunkFeatures:
-        fClassDict2 = createChunkFeatures(
-            chunkAmount=chunkAmount,
-            onlyUniqueFeatures=onlyUniqueFeatures,
-            globalSignificanceThreshold=globalSignificanceThreshold,
-            paradigm=paradigm,
-            uniqueThresh=uniqueThresh,
-            useSepSubjFS=useSepSubjFS,
-            allFeaturesList=featureList,
-            featuresToTestList=featuresToTestList,
-            useAllFeatures=useAllFeatures,
-            subjects=subjects,
-            t_min=t_min,
-            t_max=t_max,
-            sampling_rate=sampling_rate,
-            saveFolderName="const",
-
-        )[0]
-
-        for sub in subjects:
-            fClassDict[f"{sub}"].extendFeatureList(
-                fClassDict2[f"{sub}"].getFeatureList()
-            )
-            if signAll:
-                fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-                    fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-                )
+            fClassDict2[f"{sub}"] = None
         fClassDict2 = None
 
     for sub in subjects:
@@ -1426,42 +1283,6 @@ def winFeatFunction(featureList, subjects, paradigm, globalSignificanceThreshold
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
         print(f"Corrected Exists = {correctedExists}")
-
-        # if correctedExists is False:
-
-        #     bClassDict2[f"{sub}"] = baseLineCorrection(
-        #         subject=sub,
-        #         sampling_rate=sampling_rate,
-        #         chunk=False,
-        #         chunkAmount=1,
-        #         # Doesn't matter if chunk = False
-        #     )
-
-        #     bClassDict2[f"{sub}"].loadBaselineData()
-
-        #     bClassDict2[f"{sub}"].getBaselineFeatures(
-        #         trialSampleAmount=fClassDict2[f"{sub}"].getOrigData(
-        #         ).shape[2],
-        #         featureList=featureList,
-        #     )
-
-        #     fClassDict2[f"{sub}"].correctedFeatureList = bClassDict2[
-        #         f"{sub}"
-        #     ].baselineCorrect(
-        #         fClassDict2[f"{sub}"].getFeatureList(),
-        #         fClassDict2[f"{sub}"].getLabelsAux(),
-        #         fClassDict2[f"{sub}"].paradigmName,
-        #     )
-
-        #     print(
-        #         f"Creating features for subject:{sub} after baseline correction")
-
-        #     createdFeatureList, labels, correctedExists = fClassDict2[
-        #         f"{sub}"
-        #     ].getFeatures(
-        #         featureList=featureList,
-        #         verbose=True,
-        #         )
 
     if baselineF is not True:
         if signAll:
@@ -1696,38 +1517,6 @@ def onlyCreateFeaturesFunction(
                 featureList=featureList,
                 verbose=True,
             )
-
-            # bClassDict[f"{sub}"] = baseLineCorrection(
-            #     subject=sub,
-            #     sampling_rate=sampling_rate,
-            #     chunk=chunkFeatures,
-            #     chunkAmount=chunkAmount,
-            #     saveFolderName=saveFolderName,  # Doesn't matter if chunk = False
-            # )
-
-            # bClassDict[f"{sub}"].loadBaselineData()
-
-            # bClassDict[f"{sub}"].getBaselineFeatures(
-            #     trialSampleAmount=fClassDict[f"{sub}"].getOrigData().shape[2],
-            #     featureList=featureList,
-            # )
-
-            # fClassDict[f"{sub}"].correctedFeatureList = bClassDict[
-            #     f"{sub}"
-            # ].baselineCorrect(
-            #     fClassDict[f"{sub}"].getFeatureList(),
-            #     fClassDict[f"{sub}"].getLabelsAux(),
-            #     fClassDict[f"{sub}"].paradigmName,
-            # )
-
-            # print(
-            #     f"Creating features for subject:{sub} after baseline correct")
-            # createdFeatureList, labels, correctedExists = fClassDict[
-            #     f"{sub}"
-            # ].getFeatures(
-            #     featureList=featureList,
-            #     verbose=True,
-            # )
 
     if signAll:
         if useSepSubjFS is not True:

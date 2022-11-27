@@ -167,8 +167,8 @@ class SvmMets:
                 C=C,
                 cache_size=1800,
                 tol=self.tol,
-              
-            ), n_jobs=2
+
+            ),
         )
 
         clf.fit(ndata_train, labels_train)
