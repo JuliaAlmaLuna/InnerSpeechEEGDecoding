@@ -418,3 +418,16 @@ def rightLeftVisSpecialPlot():
             ],
         ],
     )
+
+
+def rightLeftVis():
+    return (
+        "vvrl",
+        [
+            [["Visualized"], ["Visualized"]],
+            [
+                ["Right"],
+                ["Left"],
+            ],
+        ],
+    )

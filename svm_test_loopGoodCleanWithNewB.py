@@ -31,6 +31,7 @@ def testLoop(
     useAda,
     userndF,
     useMLP,
+    useOVR,
     fmetDict,
     sub,
 ):
@@ -67,6 +68,16 @@ def testLoop(
             # gdData,
             kernels=["linear", "sigmoid", "rbf"],  #
         )
+    elif useOVR:
+        allResults = fmetDict["allSame"].testSuiteOVR(
+            data_train,
+            data_test,
+            labels_train,
+            labels_test,
+            name,
+            # gdData,
+            kernels=["linear", "sigmoid", "rbf"],  #
+        )
     else:
         allResults = fmetDict["allSame"].testSuite(
             data_train,
@@ -91,6 +102,7 @@ def mixShuffleSplit(
     maxCombinationAmount,
     bestFeatures,
     useBestFeaturesTest,
+    subject,
 ):
 
     # Copy labels and features list to avoid changes to originals. Probly not needed
@@ -103,6 +115,7 @@ def mixShuffleSplit(
         maxCombinationAmount=maxCombinationAmount,
         bestFeatures=bestFeatures,
         useBestFeaturesTest=useBestFeaturesTest,
+        subject=subject,
     )
     tempLabels = None
     tempFeatureList = None
@@ -292,20 +305,20 @@ def anovaTest(
             f_statistic, p_values = feature_selection.f_classif(
                 flatfeature, labels)
 
-            varSelect = feature_selection.VarianceThreshold(0.01)
-            varSelect.fit(flatfeature)
-            varMask = varSelect.get_support()
-            # goodVarflatfeature = varSelect.transform(flatfeature)
-            printProcess(
-                f"subj{subject}output",
-                f"varMask Nonzero amount {np.count_nonzero(varMask)}", saveFolderName
-            )
+            # varSelect = feature_selection.VarianceThreshold(0.01)
+            # varSelect.fit(flatfeature)
+            # varMask = varSelect.get_support()
+            # # goodVarflatfeature = varSelect.transform(flatfeature)
+            # printProcess(
+            #     f"subj{subject}output",
+            #     f"varMask Nonzero amount {np.count_nonzero(varMask)}", saveFolderName
+            # )
 
             # Create a mask of features with P values below threshold
             p_values[p_values > significanceThreshold] = 0
             p_values[p_values != 0] = (1 - p_values[p_values != 0]) ** 2
 
-            goodData = f_statistic * p_values * varMask
+            goodData = f_statistic * p_values  # * varMask
 
             remainingNrOfFeatures = np.count_nonzero(goodData)
             if remainingNrOfFeatures > 17000:
@@ -373,49 +386,58 @@ def fSelectUsingSepSubjects(
     saveFolderName,
 ):
     goodFeatureMaskListList = []
+    tempLabels = fClassDict[f"{1}"].getLabels()
+    uniqueLabels = np.unique(tempLabels)
+    for label in uniqueLabels:
+        goodFeatureMaskListList = []
+        for sub in subjects:
+            ovrLabels = fClassDict[f"{sub}"].getLabels()
+            ovrLabels[ovrLabels != label] = 5
+            ovrLabels[ovrLabels == label] = 0
+            ovrLabels[ovrLabels != 0] = 1
+            # fClassDict[f"{sub}"].labels[fClassDict[f"{sub}"].labels != label] = 5
+            goodFeatureMaskList = anovaTest(
+                featureList=fClassDict[f"{sub}"].getFeatureList(),
+                labels=ovrLabels,
+                significanceThreshold=globalSignificanceThreshold,
+                onlyUniqueFeatures=onlyUniqueFeatures,
+                uniqueThresh=uniqueThresh,
+                paradigmName=f"{paradigmName}-label-{label}-soloFSSub",
+                subject=sub,
+                saveFolderName=saveFolderName
+            )
+            goodFeatureMaskListList.append(goodFeatureMaskList)
 
-    for sub in subjects:
-        goodFeatureMaskList = anovaTest(
-            featureList=fClassDict[f"{sub}"].getFeatureList(),
-            labels=fClassDict[f"{sub}"].getLabels(),
-            significanceThreshold=globalSignificanceThreshold,
-            onlyUniqueFeatures=onlyUniqueFeatures,
-            uniqueThresh=uniqueThresh,
-            paradigmName=f"{paradigmName}soloFSSub",
-            subject=sub,
-            saveFolderName=saveFolderName
-        )
-        goodFeatureMaskListList.append(goodFeatureMaskList)
-
-    compute3 = dask.compute(goodFeatureMaskListList)
-    goodFeatureMaskListList = dask.compute(compute3)
+        compute3 = dask.compute(goodFeatureMaskListList)
+        goodFeatureMaskListList = dask.compute(compute3)
 
     for sub in subjects:
         for feature in fClassDict[f"{sub}"].getFeatureList():
             anovaMask = None
             for sub2 in subjects:
-                if sub2 == sub:
-                    continue
-                if anovaMask is None:
-                    anovaMask = loadAnovaMaskNoClass(
-                        featurename=feature[1],
-                        maskname=f"sign{globalSignificanceThreshold}",
-                        uniqueThresh=uniqueThresh,
-                        paradigmName=f"{paradigmName}soloFSSub",
-                        subject=sub2,
-                        onlyUniqueFeatures=onlyUniqueFeatures,
-                        saveFolderName=saveFolderName
-                    )
-                else:
-                    anovaMask = anovaMask + loadAnovaMaskNoClass(
-                        featurename=feature[1],
-                        maskname=f"sign{globalSignificanceThreshold}",
-                        uniqueThresh=uniqueThresh,
-                        paradigmName=f"{paradigmName}soloFSSub",
-                        subject=sub2,
-                        onlyUniqueFeatures=onlyUniqueFeatures,
-                        saveFolderName=saveFolderName
-                    )
+                for label in uniqueLabels:
+                    if sub2 == sub:
+                        continue
+                    if anovaMask is None:
+                        anovaMask = loadAnovaMaskNoClass(
+                            featurename=feature[1],
+                            maskname=f"sign{globalSignificanceThreshold}",
+                            uniqueThresh=uniqueThresh,
+                            paradigmName=f"{paradigmName}-label-{label}-soloFSSub",
+                            subject=sub2,
+                            onlyUniqueFeatures=onlyUniqueFeatures,
+                            saveFolderName=saveFolderName
+                        )
+                    else:
+                        anovaMask = anovaMask + loadAnovaMaskNoClass(
+                            featurename=feature[1],
+                            maskname=f"sign{globalSignificanceThreshold}",
+                            uniqueThresh=uniqueThresh,
+                            paradigmName=f"{paradigmName}-label-{label}-soloFSSub",
+                            subject=sub2,
+                            onlyUniqueFeatures=onlyUniqueFeatures,
+                            saveFolderName=saveFolderName
+                        )
             saveAnovaMaskNoClass(
                 featurename=feature[1],
                 paradigmName=f"{paradigmName}usingSoloFsubs",
@@ -622,23 +644,24 @@ def main():
     # paradigm = paradigmSetting.upDownInnerSpecial()
     # paradigm = paradigmSetting.upDownVisInnersep()
     # paradigm = paradigmSetting.upDownVis()
-    paradigm = paradigmSetting.rightLeftInner()
-    # paradigm = paradigmSetting.upDownRightLeftVis()
+    # paradigm = paradigmSetting.rightLeftInner()
+    # paradigm = paradigmSetting.rightLeftVis()
+    paradigm = paradigmSetting.upDownRightLeftVis()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 5  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
     # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    repetitionName = "rlI3cOnlySepOnlyCurr05th"
-    repetitionValue = f"{129}{repetitionName}"
-    maxCombinationAmount = 3
-    onlyCreateFeatures = False
+    repetitionName = "udrlI2cOnlySepOnlyCurr01th"
+    repetitionValue = f"{25}{repetitionName}"
+    maxCombinationAmount = 1
+    onlyCreateFeatures = True
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
     useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top2rli.npy"
+    bestFeaturesSaveFile = "top1udrlI.npy"
     quickTest = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
@@ -650,15 +673,15 @@ def main():
     # useWinFeat = True
     # t_min2 = 1.7
     # t_max2 = 2.9
-    saveFolderName = "peakTime4SortedSep13"
+    saveFolderName = "peakTime4SortedSep14"
     t_min = 1.1
     t_max = 1.6
     sampling_rate = 256
-    saveFolderName2 = "constTimeSortedSep13"
+    saveFolderName2 = "constTimeSortedSep14"
     useWinFeat = True
     t_min2 = 1.6
     t_max2 = 2.1
-    saveFolderName3 = "lateTimeSortedSep13"
+    saveFolderName3 = "lateTimeSortedSep14"
     useWinFeat2 = True
     t_min3 = 2.1
     t_max3 = 2.6
@@ -677,12 +700,13 @@ def main():
     # Does not seem to help at all. Could be useful for really individual features.
     useSepSubjFS = True
     if useSepSubjFS:
-        globalSignificanceThreshold = 0.05
+        globalSignificanceThreshold = 0.01
     ################################################################
     # Sklearn/TestTrain parameters
     useAda = False  # Using ADA
     userndF = False  # Sklearn random forest, works a little worse and a little slower than SVM at this point
     useMLP = False  # Sklearn MLP, not made good yet. Works ok
+    useOVR = True
     tolerance = 0.001  # Untested
     ################################################################
     # Feature creation/extraction parameters
@@ -692,53 +716,106 @@ def main():
     usefeaturesToTestList = True
     featuresToTestDict = dict()
     stftSplit = 8  # Not used
-    featuresToTestDict["fftFeatures"] = [
-        1,  # fftData,
-        6,  # fftData_CV
-        12,  # fftData_BC
-        15,  # fftData_BC_CV
-        # 55,  # fftData_CV_BC
+    # featuresToTestDict["fftFeatures"] = [
+    #     # 1,  # fftData,
+    #     # 6,  # fftData_CV
+    #     12,  # fftData_BC
+    #     # 15,  # fftData_BC_CV
+    #     55,  # fftData_CV_BC
 
-    ]
+    # ]
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
         52,  # stftData_BC
+        65,  # stftData_GR
         53,  # stftData_CV
-        54,  # stftData_BC_CV
+        66,  # stftData_GR_BC
+        # 54,  # stftData_BC_CV
         58,  # stftData_CV_BC
+        67,  # stftData_GR_CV
+        70,  # stftData_GR_CV_BC
     ]
 
-    featuresToTestDict["inversefftFeatures"] = [
-        25,  # fftData_BC_ifft
-        # 28,  # fftData_BC_ifft_cor2x1
-        # 29,  # fftData_BC_ifft_cor2x2
-        # 30,  # fftData_BC_ifft_cor2x3
-        # 34,  # fftData_BC_ifft_cor1x1
-        36,  # fftData_BC_ifft_CV
-    ]
-    # # featuresToTestDict["welchFeatures"] = [
-    # #     2,  # welchData
-    # #     7,  # welchData_CV
-    # #     13,  # welchData_BC
-    # #     16,  # welchData_BC_CV
-    # #     56,  # welchData_CV_BC
+    # # # # # featuresToTestDict["welchFeatures"] = [
+    # # # # #     2,  # welchData
+    # # # # #     7,  # welchData_CV
+    # # # # #     13,  # welchData_BC
+    # # # # #     16,  # welchData_BC_CV
+    # # # # #     56,  # welchData_CV_BC
+    # # # # # ]
+    # # featuresToTestDict["hilbertFeatures"] = [
+    # #     # 3,  # hilbertData,
+    # #     # 8,  # hilbertData_CV
+    # #     14,  # hilbertData_BC
+    # #     # 17,  # hilbertData_BC_CV
+    # #     57,  # hilbertData_CV_BC
     # # ]
-    featuresToTestDict["hilbertFeatures"] = [
-        3,  # hilbertData,
-        8,  # hilbertData_CV
-        14,  # hilbertData_BC
-        17,  # hilbertData_BC_CV
-        57,  # hilbertData_CV_BC
-    ]
 
-    featuresToTestDict["gaussianFeatures"] = [
-        9,  # "gausData"
-        # 10,  # dataGCV2
-        18,  # gausData_CV
-        19,  # gausData_CV_BC
-        20,  # gaussianData_BC
-        21,  # gausData_BC_CV
-    ]
+    # featuresToTestDict["gaussianFeatures"] = [
+    #     9,  # "gausData"
+    #     # 10,  # dataGCV2
+    #     18,  # gausData_CV
+    #     # 19,  # gausData_CV_BC
+    #     72,  # gausData_GR
+    #     73,  # gausData_GR_CV
+    #     20,  # gausData_BC
+    #     21,  # gausData_BC_CV
+    #     74,  # gausData_GR_CV_BC
+    #     75,  # gausData_GR_BC
+    #     # 76,  # gausData_BC_GR_CV
+    # ]
+
+    # featuresToTestDict["normFeatures"] = [
+    #     87,  # "normData"
+    #     # 10,  # dataGCV2
+    #     # 18,  # gausData_CV
+    #     # 19,  # gausData_CV_BC
+    #     88,  # normData_GR
+    #     89,  # normData_GR_CV
+    #     90,  # normData_GR_BC
+    #     91,  # normData_GR_BC_CV
+    #     92,  # normData_GR_CV_BC
+    #     # 93,  # normData_BC_GR
+    #     # 94,  # normData_BC_GR_CV
+    # ]
+
+    # # featuresToTestDict["inversefftFeatures"] = [
+    # #     25,  # fftData_BC_ifft
+    # #     # 28,  # fftData_BC_ifft_cor2x1
+    # #     # 29,  # fftData_BC_ifft_cor2x2
+    # #     # 30,  # fftData_BC_ifft_cor2x3
+    # #     # 34,  # fftData_BC_ifft_cor1x1
+    # #     36,  # fftData_BC_ifft_CV
+    # #     85,  # fftData_BC_ifft_GR
+    # #     86,  # fftData_BC_ifft_GR_CV
+    # # ]
+
+    # featuresToTestDict["gaussianFeatures2"] = [
+    #     77,  # "gausData2"
+    #     # 10,  # dataGCV2
+    #     95,  # gausData2_CV
+    #     # 19,  # gausData_CV_BC
+    #     78,  # gausData2_GR
+    #     79,  # gausData2_GR_BC
+    #     83,  # gausData2_GR_CV
+    #     80,  # gausData2_BC
+    #     81,  # gausData2_CV_BC
+    #     82,  # gausData2_GR_CV_BC
+    #     # 84,  # gausData2_BC_GR_CV
+    # ]
+
+    # featuresToTestDict["entropyFeatures"] = [
+    #     59,  # chanEntr
+    #     # 10,  # dataGCV2
+    #     60,  # timeEntr
+    #     # 61,  # timeEntr_CV
+    #     68,  # chanEntr_GR
+    #     69,  # chanEntr_GR_BC
+    #     62,  # chanEntr_BC
+    #     63,  # timeEntr_BC
+    #     # 71,  # chanEntr_GR_BC_CV
+    #     # 64,  # timeEntr_CV_BC
+    # ]
 
     # featuresToTestDict["corrFeatures"] = [
     #     33,  # dataCorr2ax1d
@@ -812,7 +889,43 @@ def main():
         False,  # 56 welchData_CV_BC
         False,  # 57 hilbertData_CV_BC
         False,  # 58 stftData_CV_BC
-        # True,  # FFT BC IFFT 24
+        False,  # 59 fftData_CV_BC
+        False,  # 60 welchData_CV_BC
+        False,  # 61 hilbertData_CV_BC
+        False,  # 62 stftData_CV_BC
+        False,  # 63 hilbertData_CV_BC
+        False,  # 64 stftData_CV_BC
+        False,  # 65 stftData_GR
+        False,  # 66 stftData_GR_BC
+        False,  # 67 stftData_BC_GR
+        False,  # 68 chanEntr_GR
+        False,  # 69 chanEntr_GR_BC
+        False,  # 70 stftData_GR_BC_CV
+        False,  # 71 chanEntr_GR_BC_CV
+        False,  # 72 chanEntr_GR_BC
+        False,  # 73 stftData_GR_BC_CV
+        False,  # 74 chanEntr_GR_BC_CV
+        False,  # 75 chanEntr_GR
+        False,  # 76 chanEntr_GR_BC
+        False,  # 77 stftData_GR_BC_CV
+        False,  # 78 chanEntr_GR_BC_CV
+        False,  # 79 chanEntr_GR_BC
+        False,  # 80 stftData_GR_BC_CV
+        False,  # 81 chanEntr_GR_BC_CV
+        False,  # 82 chanEntr_GR
+        False,  # 83 chanEntr_GR_BC
+        False,  # 84 stftData_GR_BC_CV
+        False,  # 85 fftData_BC_ifft_GR
+        False,  # 86 fftData_BC_ifft_GR_CV
+        False,  # 79 chanEntr_GR_BC
+        False,  # 80 stftData_GR_BC_CV
+        False,  # 81 chanEntr_GR_BC_CV
+        False,  # 82 chanEntr_GR
+        False,  # 83 chanEntr_GR_BC
+        False,  # 84 stftData_GR_BC_CV
+        False,  # 85 fftData_BC_ifft_GR
+        False,  # 86 fftData_BC_ifft_GR_CV
+        # True,  # FT BC IFFT 24
         # More to be added
     ]
 
@@ -1151,6 +1264,7 @@ def main():
                     maxCombinationAmount=maxCombinationAmount,
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
+                    subject=sub,
                 )
             else:
                 mDataList = mixShuffleSplit(
@@ -1160,6 +1274,7 @@ def main():
                     maxCombinationAmount=maxCombinationAmount,
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
+                    subject=sub,
                 )
             allResultsPerSubject = []
             # For loop of each combination of features
@@ -1180,6 +1295,7 @@ def main():
                     useAda,
                     userndF,
                     useMLP,
+                    useOVR,
                     fmetDict,
                     sub,
                 )
@@ -1376,8 +1492,8 @@ def onlyCreateFeaturesFunction(
     fmetDict = dict()
     bClassDict = dict()
     bFeatClassDict = dict()
+    allFeaturesAlreadyCreated = False
     for sub in subjects:  #
-
         fClassDict[f"{sub}"] = fclass.featureEClass(
             sub,
             paradigm[0],
@@ -1390,6 +1506,7 @@ def onlyCreateFeaturesFunction(
             stftSplit=stftSplit,
             saveFolderName=saveFolderName
         )
+
         fClassDict[f"{sub}"].loadData(
             t_min=t_min,
             t_max=t_max,
@@ -1410,6 +1527,8 @@ def onlyCreateFeaturesFunction(
             featureList=featureList,
             verbose=True,
         )
+        if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is not None:
+            return True
         print(len(createdFeatureList))
         print(f"Printing features created so far for subject {sub}")
         for createdFeature in createdFeatureList:
@@ -1519,6 +1638,9 @@ def onlyCreateFeaturesFunction(
                 featureList=featureList,
                 verbose=True,
             )
+        # if fClassDict[f"{sub}"].allFeaturesAlreadyCreated is True:
+        #     allFeaturesAlreadyCreated = True
+        #     return True
 
     if signAll:
         if useSepSubjFS is not True:

@@ -231,6 +231,7 @@ class featureEClass:
         maxCombinationAmount,
         bestFeatures,
         useBestFeaturesTest,
+        subject,
     ):  #
         """
         Mixes the features that are sent in into combinations
@@ -257,6 +258,8 @@ class featureEClass:
         namesAndIndexBestFeatures = np.zeros(
             np.array(bestFeatures, dtype=object).shape)
         bestFeatures = np.array(bestFeatures, dtype=object)
+        if bestFeatures.shape[0] == 9:
+            bestFeatures[:] = bestFeatures[subject - 1, :]
         # print(bestFeatures.shape)
         for index, feature in enumerate(featureList, 0):
             # print(feature[1])
@@ -495,6 +498,13 @@ class featureEClass:
     # I think. Or if they dont have time. Just dont
     def newCovariance(self, preCovFeature, splits=24):
         splits = 26
+        smallShape = False
+        if preCovFeature.ndim > 3:
+            preCovFeature = np.reshape(
+                preCovFeature, [preCovFeature.shape[0], preCovFeature.shape[1], -1])
+        if preCovFeature.shape[-1] < 26:
+            splits = preCovFeature.shape[-1]
+            smallShape = True
         postCovFeature = []
         if splits > 1:
             averagedData = self.averageChannels(preCovFeature)
@@ -508,15 +518,31 @@ class featureEClass:
                 [averagedData.shape[0], averagedData.shape[1] * splits, -1],
             )
             # print(averagedData.shape[1] * splits)
-        for trial in preCovFeature:
-            postCovFeature.append(np.cov(trial))
+        if smallShape:
+            for trial in preCovFeature:
+                postCovFeature.append(np.cov(trial, bias=1))
+        else:
+            for trial in preCovFeature:
+                postCovFeature.append(np.cov(trial))
         postCovFeature = np.array(postCovFeature)
 
         return postCovFeature
 
+    # shape, trial * channels * whatever. Here it does gradient/derivative on first dim after channel
+    def gradientFunc(self, preDRFeature):
+        postDRFeature = []
+        for trial in preDRFeature:
+            if trial.ndim < 2:
+                postDRFeature.append(np.gradient(trial, axis=0))
+            else:
+                postDRFeature.append(np.gradient(trial, axis=1))
+        postDRFeature = np.array(postDRFeature)
+        print(postDRFeature.shape)
+        return postDRFeature
     # TODO: Add derivative feature. First, second
     # Then derivate CV
     # Then either BC after first or second step.
+
     def createFeature(self, featureName, tempData):
         noReshape = False
         createdFeature = None
@@ -537,6 +563,15 @@ class featureEClass:
                     np.array(self.newCovariance(preCVFeature, splits=splitNr)),
                     featureNameSaved,
                 ]
+        elif featureName[-2:] == "GR":
+            # print(featureName)
+            # print(featureName[:-3])
+            if self.loadFeatures(featureName[:-3]) is not None:
+                preDRFeature = self.loadFeatures(featureName[:-3])[0]
+                createdFeature = [
+                    np.array(self.gradientFunc(preDRFeature)),
+                    featureNameSaved,
+                ]
         else:
             if featureName == "fftData":
                 absFFT, angleFFT = ut.fftData2(tempData)
@@ -548,6 +583,45 @@ class featureEClass:
                         f"angle{featureNameSaved}",
                     ],
                 )
+
+            if featureName == "chanEntr":
+                import antropy as ant
+                tempData = np.swapaxes(tempData, -1, -2)
+                chanEntropy = []
+                for trial in tempData:
+                    chanEntropyTrial = []
+                    for time in range(trial.shape[0] // 3):
+                        threeTime = np.array(
+                            trial[time:time + 2, :]).reshape([-1])
+                        chanEntropyTrial.append(
+                            ant.perm_entropy(threeTime, normalize=True))
+                    # for time in trial:
+                    #     chanEntropyTrial.append(
+                    #         ant.perm_entropy(time, normalize=True))
+                    chanEntropy.append(chanEntropyTrial)
+                chanEntropy = np.array(chanEntropy, dtype=np.float32)
+                createdFeature = [chanEntropy, featureNameSaved]
+
+            if featureName == "timeEntr":
+                import antropy as ant
+                timeEntropy = []
+                for trial in tempData:
+                    timeEntropyTrial = []
+                    for channel in trial:
+                        windSize = tempData.shape[-1] // 8
+                        timeEntropyWindows = []
+                        for wind in range(7):
+                            window = channel[windSize *
+                                             wind: windSize * (wind + 1)]
+                            # ant.perm_entropy(window, normalize=True)
+                            timeEntropyWindows.append(
+                                ant.perm_entropy(window, normalize=True))
+                        timeEntropyTrial.append(
+                            np.array(timeEntropyWindows).reshape(-1))
+                    timeEntropy.append(timeEntropyTrial)
+
+                timeEntropy = np.array(timeEntropy, dtype=np.float32)
+                createdFeature = [timeEntropy, featureNameSaved]
 
             if featureName == "fftData_BC_ifft":
                 if self.chunk:
@@ -598,10 +672,10 @@ class featureEClass:
                 stftFeature = abs(signal.stft(tempData, fs=256, window="blackman", boundary="zeros",
                                               padded=True, axis=-1, nperseg=arLength // 6)[2])  # [:, :, :, :splitNr]
                 stftFeature = np.swapaxes(stftFeature, -1, -2)
-                # print(stftFeature.shape)
-                stftFeatureReshaped = np.reshape(
-                    stftFeature, [stftFeature.shape[0], stftFeature.shape[1], -1])
-                createdFeature = [stftFeatureReshaped, featureNameSaved]
+                print(stftFeature.shape)
+                # stftFeatureReshaped = np.reshape(
+                #     stftFeature, [stftFeature.shape[0], stftFeature.shape[1], -1])
+                createdFeature = [stftFeature, featureNameSaved]
 
             if featureName == "hilbertData":
                 dataH = hilbert(tempData, axis=2, N=128)
@@ -1021,6 +1095,17 @@ class featureEClass:
                     ndimage.gaussian_filter1d(tempData, 5, axis=2),
                     featureNameSaved,
                 ]
+            if featureName == "gausData2":
+                createdFeature = [
+                    ndimage.gaussian_filter1d(tempData, 2, axis=2),
+                    featureNameSaved,
+                ]
+
+            if featureName == "normData":
+                createdFeature = [
+                    tempData,
+                    featureNameSaved,
+                ]
 
         if self.chunk:
             if noReshape is False:
@@ -1054,7 +1139,7 @@ class featureEClass:
         tempData = np.copy(self.data)
 
         correctedExists = True
-
+        self.allFeaturesAlreadyCreated = False
         for fNr, useFeature in enumerate(featureList, 1):
 
             del tempData
@@ -1213,6 +1298,80 @@ class featureEClass:
                     featureName = "hilbertData_CV_BC"
                 if fNr == 58:
                     featureName = "stftData_CV_BC"
+                if fNr == 59:
+                    featureName = "chanEntr"
+                if fNr == 60:
+                    featureName = "timeEntr"
+                if fNr == 61:
+                    featureName = "timeEntr_CV"
+                if fNr == 62:
+                    featureName = "chanEntr_BC"
+                if fNr == 63:
+                    featureName = "timeEntr_BC"
+                if fNr == 64:
+                    featureName = "timeEntr_CV_BC"
+                if fNr == 65:
+                    featureName = "stftData_GR"
+                if fNr == 66:
+                    featureName = "stftData_GR_BC"
+                if fNr == 67:
+                    featureName = "stftData_GR_CV"
+                if fNr == 68:
+                    featureName = "chanEntr_GR"
+                if fNr == 69:
+                    featureName = "chanEntr_GR_BC"
+                if fNr == 70:
+                    featureName = "stftData_GR_CV_BC"
+                if fNr == 71:
+                    featureName = "chanEntr_GR_BC_CV"
+                if fNr == 72:
+                    featureName = "gausData_GR"
+                if fNr == 73:
+                    featureName = "gausData_GR_CV"
+                if fNr == 74:
+                    featureName = "gausData_GR_CV_BC"
+                if fNr == 75:
+                    featureName = "gausData_GR_BC"
+                if fNr == 76:
+                    featureName = "gausData_BC_GR_CV"
+                if fNr == 77:
+                    featureName = "gausData2"
+                if fNr == 78:
+                    featureName = "gausData2_GR"
+                if fNr == 79:
+                    featureName = "gausData2_GR_BC"
+                if fNr == 80:
+                    featureName = "gausData2_BC"
+                if fNr == 81:
+                    featureName = "gausData2_CV_BC"
+                if fNr == 82:
+                    featureName = "gausData2_GR_CV_BC"
+                if fNr == 83:
+                    featureName = "gausData2_GR_CV"
+                if fNr == 84:
+                    featureName = "gausData2_BC_GR_CV"
+                if fNr == 85:
+                    featureName = "fftData_BC_ifft_GR"
+                if fNr == 86:
+                    featureName = "fftData_BC_ifft_GR_CV"
+                if fNr == 87:
+                    featureName = "normData"
+                if fNr == 88:
+                    featureName = "normData_GR"
+                if fNr == 89:
+                    featureName = "normData_GR_CV"
+                if fNr == 90:
+                    featureName = "normData_GR_BC"
+                if fNr == 91:
+                    featureName = "normData_GR_BC_CV"
+                if fNr == 92:
+                    featureName = "normData_GR_CV_BC"
+                if fNr == 93:
+                    featureName = "normData_BC_GR"
+                if fNr == 94:
+                    featureName = "normData_BC_GR_CV"
+                if fNr == 95:
+                    featureName = "gausData2_CV"
 
                 if "baseline" in self.paradigmName or "split" in self.paradigmName:
                     if "BC" in featureName:
@@ -1244,6 +1403,7 @@ class featureEClass:
 
                 if loadedFeature is not None:
                     createdFeature = loadedFeature
+                    # self.allFeaturesAlreadyCreated = True
                 else:
                     if featureName[-2:] == "BC":
                         if self.chunk:
@@ -1258,7 +1418,7 @@ class featureEClass:
                         correctedExists = False
                         continue
                     else:
-
+                        # self.allFeaturesAlreadyCreated = False
                         createdFeature = self.createFeature(
                             featureName, tempData=tempData
                         )
