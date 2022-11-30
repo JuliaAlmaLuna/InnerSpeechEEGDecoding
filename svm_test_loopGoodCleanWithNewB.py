@@ -653,16 +653,17 @@ def main():
     validationRepetition = True
     # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    repetitionName = "udrlI2cOnlySepOnlyCurr01th"
-    repetitionValue = f"{25}{repetitionName}"
-    maxCombinationAmount = 1
-    onlyCreateFeatures = True
+    repetitionName = "udrlV2cOnlySepOnlyCurr01th"
+    repetitionValue = f"{41}{repetitionName}"
+    maxCombinationAmount = 2
+    onlyCreateFeatures = False
     useAllFeatures = True
     chunkFeatures = False
     # When increasing combination amount by one each test.
     useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top1udrlI.npy"
+    bestFeaturesSaveFile = "top1udrlV.npy"
     quickTest = True
+    useMasked = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
     # saveFolderName = "peakTime2"
@@ -716,14 +717,14 @@ def main():
     usefeaturesToTestList = True
     featuresToTestDict = dict()
     stftSplit = 8  # Not used
-    # featuresToTestDict["fftFeatures"] = [
-    #     # 1,  # fftData,
-    #     # 6,  # fftData_CV
-    #     12,  # fftData_BC
-    #     # 15,  # fftData_BC_CV
-    #     55,  # fftData_CV_BC
+    featuresToTestDict["fftFeatures"] = [
+        1,  # fftData,
+        6,  # fftData_CV
+        12,  # fftData_BC
+        15,  # fftData_BC_CV
+        55,  # fftData_CV_BC
 
-    # ]
+    ]
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
         52,  # stftData_BC
@@ -733,7 +734,7 @@ def main():
         # 54,  # stftData_BC_CV
         58,  # stftData_CV_BC
         67,  # stftData_GR_CV
-        70,  # stftData_GR_CV_BC
+        # 70,  # stftData_GR_CV_BC
     ]
 
     # # # # # featuresToTestDict["welchFeatures"] = [
@@ -751,33 +752,33 @@ def main():
     # #     57,  # hilbertData_CV_BC
     # # ]
 
-    # featuresToTestDict["gaussianFeatures"] = [
-    #     9,  # "gausData"
-    #     # 10,  # dataGCV2
-    #     18,  # gausData_CV
-    #     # 19,  # gausData_CV_BC
-    #     72,  # gausData_GR
-    #     73,  # gausData_GR_CV
-    #     20,  # gausData_BC
-    #     21,  # gausData_BC_CV
-    #     74,  # gausData_GR_CV_BC
-    #     75,  # gausData_GR_BC
-    #     # 76,  # gausData_BC_GR_CV
-    # ]
+    featuresToTestDict["gaussianFeatures"] = [
+        9,  # "gausData"
+        # 10,  # dataGCV2
+        18,  # gausData_CV
+        19,  # gausData_CV_BC
+        72,  # gausData_GR
+        73,  # gausData_GR_CV
+        20,  # gausData_BC
+        21,  # gausData_BC_CV
+        74,  # gausData_GR_CV_BC
+        75,  # gausData_GR_BC
+        # 76,  # gausData_BC_GR_CV
+    ]
 
-    # featuresToTestDict["normFeatures"] = [
-    #     87,  # "normData"
-    #     # 10,  # dataGCV2
-    #     # 18,  # gausData_CV
-    #     # 19,  # gausData_CV_BC
-    #     88,  # normData_GR
-    #     89,  # normData_GR_CV
-    #     90,  # normData_GR_BC
-    #     91,  # normData_GR_BC_CV
-    #     92,  # normData_GR_CV_BC
-    #     # 93,  # normData_BC_GR
-    #     # 94,  # normData_BC_GR_CV
-    # ]
+    featuresToTestDict["normFeatures"] = [
+        87,  # "normData"
+        # 10,  # dataGCV2
+        # 18,  # gausData_CV
+        # 19,  # gausData_CV_BC
+        88,  # normData_GR
+        89,  # normData_GR_CV
+        90,  # normData_GR_BC
+        91,  # normData_GR_BC_CV
+        92,  # normData_GR_CV_BC
+        # 93,  # normData_BC_GR
+        # 94,  # normData_BC_GR_CV
+    ]
 
     # # featuresToTestDict["inversefftFeatures"] = [
     # #     25,  # fftData_BC_ifft
@@ -793,13 +794,13 @@ def main():
     # featuresToTestDict["gaussianFeatures2"] = [
     #     77,  # "gausData2"
     #     # 10,  # dataGCV2
-    #     95,  # gausData2_CV
+    #     # 95,  # gausData2_CV
     #     # 19,  # gausData_CV_BC
     #     78,  # gausData2_GR
     #     79,  # gausData2_GR_BC
     #     83,  # gausData2_GR_CV
     #     80,  # gausData2_BC
-    #     81,  # gausData2_CV_BC
+    #     # 81,  # gausData2_CV_BC
     #     82,  # gausData2_GR_CV_BC
     #     # 84,  # gausData2_BC_GR_CV
     # ]
@@ -1084,10 +1085,169 @@ def main():
     # Creating the features for each subject and putting them in a dict
     fClassDict = dict()
     fmetDict = dict()
-    bClassDict = dict()
-    bFeatClassDict = dict()
-    for sub in subjects:  #
+    if useMasked is False:
+        bClassDict = dict()
+        bFeatClassDict = dict()
+        for sub in subjects:  #
 
+            fClassDict[f"{sub}"] = fclass.featureEClass(
+                sub,
+                paradigm[0],
+                globalSignificance=globalSignificanceThreshold,
+                chunk=False,
+                chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+                onlyUniqueFeatures=onlyUniqueFeatures,
+                uniqueThresh=uniqueThresh,
+                useSepSubjFS=useSepSubjFS,
+                stftSplit=stftSplit,
+                saveFolderName=saveFolderName,
+            )
+            fClassDict[f"{sub}"].loadData(
+                t_min=t_min,
+                t_max=t_max,
+                sampling_rate=sampling_rate,
+                twoDLabels=False,
+                paradigms=paradigm[1],
+            )
+
+            fmetDict["allSame"] = svmMet.SvmMets(
+                significanceThreshold=soloSignificanceThreshold,
+                signAll=signAll,
+                signSolo=signSolo,
+                verbose=False,
+                tol=tolerance,
+                quickTest=quickTest,
+            )
+            print(f"Creating features for subject:{sub}")
+            createdFeatureList, labels, correctedExists = fClassDict[f"{sub}"].getFeatures(
+                featureList=featureList,
+                verbose=True,
+            )
+
+            print(len(createdFeatureList))
+            print(f"Printing features created so far for subject {sub}")
+            for createdFeature in createdFeatureList:
+                print(createdFeature[1])
+            print(f"Corrected Exists = {correctedExists}")
+            createdFeatureList = None
+            createdFeature = None
+            fClassDict[f"{sub}"].data = None
+
+        if signAll:
+            if useSepSubjFS is not True:
+                allSubjFListList = []
+                allSubjFLabelsList = []
+                subjectsThatNeedFSelect = []
+            for sub in subjects:
+
+                if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
+                    if useSepSubjFS:
+                        print("using Here")
+                        fSelectUsingSepSubjects(
+                            fClassDict,
+                            globalSignificanceThreshold,
+                            onlyUniqueFeatures,
+                            uniqueThresh,
+                            paradigm[0],
+                            subjects,
+                            saveFolderName=saveFolderName
+                        )
+                        break
+                    else:
+                        # fClass.getFeatureList() for all other subjects into
+                        allSubjFList, allSubjFLabels = combineAllSubjects(
+                            fClassDict, subjectLeftOut=sub, onlyTrain=False
+                        )
+
+                        # add allSubjFlist and Labels to list
+                        allSubjFLabelsList.append(allSubjFLabels)
+                        allSubjFListList.append(allSubjFList)
+                        subjectsThatNeedFSelect.append(sub)
+
+                else:
+                    print(
+                        f"Feature Mask Already exist for all Features for subject {sub}")
+
+            if useSepSubjFS is not True:
+                goodFeatureMaskListList = []
+                for subj, features, labels in zip(
+                    subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
+                ):
+
+                    # Maybe dp before here
+                    goodFeatureMaskList = anovaTest(
+                        features,
+                        labels,
+                        globalSignificanceThreshold,
+                        onlyUniqueFeatures,
+                        uniqueThresh,
+                        paradigm[0],
+                        subj,
+                        saveFolderName=saveFolderName
+                    )
+
+                    goodFeatureMaskListList.append(goodFeatureMaskList)
+
+                compute3 = dask.compute(goodFeatureMaskListList)
+                goodFeatureMaskListList = dask.compute(compute3)
+
+        if useWinFeat:
+            fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
+                                          globalSignificanceThreshold=globalSignificanceThreshold,
+                                          onlyUniqueFeatures=onlyUniqueFeatures,
+                                          uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                          saveFolderName=saveFolderName2,
+                                          t_min=t_min2, t_max=t_max2,
+                                          sampling_rate=sampling_rate,
+                                          soloSignificanceThreshold=soloSignificanceThreshold,
+                                          signAll=signAll,
+                                          signSolo=signSolo, tolerance=tolerance, quickTest=quickTest)
+
+            for sub in subjects:
+                fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                fClassDict[f"{sub}"].addNameFeat(saveFolderName)
+                fClassDict2[f"{sub}"].addNameFeat(saveFolderName2)
+
+                fClassDict[f"{sub}"].extendFeatureList(
+                    fClassDict2[f"{sub}"].getFeatureList()
+                )
+                if signAll:
+                    fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
+                        fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                    )
+                fClassDict2[f"{sub}"] = None
+            fClassDict2 = None
+
+        if useWinFeat2:
+            fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
+                                          globalSignificanceThreshold=globalSignificanceThreshold,
+                                          onlyUniqueFeatures=onlyUniqueFeatures,
+                                          uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                          saveFolderName=saveFolderName3,
+                                          t_min=t_min3, t_max=t_max3,
+                                          sampling_rate=sampling_rate,
+                                          soloSignificanceThreshold=soloSignificanceThreshold,
+                                          signAll=signAll,
+                                          signSolo=signSolo, tolerance=tolerance, quickTest=quickTest)
+
+            for sub in subjects:
+                fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                # fClassDict[f"{sub}"].addNameFeat(saveFolderName)
+                fClassDict2[f"{sub}"].addNameFeat(saveFolderName3)
+
+                fClassDict[f"{sub}"].extendFeatureList(
+                    fClassDict2[f"{sub}"].getFeatureList()
+                )
+                if signAll:
+                    fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
+                        fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
+                    )
+                fClassDict2[f"{sub}"] = None
+                fClassDict[f"{sub}"].createMaskedFeatureList()
+            fClassDict2 = None
+
+    if useMasked:
+        sub = 1
         fClassDict[f"{sub}"] = fclass.featureEClass(
             sub,
             paradigm[0],
@@ -1126,125 +1286,38 @@ def main():
         print(f"Printing features created so far for subject {sub}")
         for createdFeature in createdFeatureList:
             print(createdFeature[1])
-        print(f"Corrected Exists = {correctedExists}")
-        createdFeatureList = None
-        createdFeature = None
-        fClassDict[f"{sub}"].data = None
-
-    if signAll:
-        if useSepSubjFS is not True:
-            allSubjFListList = []
-            allSubjFLabelsList = []
-            subjectsThatNeedFSelect = []
-        for sub in subjects:
-
-            if fClassDict[f"{sub}"].getGlobalGoodFeaturesMask() is None:
-                if useSepSubjFS:
-                    print("using Here")
-                    fSelectUsingSepSubjects(
-                        fClassDict,
-                        globalSignificanceThreshold,
-                        onlyUniqueFeatures,
-                        uniqueThresh,
-                        paradigm[0],
-                        subjects,
-                        saveFolderName=saveFolderName
-                    )
-                    break
-                else:
-                    # fClass.getFeatureList() for all other subjects into
-                    allSubjFList, allSubjFLabels = combineAllSubjects(
-                        fClassDict, subjectLeftOut=sub, onlyTrain=False
-                    )
-
-                    # add allSubjFlist and Labels to list
-                    allSubjFLabelsList.append(allSubjFLabels)
-                    allSubjFListList.append(allSubjFList)
-                    subjectsThatNeedFSelect.append(sub)
-
-            else:
-                print(
-                    f"Feature Mask Already exist for all Features for subject {sub}")
-
-        if useSepSubjFS is not True:
-            goodFeatureMaskListList = []
-            for subj, features, labels in zip(
-                subjectsThatNeedFSelect, allSubjFListList, allSubjFLabelsList
-            ):
-
-                # Maybe dp before here
-                goodFeatureMaskList = anovaTest(
-                    features,
-                    labels,
-                    globalSignificanceThreshold,
-                    onlyUniqueFeatures,
-                    uniqueThresh,
-                    paradigm[0],
-                    subj,
-                    saveFolderName=saveFolderName
-                )
-
-                goodFeatureMaskListList.append(goodFeatureMaskList)
-
-            compute3 = dask.compute(goodFeatureMaskListList)
-            goodFeatureMaskListList = dask.compute(compute3)
-
-    if useWinFeat:
-        fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
-                                      globalSignificanceThreshold=globalSignificanceThreshold,
-                                      onlyUniqueFeatures=onlyUniqueFeatures,
-                                      uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                      saveFolderName=saveFolderName2,
-                                      t_min=t_min2, t_max=t_max2,
-                                      sampling_rate=sampling_rate, soloSignificanceThreshold=soloSignificanceThreshold,
-                                      signAll=signAll,
-                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest)
 
         for sub in subjects:
-            fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-            fClassDict[f"{sub}"].addNameFeat(saveFolderName)
-            fClassDict2[f"{sub}"].addNameFeat(saveFolderName2)
-
-            fClassDict[f"{sub}"].extendFeatureList(
-                fClassDict2[f"{sub}"].getFeatureList()
+            fClassDict[f"{sub}"] = fclass.featureEClass(
+                sub,
+                paradigm[0],
+                globalSignificance=globalSignificanceThreshold,
+                chunk=False,
+                chunkAmount=chunkAmount,  # Doesn't matter if chunk = False
+                onlyUniqueFeatures=onlyUniqueFeatures,
+                uniqueThresh=uniqueThresh,
+                useSepSubjFS=useSepSubjFS,
+                stftSplit=stftSplit,
+                saveFolderName=saveFolderName,
             )
-            if signAll:
-                fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-                    fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-                )
-            fClassDict2[f"{sub}"] = None
-        fClassDict2 = None
-
-    if useWinFeat2:
-        fClassDict2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
-                                      globalSignificanceThreshold=globalSignificanceThreshold,
-                                      onlyUniqueFeatures=onlyUniqueFeatures,
-                                      uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                      saveFolderName=saveFolderName3,
-                                      t_min=t_min3, t_max=t_max3,
-                                      sampling_rate=sampling_rate, soloSignificanceThreshold=soloSignificanceThreshold,
-                                      signAll=signAll,
-                                      signSolo=signSolo, tolerance=tolerance, quickTest=quickTest)
-
-        for sub in subjects:
-            fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-            # fClassDict[f"{sub}"].addNameFeat(saveFolderName)
-            fClassDict2[f"{sub}"].addNameFeat(saveFolderName3)
-
-            fClassDict[f"{sub}"].extendFeatureList(
-                fClassDict2[f"{sub}"].getFeatureList()
+            fClassDict[f"{sub}"].loadData(
+                t_min=t_min,
+                t_max=t_max,
+                sampling_rate=sampling_rate,
+                twoDLabels=False,
+                paradigms=paradigm[1],
             )
-            if signAll:
-                fClassDict[f"{sub}"].extendGlobalGoodFeaturesMaskList(
-                    fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
-                )
-            fClassDict2[f"{sub}"] = None
-            fClassDict[f"{sub}"].createMaskedFeatureList()
-        fClassDict2 = None
+            folderNames = [saveFolderName, saveFolderName2, saveFolderName3]
+            for folderName in folderNames:
+                fClassDict[f"{sub}"].loadAllMaskedFeatures(
+                    createdFeatureList, folderName)
+        # print(f"Corrected Exists = {correctedExists}")
+        # createdFeatureList = None
+        # createdFeature = None
+        # fClassDict[f"{sub}"].data = None
 
     for sub in subjects:
         fClassDict[f"{sub}"].setOrder(seed, testSize)
-
     # A for loop just running all subjects using different seeds for train/data split
     for testNr in np.arange(testSize):
 
@@ -1256,7 +1329,7 @@ def main():
             # signAll = True
             # Then only create new combos containing that best combos + 1 or 2 more features
             if signAll:
-                print(fClassDict[f"{sub}"].getLabels())
+                # print(fClassDict[f"{sub}"].getLabels())
                 mDataList = mixShuffleSplit(
                     fClassDict[f"{sub}"].getMaskedFeatureList(),
                     labels=fClassDict[f"{sub}"].getLabels(),

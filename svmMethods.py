@@ -242,8 +242,22 @@ class SvmMets:
             if pred == labels_test[nr]:
                 correct[nr] = 1
                 correctamount += 1
+        sepScores = self.scoresSepLabels(clf, ndata_test, labels_test)
+        score = clf.score(ndata_test, labels_test)
+        scores = []
+        scores.append(score)
+        for sepscore in sepScores:
+            scores.append(sepscore)
+        # print(sepScores)
+        return scores  # correctamount / labels_test.shape[0]  # , coefs
 
-        return correctamount / labels_test.shape[0]  # , coefs
+    def scoresSepLabels(self, clf, data, labels):
+        uniqueLabels = np.unique(labels)
+        scoresSep = []
+        for label in uniqueLabels:
+            indexes = np.where(labels == label)
+            scoresSep.append(clf.score(data[indexes], labels[indexes]))
+        return scoresSep
 
     def testSuiteOVR(
         self,

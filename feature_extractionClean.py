@@ -86,11 +86,56 @@ class featureEClass:
             else:
                 maskedFeature[0] = self.flattenAllExceptTrial(feature[0])
                 cleanMaskedFeatureList.append(maskedFeature)
-
+            self.saveMaskedFeature(featurename=feature[1],
+                                   maskname=f"pt{self.globalSignificance}-u{self.uniqueThresh}",
+                                   array=maskedFeature)
         self.createdFeatureList = None
         self.globalGoodFeatureMask = None
         self.data = None
         self.maskedFeatureList = cleanMaskedFeatureList
+
+    def loadAllMaskedFeatures(self, featureList, folderName):
+        maskedFeatureList = self.maskedFeatureList
+        for feat in featureList:
+            fName = f"{feat[1]}{folderName}"
+            # print(fName)
+            maskName = f"pt{self.globalSignificance}-u{self.uniqueThresh}"
+            maskedFeatureList.append(self.loadMaskedFeature(
+                featurename=fName, maskname=maskName))
+
+        self.maskedFeatureList = maskedFeatureList
+
+    def loadMaskedFeature(self, featurename, maskname):
+        name = f"{featurename}{maskname}"
+
+        saveDir = f"{os.getcwd()}/{self.saveFolderName}/SavedMaskedFeature/sub-{self.subject}-par-{self.paradigmName}"
+        path = glob.glob(saveDir + f"/{name}.npy")
+        # print(saveDir)
+        # print(name)
+        # print(path)
+
+        if len(path) > 0:
+            savedAnovaMask = np.load(path[0], allow_pickle=True)
+            # savedAnovaMask[savedAnovaMask != 0] = 1
+            # savedAnovaMask = np.array(savedAnovaMask, dtype=int)
+            return savedAnovaMask
+        else:
+            return None
+
+    def saveMaskedFeature(self, featurename, maskname, array):
+        name = f"{featurename}{maskname}"
+
+        # if self.onlyUniqueFeatures:
+        #     name = f"{name}u{self.uniqueThresh}"
+
+        saveDir = f"{os.getcwd()}/{self.saveFolderName}/SavedMaskedFeature/sub-{self.subject}-par-{self.paradigmName}"
+        if os.path.exists(saveDir) is not True:
+            os.makedirs(saveDir)
+
+        np.save(
+            f"{saveDir}/{name}",
+            array,
+        )
 
     def getMaskedFeatureList(self):
         tempMaskedFeatureList = dp(self.maskedFeatureList)
@@ -258,8 +303,12 @@ class featureEClass:
         namesAndIndexBestFeatures = np.zeros(
             np.array(bestFeatures, dtype=object).shape)
         bestFeatures = np.array(bestFeatures, dtype=object)
+
         if bestFeatures.shape[0] == 9:
-            bestFeatures[:] = bestFeatures[subject - 1, :]
+            for bestFeat in bestFeatures:
+                for x in range(bestFeat.shape[0]):
+                    bestFeat[x] = bestFeatures[subject - 1, x]
+
         # print(bestFeatures.shape)
         for index, feature in enumerate(featureList, 0):
             # print(feature[1])
@@ -268,7 +317,7 @@ class featureEClass:
             namesAndIndex[1] = index
             if np.where(bestFeatures == feature[1])[0].shape[0] > 0:
                 row = np.where(bestFeatures == feature[1])[0]
-                if maxCombinationAmount > 2:
+                if bestFeatures.shape[1] > 1:
                     column = np.where(bestFeatures == feature[1])[1]
                     namesAndIndexBestFeatures[row, column] = int(index)
                 else:

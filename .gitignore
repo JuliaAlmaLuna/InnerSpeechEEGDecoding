@@ -23,6 +23,9 @@ potholes**
 WorkingBaseLineFeatures**
 WorkingBaselineFeaturesNew**
 SavedResults**
+SavedMaskedFeature**
+topFeaturesResults**¨
+topFeatures**
 
 eeg-imagined-speech-nieto/derivatives/sub-01/ses-01/sub-01_ses-01_baseline-epo.fif
 eeg-imagined-speech-nieto/derivatives/sub-01/ses-01/sub-01_ses-01_eeg-epo.fif
@@ -294,3 +297,4 @@ __pycache__/dataLoader.cpython-38.pyc
 eeg-imagined-speech-nieto/CHANGES
 eeg-imagined-speech-nieto/dataset_description.json
 eeg-imagined-speech-nieto/README
+peakTime4SortedSep14/SavedMaskedFeature/sub-1-par-vvvvudrl/normData_GR_BC_CVconstTimeSortedSep14pt0.01-u0.9.npy
