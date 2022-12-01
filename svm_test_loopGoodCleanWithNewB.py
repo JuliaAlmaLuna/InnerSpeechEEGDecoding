@@ -646,24 +646,35 @@ def main():
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.rightLeftInner()
     # paradigm = paradigmSetting.rightLeftVis()
-    paradigm = paradigmSetting.upDownRightLeftVis()
+    # paradigm = paradigmSetting.upDownRightLeftVis()
+    paradigm = paradigmSetting.rightLeftVis()
+    # paradigm = paradigmSetting.upDownVis()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    testSize = 5  # Nr of seed iterations until stopping
+    testSize = 10  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
-    # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
-    # Currently the best. Try with lower fselect threshold and usesepsubjects
-    repetitionName = "udrlV2cOnlySepOnlyCurr01th"
-    repetitionValue = f"{41}{repetitionName}"
-    maxCombinationAmount = 2
-    onlyCreateFeatures = False
     useAllFeatures = True
     chunkFeatures = False
+    # "peak4-const3-i-ud-global-10-3c"  # "udrliplotnoAda1hyperparams"
+    signAll = True
+    globalSignificanceThreshold = 0.1  # 0.1  #
+    useSepSubjFS = True
+    if useSepSubjFS:
+        # CHANGED FROM 0.01 REMEMBER. Goes too slow for larger ones? Maybe not now with masked feature tactic? 
+        # If it helps. Maybe find 0.02 or 0.03 that helps but isnt horribly slow!
+        globalSignificanceThreshold = 0.05
+    # Currently the best. Try with lower fselect threshold and usesepsubjects
+    cmbSize = 1
+    paraName = paradigm[0]
+    repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr05th"
+    repetitionValue = f"{46}{repetitionName}"
+    onlyCreateFeatures = True
+    useBestFeaturesTest = False
+    useMasked = False
     # When increasing combination amount by one each test.
-    useBestFeaturesTest = True
-    bestFeaturesSaveFile = "top1udrlV.npy"
+    bestFeaturesSaveFile = f"top{cmbSize-1}{paraName}.npy"
+    worstFeaturesSaveFile = f"worstFeats1{paraName}.npy"
     quickTest = True
-    useMasked = True
     ##############################################################
     # Loading parameters, what part of the trials to load and test
     # saveFolderName = "peakTime2"
@@ -674,6 +685,7 @@ def main():
     # useWinFeat = True
     # t_min2 = 1.7
     # t_max2 = 2.9
+    maxCombinationAmount = cmbSize
     saveFolderName = "peakTime4SortedSep14"
     t_min = 1.1
     t_max = 1.6
@@ -694,14 +706,11 @@ def main():
     # Feature selection parameters
     onlyUniqueFeatures = True
     uniqueThresh = 0.9
-    signAll = True
-    globalSignificanceThreshold = 0.1  # 0.1  #
+
     signSolo = False
     soloSignificanceThreshold = 0.005
     # Does not seem to help at all. Could be useful for really individual features.
-    useSepSubjFS = True
-    if useSepSubjFS:
-        globalSignificanceThreshold = 0.01
+
     ################################################################
     # Sklearn/TestTrain parameters
     useAda = False  # Using ADA
@@ -717,14 +726,16 @@ def main():
     usefeaturesToTestList = True
     featuresToTestDict = dict()
     stftSplit = 8  # Not used
+    featuresToOnlyCreateNotTest = []
     featuresToTestDict["fftFeatures"] = [
-        1,  # fftData,
+        1,  # fftData, # Needed if create
         6,  # fftData_CV
-        12,  # fftData_BC
         15,  # fftData_BC_CV
+        12,  # fftData_BC
         55,  # fftData_CV_BC
 
     ]
+    featuresToOnlyCreateNotTest.append(0)
     featuresToTestDict["stftFeatures"] = [
         51,  # stftData,
         52,  # stftData_BC
@@ -732,7 +743,7 @@ def main():
         53,  # stftData_CV
         66,  # stftData_GR_BC
         # 54,  # stftData_BC_CV
-        58,  # stftData_CV_BC
+        # 58,  # stftData_CV_BC
         67,  # stftData_GR_CV
         # 70,  # stftData_GR_CV_BC
     ]
@@ -744,24 +755,26 @@ def main():
     # # # # #     16,  # welchData_BC_CV
     # # # # #     56,  # welchData_CV_BC
     # # # # # ]
-    # # featuresToTestDict["hilbertFeatures"] = [
-    # #     # 3,  # hilbertData,
-    # #     # 8,  # hilbertData_CV
-    # #     14,  # hilbertData_BC
-    # #     # 17,  # hilbertData_BC_CV
-    # #     57,  # hilbertData_CV_BC
-    # # ]
+    featuresToTestDict["hilbertFeatures"] = [
+        3,  # hilbertData, Needed if create
+        8,  # hilbertData_CV Needed if create
+        14,  # hilbertData_BC
+        57,  # hilbertData_CV_BC
+        17,  # hilbertData_BC_CV
+    ]
+    # featuresToOnlyCreateNotTest.append(3)
+    # featuresToOnlyCreateNotTest.append(8)
 
     featuresToTestDict["gaussianFeatures"] = [
         9,  # "gausData"
         # 10,  # dataGCV2
         18,  # gausData_CV
-        19,  # gausData_CV_BC
+        # 19,  # gausData_CV_BC
         72,  # gausData_GR
-        73,  # gausData_GR_CV
         20,  # gausData_BC
+        73,  # gausData_GR_CV
         21,  # gausData_BC_CV
-        74,  # gausData_GR_CV_BC
+        # 74,  # gausData_GR_CV_BC
         75,  # gausData_GR_BC
         # 76,  # gausData_BC_GR_CV
     ]
@@ -772,8 +785,8 @@ def main():
         # 18,  # gausData_CV
         # 19,  # gausData_CV_BC
         88,  # normData_GR
-        89,  # normData_GR_CV
         90,  # normData_GR_BC
+        89,  # normData_GR_CV
         91,  # normData_GR_BC_CV
         92,  # normData_GR_CV_BC
         # 93,  # normData_BC_GR
@@ -830,33 +843,35 @@ def main():
     for ind, featureI in enumerate(featuresToTestList):
         featuresToTestList[ind] = featureI - 1
 
+    featuresToOnlyCreateNotTest = [i - 1 for i in featuresToOnlyCreateNotTest]
+
     # What features that are created and tested
     featureList = [
-        False,  # FFT 1
-        True,  # Welch 2
-        False,  # Hilbert 3 DataHR seems to not add much if any to FFT and Welch
+        True,  # fftData 1
+        True,  # welchData 2
+        True,  # hilbertData 3 DataHR seems to not add much if any to FFT and Welch
         False,  # Powerbands 4
         False,  # FFT frequency buckets 5
-        False,  # FFT Covariance 6
-        False,  # Welch Covariance 7
-        False,  # Hilbert Covariance 8 DataHR seems to not add much if any to FFT and Welch
-        False,  # Covariance on smoothed Data 9 dataGCV
+        False,  # FFT fftData_CV 6
+        True,  # Welch welchData_CV 7
+        True,  # Hilbert hilbertData_CV 8 DataHR seems to not add much if any to FFT and Welch
+        True,  # gausData  9 dataGCV
         False,  # Covariance on smoothed Data2 10 dataGCV2 SKIP
-        False,  # Correlate1d # SEEMS BAD 11
-        False,  # dataFFTCV-BC 12 Is this one doing BC before or after? Before right. yes
-        False,  # dataWCV-BC 13
-        True,  # dataHRCV-BC 14 DataHR seems to not add much if any to FFT and Welch
-        True,  # fftDataBC 15
-        False,  # welchDataBC 16
-        False,  # dataHRBC 17 DataHR seems to not add much if any to FFT and Welch
-        False,  # gaussianData 18
-        True,  # dataGCVBC 19
-        True,  # gaussianDataBC 20
-        True,  # dataGCV-BC       21      -BC means BC before covariance
+        False,  # normDatacor2x1 # SEEMS BAD 11
+        True,  # fftData_BC 12 Is this one doing BC before or after? Before right. yes
+        True,  # welchData_BC-BC 13
+        True,  # hilbertData_BC 14 DataHR seems to not add much if any to FFT and Welch
+        True,  # fftData_BC_CV 15
+        True,  # welchData_BC_CV 16
+        True,  # hilbertData_BC_CV 17 DataHR seems to not add much if any to FFT and Welch
+        True,  # gausData_CV 18
+        True,  # gausData_CV_BC 19
+        True,  # gausData_BC 20
+        True,  # gausData_BC_CV       21      -BC means BC before covariance
         False,  # dataFFTCV2-BC 22 With more channels. Only useful for chunks
         False,  # dataGCV2-BC 23 SKIP
-        True,  # 24 Correlate1dBC005s
-        False,  # 25 inverseFFT-BC
+        False,  # 24 Correlate1dBC005s
+        True,  # 25 fftData_BC_ifft
         False,  # 26 corr01s
         False,  # 27 corr02s
         False,  # 28 iFFTdataCorr1d01s-BC
@@ -867,7 +882,7 @@ def main():
         False,  # 33 dataCorr2ax1d #
         False,  # 34 iFFTdataCorr2ax1d005s-BC       Try all of these , with new iFFTdata
         False,  # 35 dataCorr2ax1dBC
-        False,  # 36 inverseFFTCV-BC
+        True,  # 36 fftData_BC_ifft_CV
         False,  # 37 anglefftData
         False,  # 38 anglefftDataBC
         False,  # 39 2dataCorr2ax1d
@@ -882,60 +897,66 @@ def main():
         False,  # 48 6dataCorr2ax1dBC
         False,  # 49 05dataCorr2ax1d
         False,  # 50 05dataCorr2ax1dBC
-        False,  # 51 stftData
-        False,  # 52 stftData_BC
-        False,  # 53 stftData_CV
-        False,  # 54 stftData_BC_CV
-        False,  # 55 fftData_CV_BC
-        False,  # 56 welchData_CV_BC
-        False,  # 57 hilbertData_CV_BC
-        False,  # 58 stftData_CV_BC
-        False,  # 59 fftData_CV_BC
-        False,  # 60 welchData_CV_BC
-        False,  # 61 hilbertData_CV_BC
-        False,  # 62 stftData_CV_BC
-        False,  # 63 hilbertData_CV_BC
-        False,  # 64 stftData_CV_BC
-        False,  # 65 stftData_GR
-        False,  # 66 stftData_GR_BC
-        False,  # 67 stftData_BC_GR
+        True,  # 51 stftData
+        True,  # 52 stftData_BC
+        True,  # 53 stftData_CV
+        True,  # 54 stftData_BC_CV
+        True,  # 55 fftData_CV_BC
+        True,  # 56 welchData_CV_BC
+        True,  # 57 hilbertData_CV_BC
+        True,  # 58 stftData_CV_BC
+        False,  # 59 chanEntr
+        False,  # 60 timeEntr
+        False,  # 61 timeEntr_CV
+        False,  # 62 chanEntr_BC
+        False,  # 63 timeEntr_BC
+        False,  # 64 timeEntr_CV_BC
+        True,  # 65 stftData_GR
+        True,  # 66 stftData_GR_BC
+        True,  # 67 stftData_GR_CV
         False,  # 68 chanEntr_GR
         False,  # 69 chanEntr_GR_BC
-        False,  # 70 stftData_GR_BC_CV
+        True,  # 70 stftData_GR_CV_BC
         False,  # 71 chanEntr_GR_BC_CV
-        False,  # 72 chanEntr_GR_BC
-        False,  # 73 stftData_GR_BC_CV
-        False,  # 74 chanEntr_GR_BC_CV
-        False,  # 75 chanEntr_GR
-        False,  # 76 chanEntr_GR_BC
-        False,  # 77 stftData_GR_BC_CV
-        False,  # 78 chanEntr_GR_BC_CV
-        False,  # 79 chanEntr_GR_BC
-        False,  # 80 stftData_GR_BC_CV
-        False,  # 81 chanEntr_GR_BC_CV
-        False,  # 82 chanEntr_GR
-        False,  # 83 chanEntr_GR_BC
-        False,  # 84 stftData_GR_BC_CV
-        False,  # 85 fftData_BC_ifft_GR
-        False,  # 86 fftData_BC_ifft_GR_CV
-        False,  # 79 chanEntr_GR_BC
-        False,  # 80 stftData_GR_BC_CV
-        False,  # 81 chanEntr_GR_BC_CV
-        False,  # 82 chanEntr_GR
-        False,  # 83 chanEntr_GR_BC
-        False,  # 84 stftData_GR_BC_CV
-        False,  # 85 fftData_BC_ifft_GR
-        False,  # 86 fftData_BC_ifft_GR_CV
+        True,  # 72 gausData_GR
+        True,  # 73 gausData_GR_CV
+        True,  # 74 gausData_GR_CV_BC
+        True,  # 75 gausData_GR_BC
+        True,  # 76 gausData_BC_GR_CV
+        True,  # 77 gausData2
+        True,  # 78 gausData2_GR
+        True,  # 79 gausData2_GR_BC
+        True,  # 80 gausData2_BC
+        True,  # 81 gausData2_CV_BC
+        True,  # 82 gausData2_GR_CV_BC
+        True,  # 83 gausData2_GR_CV
+        True,  # 84 gausData2_BC_GR_CV
+        True,  # 85 fftData_BC_ifft_GR
+        True,  # 86 fftData_BC_ifft_GR_CV
+        True,  # 87 normData
+        True,  # 88 normData_GR
+        True,  # 89 normData_GR_CV
+        True,  # 90 normData_GR_BC
+        True,  # 91 normData_GR_BC_CV
+        True,  # 92 normData_GR_CV_BC
+        True,  # 93 normData_BC_GR
+        True,  # 94 normData_BC_GR_CV
+        True,  # 95 gausData2_CV
         # True,  # FT BC IFFT 24
         # More to be added
     ]
 
     ###############################################################
-    bestFeatures = np.load(
-        f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+
     if useBestFeaturesTest:
+        bestFeatures = np.load(
+            f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+        worstFeatures = np.load(
+            f"worstFeatures/{worstFeaturesSaveFile}", allow_pickle=True)
         print(bestFeatures)
         print(bestFeatures.shape)
+    else:
+        bestFeatures = None
 
     # For loops to fit with numbering from 0 to len()-1 instead of 1 to len()
     # for ind, fea in enumerate(badFeatures):
@@ -1080,6 +1101,8 @@ def main():
             featureList[featureI] = False
             if featureI in featuresToTestList:
                 featureList[featureI] = True
+            if featureI in featuresToOnlyCreateNotTest:
+                featureList[featureI] = False
 
     print(f"FeatureList so far: {featureList}")
     # Creating the features for each subject and putting them in a dict
@@ -1284,8 +1307,17 @@ def main():
 
         print(len(createdFeatureList))
         print(f"Printing features created so far for subject {sub}")
-        for createdFeature in createdFeatureList:
-            print(createdFeature[1])
+        if useBestFeaturesTest:
+            newCreatedFeatureList = []
+            for createdFeature in createdFeatureList:
+                if createdFeature[1] not in worstFeatures:
+                    newCreatedFeatureList.append(createdFeature)
+                else:
+                    print(f"Removed {createdFeature[1]} with worst feat check")
+            createdFeatureList = newCreatedFeatureList
+        else:
+            for createdFeature in createdFeatureList:
+                print(createdFeature[1])
 
         for sub in subjects:
             fClassDict[f"{sub}"] = fclass.featureEClass(

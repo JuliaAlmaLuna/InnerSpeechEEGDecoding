@@ -298,30 +298,30 @@ class featureEClass:
         labelsList = []
         dataNrs = np.arange(len(featureList))
         combos = []
+        if useBestFeaturesTest:
+            namesAndIndex = np.array([len(featureList), 2], dtype=object)
+            namesAndIndexBestFeatures = np.zeros(
+                np.array(bestFeatures, dtype=object).shape)
+            bestFeatures = np.array(bestFeatures, dtype=object)
 
-        namesAndIndex = np.array([len(featureList), 2], dtype=object)
-        namesAndIndexBestFeatures = np.zeros(
-            np.array(bestFeatures, dtype=object).shape)
-        bestFeatures = np.array(bestFeatures, dtype=object)
+            if bestFeatures.shape[0] == 9:
+                for bestFeat in bestFeatures:
+                    for x in range(bestFeat.shape[0]):
+                        bestFeat[x] = bestFeatures[subject - 1, x]
 
-        if bestFeatures.shape[0] == 9:
-            for bestFeat in bestFeatures:
-                for x in range(bestFeat.shape[0]):
-                    bestFeat[x] = bestFeatures[subject - 1, x]
-
-        # print(bestFeatures.shape)
-        for index, feature in enumerate(featureList, 0):
-            # print(feature[1])
-            # print(np.where(bestFeatures == feature[1]))
-            namesAndIndex[0] = feature[1]
-            namesAndIndex[1] = index
-            if np.where(bestFeatures == feature[1])[0].shape[0] > 0:
-                row = np.where(bestFeatures == feature[1])[0]
-                if bestFeatures.shape[1] > 1:
-                    column = np.where(bestFeatures == feature[1])[1]
-                    namesAndIndexBestFeatures[row, column] = int(index)
-                else:
-                    namesAndIndexBestFeatures[row] = int(index)
+            # print(bestFeatures.shape)
+            for index, feature in enumerate(featureList, 0):
+                # print(feature[1])
+                # print(np.where(bestFeatures == feature[1]))
+                namesAndIndex[0] = feature[1]
+                namesAndIndex[1] = index
+                if np.where(bestFeatures == feature[1])[0].shape[0] > 0:
+                    row = np.where(bestFeatures == feature[1])[0]
+                    if bestFeatures.shape[1] > 1:
+                        column = np.where(bestFeatures == feature[1])[1]
+                        namesAndIndexBestFeatures[row, column] = int(index)
+                    else:
+                        namesAndIndexBestFeatures[row] = int(index)
 
         # create All combinations of bestFeatures, dvs bara dem
         # Sen ta all combinations, of them and all other values
@@ -338,7 +338,7 @@ class featureEClass:
                 else:
                     maxCombinationAmount = 1
 
-            if maxCombinationAmount < 1:
+            if useBestFeaturesTest and maxCombinationAmount < 1:
                 for row in namesAndIndexBestFeatures:
                     combos.append(np.array(row))
             else:
