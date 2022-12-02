@@ -647,10 +647,13 @@ def main():
     # paradigm = paradigmSetting.rightLeftInner()
     # paradigm = paradigmSetting.rightLeftVis()
     # paradigm = paradigmSetting.upDownRightLeftVis()
-    paradigm = paradigmSetting.rightLeftVis()
+    # paradigm = paradigmSetting.rightLeftVis()
     # paradigm = paradigmSetting.upDownVis()
+    # paradigm = paradigmSetting.upDownRightLeftInner()
+    paradigm = paradigmSetting.upDownInner()
+    # paradigm = paradigmSetting.rightLeftInner()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    testSize = 10  # Nr of seed iterations until stopping
+    testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     validationRepetition = True
     useAllFeatures = True
@@ -660,17 +663,17 @@ def main():
     globalSignificanceThreshold = 0.1  # 0.1  #
     useSepSubjFS = True
     if useSepSubjFS:
-        # CHANGED FROM 0.01 REMEMBER. Goes too slow for larger ones? Maybe not now with masked feature tactic? 
-        # If it helps. Maybe find 0.02 or 0.03 that helps but isnt horribly slow!
-        globalSignificanceThreshold = 0.05
+        # CHANGED FROM 0.01 REMEMBER. Goes too slow for larger ones? Maybe not now with masked feature tactic?
+        # If it helps. Maybe find 0.02 or 0.03 that helps but isnt horribly slow! Honestly. Lower seems better? Somehow!
+        globalSignificanceThreshold = 0.01
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    cmbSize = 1
+    cmbSize = 7
     paraName = paradigm[0]
-    repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr05th"
-    repetitionValue = f"{46}{repetitionName}"
-    onlyCreateFeatures = True
-    useBestFeaturesTest = False
-    useMasked = False
+    repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr01th"
+    repetitionValue = f"{49}{repetitionName}"
+    onlyCreateFeatures = False
+    useBestFeaturesTest = True
+    useMasked = True
     # When increasing combination amount by one each test.
     bestFeaturesSaveFile = f"top{cmbSize-1}{paraName}.npy"
     worstFeaturesSaveFile = f"worstFeats1{paraName}.npy"
@@ -793,30 +796,30 @@ def main():
         # 94,  # normData_BC_GR_CV
     ]
 
-    # # featuresToTestDict["inversefftFeatures"] = [
-    # #     25,  # fftData_BC_ifft
-    # #     # 28,  # fftData_BC_ifft_cor2x1
-    # #     # 29,  # fftData_BC_ifft_cor2x2
-    # #     # 30,  # fftData_BC_ifft_cor2x3
-    # #     # 34,  # fftData_BC_ifft_cor1x1
-    # #     36,  # fftData_BC_ifft_CV
-    # #     85,  # fftData_BC_ifft_GR
-    # #     86,  # fftData_BC_ifft_GR_CV
-    # # ]
-
-    # featuresToTestDict["gaussianFeatures2"] = [
-    #     77,  # "gausData2"
-    #     # 10,  # dataGCV2
-    #     # 95,  # gausData2_CV
-    #     # 19,  # gausData_CV_BC
-    #     78,  # gausData2_GR
-    #     79,  # gausData2_GR_BC
-    #     83,  # gausData2_GR_CV
-    #     80,  # gausData2_BC
-    #     # 81,  # gausData2_CV_BC
-    #     82,  # gausData2_GR_CV_BC
-    #     # 84,  # gausData2_BC_GR_CV
+    # featuresToTestDict["inversefftFeatures"] = [
+    #     25,  # fftData_BC_ifft
+    #     # 28,  # fftData_BC_ifft_cor2x1
+    #     # 29,  # fftData_BC_ifft_cor2x2
+    #     # 30,  # fftData_BC_ifft_cor2x3
+    #     # 34,  # fftData_BC_ifft_cor1x1
+    #     36,  # fftData_BC_ifft_CV
+    #     85,  # fftData_BC_ifft_GR
+    #     86,  # fftData_BC_ifft_GR_CV
     # ]
+
+    featuresToTestDict["gaussianFeatures2"] = [
+        77,  # "gausData2"
+        # 10,  # dataGCV2
+        # 95,  # gausData2_CV
+        # 19,  # gausData_CV_BC
+        78,  # gausData2_GR
+        79,  # gausData2_GR_BC
+        83,  # gausData2_GR_CV
+        80,  # gausData2_BC
+        # 81,  # gausData2_CV_BC
+        82,  # gausData2_GR_CV_BC
+        # 84,  # gausData2_BC_GR_CV
+    ]
 
     # featuresToTestDict["entropyFeatures"] = [
     #     59,  # chanEntr
