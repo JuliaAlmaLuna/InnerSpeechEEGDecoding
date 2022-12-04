@@ -69,7 +69,7 @@ def testLoop(
             kernels=["linear", "sigmoid", "rbf"],  #
         )
     elif useOVR:
-        allResults = fmetDict["allSame"].testSuiteOVR(
+        allResults = fmetDict["allSame"].testSuiteOVRHoldOut(
             data_train,
             data_test,
             labels_train,
@@ -650,8 +650,8 @@ def main():
     # paradigm = paradigmSetting.rightLeftVis()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownRightLeftInner()
-    paradigm = paradigmSetting.upDownInner()
-    # paradigm = paradigmSetting.rightLeftInner()
+    # paradigm = paradigmSetting.upDownInner()
+    paradigm = paradigmSetting.rightLeftInner()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
@@ -663,19 +663,24 @@ def main():
     globalSignificanceThreshold = 0.1  # 0.1  #
     useSepSubjFS = True
     if useSepSubjFS:
-        # CHANGED FROM 0.01 REMEMBER. Goes too slow for larger ones? Maybe not now with masked feature tactic?
-        # If it helps. Maybe find 0.02 or 0.03 that helps but isnt horribly slow! Honestly. Lower seems better? Somehow!
         globalSignificanceThreshold = 0.01
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    cmbSize = 7
+    cmbSize = 6
     paraName = paradigm[0]
-    repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr01th"
-    repetitionValue = f"{49}{repetitionName}"
+    repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr01thTESTHoldOut70"
+    repetitionValue = f"{9}{repetitionName}"
     onlyCreateFeatures = False
+
     useBestFeaturesTest = True
+    if cmbSize == 1:
+        useBestFeaturesTest = False
+
+    useBestAvg = False
     useMasked = True
     # When increasing combination amount by one each test.
     bestFeaturesSaveFile = f"top{cmbSize-1}{paraName}.npy"
+    if useBestAvg:
+        bestFeaturesSaveFile = f"topAvg{cmbSize-1}{paraName}.npy"
     worstFeaturesSaveFile = f"worstFeats1{paraName}.npy"
     quickTest = True
     ##############################################################
@@ -751,13 +756,13 @@ def main():
         # 70,  # stftData_GR_CV_BC
     ]
 
-    # # # # # featuresToTestDict["welchFeatures"] = [
-    # # # # #     2,  # welchData
-    # # # # #     7,  # welchData_CV
-    # # # # #     13,  # welchData_BC
-    # # # # #     16,  # welchData_BC_CV
-    # # # # #     56,  # welchData_CV_BC
-    # # # # # ]
+    # featuresToTestDict["welchFeatures"] = [
+    #     2,  # welchData
+    #     7,  # welchData_CV
+    #     13,  # welchData_BC
+    #     16,  # welchData_BC_CV
+    #     56,  # welchData_CV_BC
+    # ]
     featuresToTestDict["hilbertFeatures"] = [
         3,  # hilbertData, Needed if create
         8,  # hilbertData_CV Needed if create
@@ -796,16 +801,16 @@ def main():
         # 94,  # normData_BC_GR_CV
     ]
 
-    # featuresToTestDict["inversefftFeatures"] = [
-    #     25,  # fftData_BC_ifft
-    #     # 28,  # fftData_BC_ifft_cor2x1
-    #     # 29,  # fftData_BC_ifft_cor2x2
-    #     # 30,  # fftData_BC_ifft_cor2x3
-    #     # 34,  # fftData_BC_ifft_cor1x1
-    #     36,  # fftData_BC_ifft_CV
-    #     85,  # fftData_BC_ifft_GR
-    #     86,  # fftData_BC_ifft_GR_CV
-    # ]
+    featuresToTestDict["inversefftFeatures"] = [
+        25,  # fftData_BC_ifft
+        # 28,  # fftData_BC_ifft_cor2x1
+        # 29,  # fftData_BC_ifft_cor2x2
+        # 30,  # fftData_BC_ifft_cor2x3
+        # 34,  # fftData_BC_ifft_cor1x1
+        36,  # fftData_BC_ifft_CV
+        85,  # fftData_BC_ifft_GR
+        86,  # fftData_BC_ifft_GR_CV
+    ]
 
     featuresToTestDict["gaussianFeatures2"] = [
         77,  # "gausData2"

@@ -304,10 +304,13 @@ class featureEClass:
                 np.array(bestFeatures, dtype=object).shape)
             bestFeatures = np.array(bestFeatures, dtype=object)
 
-            if bestFeatures.shape[0] == 9:
-                for bestFeat in bestFeatures:
+            if bestFeatures.shape[0] == 18:
+                for bestFeat in bestFeatures[:9]:
                     for x in range(bestFeat.shape[0]):
                         bestFeat[x] = bestFeatures[subject - 1, x]
+                for bestFeat in bestFeatures[9:]:
+                    for x in range(bestFeat.shape[0]):
+                        bestFeat[x] = bestFeatures[subject - 1 + 9, x]
 
             # print(bestFeatures.shape)
             for index, feature in enumerate(featureList, 0):
@@ -1556,7 +1559,7 @@ class featureEClass:
         # Set the random order of shuffling for the subject/seed test
         self.orderList = []
         sss = StratifiedShuffleSplit(
-            testSize, train_size=0.8, test_size=0.2, random_state=seed
+            testSize, train_size=0.7, test_size=0.3, random_state=seed
         )
 
         for train_index, test_index in sss.split(

@@ -184,6 +184,87 @@ class SvmMets:
 
         return correctamount / labels_test.shape[0]  # , coefs
 
+    def svmPipelineOVRHoldOut(
+        self,
+        ndata_train,
+        ndata_test,
+        labels_train,
+        labels_test,
+        kernel="linear",
+        degree=3,
+        gamma="auto",
+        C=1,
+    ):
+        # coefs=None,
+        # goodData,
+        """
+        Pipeline using SVM
+
+        Args:
+            data_train (np.array): Training data for SVM pipeline
+            data_test (np.array): Test data for SVM pipeline
+            labels_train (np.array): Training labels for SVM pipeline
+            labels_test (np.array): Test labels for SVM pipeline
+            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
+            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
+            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
+            . Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        # if coefs is None:
+        #     coefs = np.zeros([1, ndata_train.shape[1]])
+
+        # from sklearn import multioutput as multiO, create new class for multiOutput
+        from sklearn.multiclass import OneVsRestClassifier
+
+        clf = OneVsRestClassifier(SVC(gamma=gamma,
+                                      kernel=kernel,
+                                      degree=degree,
+                                      verbose=False,
+                                      C=C,
+                                      cache_size=1800,
+                                      tol=self.tol,
+                                      ))
+        ndata_test2 = ndata_test[(ndata_test.shape[0] // 3) * 2:]
+        ndata_test = ndata_test[0:(ndata_test.shape[0] // 3) * 2]
+        labels_test2 = labels_test[(labels_test.shape[0] // 3) * 2:]
+        labels_test = labels_test[0:(labels_test.shape[0] // 3) * 2]
+        # print(ndata_test.shape)
+        # print(ndata_test2.shape)
+        # print("JULIAAAA TEST HOLD")
+        # print(labels_test2.shape)
+        # print(labels_test.shape)
+        clf.fit(ndata_train, labels_train)
+        scoresList = []
+        for ndata_test, labels_test in zip([ndata_test, ndata_test2], [labels_test, labels_test2]):
+
+            predictions = clf.predict(ndata_test)
+            correct = np.zeros(labels_test.shape)
+            correctamount = 0
+            # print(clf.score(ndata_test, labels_test))
+            # print(clf.decision_function(ndata_train))
+            # print(f"Labels test : {labels_test}")
+            # print(f"Predictions test : {predictions}")
+            for nr, pred in enumerate(predictions, 0):
+                if pred == labels_test[nr]:
+                    correct[nr] = 1
+                    correctamount += 1
+            sepScores = self.scoresSepLabels(clf, ndata_test, labels_test)
+            score = clf.score(ndata_test, labels_test)
+            scores = []
+            scores.append(score)
+            for sepscore in sepScores:
+                scores.append(sepscore)
+            # print(sepScores)
+            scoresList.append(scores)
+
+        # correctamount / labels_test.shape[0]  # , coefs
+        return scoresList[0], scoresList[1]
+
     def svmPipelineOVR(
         self,
         ndata_train,
@@ -331,6 +412,87 @@ class SvmMets:
                                 )
                             )
                         allResults.append([name, res, kernel, c])
+
+        # coefs = np.reshape(coefs, [128, -1])
+        # hyperParams = []
+        # hyperParams.append([kernels, clist])
+        if name not in self.featCombos:
+            self.featCombos.append(name)
+        self.hyperParams = [kernels, clist]
+        return np.array(allResults, dtype=object)
+
+    def testSuiteOVRHoldOut(
+        self,
+        data_train,
+        data_test,
+        labels_train,
+        labels_test,
+        name,
+        kernels=["linear", "rbf", "sigmoid"],
+    ):
+        scaler = StandardScaler()
+        scaler = scaler.fit(data_train)
+
+        ndata_train = scaler.transform(data_train)
+        ndata_test = scaler.transform(data_test)
+        # print("Shuffling")
+        # np.random.shuffle(labels_train)
+        # print(labels_train.shape)
+        # print("here")
+        # labels_train = np.random.shuffle(labels_train)
+        allResults = []
+        if self.quickTest:
+            clist = [2.5]
+        else:
+            clist = [0.1, 1, 10, 100, 1000]
+            # Regularization parameter.
+            # The strength of the regularization is inversely proportional to C.
+            # Must be strictly positive. The penalty is a squared l2 penalty.
+        # testing using different kernels, C and degrees.
+        for kernel in kernels:
+            if kernel == "linear":
+                c = clist[0]
+                for degree in range(1, 2):
+                    res, hres = self.svmPipelineOVRHoldOut(
+                        ndata_train,
+                        ndata_test,
+                        labels_train,
+                        labels_test,
+                        # goodData=goodData,
+                        degree=degree,
+                        kernel=kernel,
+                        C=c,
+                        # coefs=coefs,
+                    )
+                    if self.verbose:
+                        print(
+                            "Result for degree {}, kernel {}, C = {}: {}".format(
+                                degree, kernel, (c * 100 // 10) / 10, res
+                            )
+                        )
+                    allResults.append([name, res, kernel, c, hres])
+
+            else:
+                for c in clist:
+                    for gamma in ["auto"]:
+                        res, hres = self.svmPipelineOVRHoldOut(
+                            ndata_train,
+                            ndata_test,
+                            labels_train,
+                            labels_test,
+                            # goodData=goodData,
+                            degree=degree,
+                            kernel=kernel,
+                            gamma=gamma,
+                            C=c,
+                        )
+                        if self.verbose:
+                            print(
+                                "Result for gamma {}, kernel {}, C = {}: {}".format(
+                                    gamma, kernel, (c * 100 // 10) / 10, res[0]
+                                )
+                            )
+                        allResults.append([name, res, kernel, c, hres])
 
         # coefs = np.reshape(coefs, [128, -1])
         # hyperParams = []
