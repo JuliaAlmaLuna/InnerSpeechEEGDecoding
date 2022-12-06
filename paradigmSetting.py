@@ -394,6 +394,21 @@ def rightLeftInner():
     )
 
 
+def sadAngryHappyDisgustedJulia():
+    return (
+        "jjjjsahd",
+        [
+            [["Julia"], ["Julia"], ["Julia"], ["Julia"]],
+            [
+                ["Sad"],
+                ["Angry"],
+                ["Happy"],
+                ["Disgusted"],
+            ],
+        ],
+    )
+
+
 def rightLeftInnerSpecialPlot():
     return (
         "iirlspecplot",

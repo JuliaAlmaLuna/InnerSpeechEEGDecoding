@@ -10,6 +10,9 @@ import util as ut
 import glob
 import os
 from sklearn.model_selection import StratifiedShuffleSplit
+from loadOwnData import loadOwnData as dl2
+from loadOwnData import createEpochs2
+# from loadOwnData import preProcessData
 # import re
 # pylint: disable=C0103
 
@@ -30,6 +33,8 @@ class featureEClass:
         chunk=False,
         onlyUniqueFeatures=False,
         useSepSubjFS=False,
+        myData=False,
+        holdOut=False,
     ):
         """
         File that holds class handling feature extraction
@@ -59,6 +64,8 @@ class featureEClass:
         self.useSepSubjFS = useSepSubjFS
         self.saveFolderName = saveFolderName
         self.stftSplit = stftSplit
+        self.myData = myData
+        self.holdOut = holdOut
         if self.signAll or self.signSolo:
             self.onlySign = True
         else:
@@ -454,7 +461,33 @@ class featureEClass:
         del labels_s
         return data_train, data_test, labels_train, labels_test, name  # , gdData
 
+    def loadOwnData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
+        # if self.data == None:
+        words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
+        wordDict = dict(words)
+        exgData, markerData = dl2(
+            dataPath="SadAngryHappyDisgusted/", t_start=t_min, t_end=t_max, words=wordDict)
+
+        allTrials, allTrialsLabels = createEpochs2(
+            words=wordDict, eegData=exgData, markerData=markerData)
+
+        allTrials = np.array(allTrials)
+        allTrialsLabels = np.array(allTrialsLabels)
+        self.data = allTrials[:, :, int(sampling_rate *
+                              t_min):int(sampling_rate * t_max)]
+        self.labels = allTrialsLabels
+        allTrials = None
+        allTrialsLabels = None
+        # print(type(allTrials))
+        # print(len(allTrials))
+        # print(len(allTrialsLabels))
+        # print(allTrialsLabels)
+        # preProcessedTrials = []
+        # plt.figure(figsize=[30, 3])
+        # plt.plot(allTrials[2][2, :])
+        print(self.data.shape)
     # TODO Add a loader for bad data, to use in testing
+
     def loadData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
         # Load the Nieto datasets if those are the ones tested. If not, data and labels loaded
         # from some other dataset needs to be
@@ -533,16 +566,20 @@ class featureEClass:
         return createdFeature
 
     def averageChannels(self, preAveragedData):
-        groupNames = ["OL", "OZ", "OR", "FL", "FZ",
-                      "FR", "CL", "CZ", "CR", "PZ", "OPZ"]
-        averagedChannelsData = np.zeros(
-            [preAveragedData.shape[0], len(
-                groupNames), preAveragedData.shape[2]]
-        )
-        for avgNr, groupName in enumerate(groupNames):
-            cnNrs = ut.channelNumbersFromGroupName(groupName)
-            chosenChannels = preAveragedData[:, cnNrs, :]
-            averagedChannelsData[:, avgNr, :] = np.mean(chosenChannels, axis=1)
+        if preAveragedData.shape[-2] > 20:
+            groupNames = ["OL", "OZ", "OR", "FL", "FZ",
+                          "FR", "CL", "CZ", "CR", "PZ", "OPZ"]
+            averagedChannelsData = np.zeros(
+                [preAveragedData.shape[0], len(
+                    groupNames), preAveragedData.shape[2]]
+            )
+            for avgNr, groupName in enumerate(groupNames):
+                cnNrs = ut.channelNumbersFromGroupName(groupName)
+                chosenChannels = preAveragedData[:, cnNrs, :]
+                averagedChannelsData[:, avgNr, :] = np.mean(
+                    chosenChannels, axis=1)
+        else:
+            averagedChannelsData = preAveragedData
         return averagedChannelsData
 
     # This covariance works best for features with time
@@ -559,6 +596,7 @@ class featureEClass:
             smallShape = True
         postCovFeature = []
         if splits > 1:
+
             averagedData = self.averageChannels(preCovFeature)
             while True:
                 if averagedData.shape[2] % splits == 0:
@@ -1558,8 +1596,15 @@ class featureEClass:
     def setOrder(self, seed, testSize):
         # Set the random order of shuffling for the subject/seed test
         self.orderList = []
+        if self.holdOut:
+            trainSplit = 0.7
+            testSplit = 0.3
+        else:
+            trainSplit = 0.8
+            testSplit = 0.2
+
         sss = StratifiedShuffleSplit(
-            testSize, train_size=0.7, test_size=0.3, random_state=seed
+            testSize, train_size=trainSplit, test_size=testSplit, random_state=seed
         )
 
         for train_index, test_index in sss.split(

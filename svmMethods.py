@@ -24,6 +24,7 @@ class SvmMets:
         significanceThreshold=0.1,
         verbose=True,
         quickTest=False,
+        holdOut=False,
     ):
         print("new SvmMets")
         self.signAll = signAll
@@ -34,6 +35,7 @@ class SvmMets:
         self.quickTest = quickTest
         self.hyperParams = None
         self.featCombos = []
+        self.holdOut = holdOut
 
         if verbose is not True:
             import warnings
@@ -229,15 +231,17 @@ class SvmMets:
                                       cache_size=1800,
                                       tol=self.tol,
                                       ))
-        ndata_test2 = ndata_test[(ndata_test.shape[0] // 3) * 2:]
-        ndata_test = ndata_test[0:(ndata_test.shape[0] // 3) * 2]
-        labels_test2 = labels_test[(labels_test.shape[0] // 3) * 2:]
-        labels_test = labels_test[0:(labels_test.shape[0] // 3) * 2]
-        # print(ndata_test.shape)
-        # print(ndata_test2.shape)
-        # print("JULIAAAA TEST HOLD")
-        # print(labels_test2.shape)
-        # print(labels_test.shape)
+        if self.holdOut:
+            ndata_test2 = ndata_test[(ndata_test.shape[0] // 3) * 2:]
+            ndata_test = ndata_test[0:(ndata_test.shape[0] // 3) * 2]
+            labels_test2 = labels_test[(labels_test.shape[0] // 3) * 2:]
+            labels_test = labels_test[0:(labels_test.shape[0] // 3) * 2]
+        else:
+            ndata_test2 = ndata_test
+            ndata_test = ndata_test
+            labels_test2 = labels_test
+            labels_test = labels_test
+    
         clf.fit(ndata_train, labels_train)
         scoresList = []
         for ndata_test, labels_test in zip([ndata_test, ndata_test2], [labels_test, labels_test2]):

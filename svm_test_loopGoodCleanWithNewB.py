@@ -647,11 +647,11 @@ def main():
     # paradigm = paradigmSetting.rightLeftInner()
     # paradigm = paradigmSetting.rightLeftVis()
     # paradigm = paradigmSetting.upDownRightLeftVis()
-    # paradigm = paradigmSetting.rightLeftVis()
+    paradigm = paradigmSetting.rightLeftVis()
     # paradigm = paradigmSetting.upDownVis()
     # paradigm = paradigmSetting.upDownRightLeftInner()
     # paradigm = paradigmSetting.upDownInner()
-    paradigm = paradigmSetting.rightLeftInner()
+    # paradigm = paradigmSetting.rightLeftInner()
     subjects = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
@@ -665,10 +665,10 @@ def main():
     if useSepSubjFS:
         globalSignificanceThreshold = 0.01
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    cmbSize = 6
+    cmbSize = 4
     paraName = paradigm[0]
     repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr01thTESTHoldOut70"
-    repetitionValue = f"{9}{repetitionName}"
+    repetitionValue = f"{3}{repetitionName}"
     onlyCreateFeatures = False
 
     useBestFeaturesTest = True
@@ -1274,6 +1274,7 @@ def main():
                         fClassDict2[f"{sub}"].getGlobalGoodFeaturesMask()
                     )
                 fClassDict2[f"{sub}"] = None
+
                 fClassDict[f"{sub}"].createMaskedFeatureList()
             fClassDict2 = None
 
