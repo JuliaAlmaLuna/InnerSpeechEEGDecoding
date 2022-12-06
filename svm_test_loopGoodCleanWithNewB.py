@@ -665,10 +665,10 @@ def main():
     if useSepSubjFS:
         globalSignificanceThreshold = 0.01
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    cmbSize = 4
+    cmbSize = 1
     paraName = paradigm[0]
     repetitionName = f"{paraName}{cmbSize}cOnlySepOnlyCurr01thTESTHoldOut70"
-    repetitionValue = f"{3}{repetitionName}"
+    repetitionValue = f"{34}{repetitionName}"
     onlyCreateFeatures = False
 
     useBestFeaturesTest = True

@@ -452,10 +452,10 @@ def fSelectUsingSepSubjects(
 
 # This class combines all subjects except one, so that the combination can be sent into anovaTest for feature selection
 # Mask creation
-# This code combines the features and labels from multiple subjects into one array. 
-# It takes in a dictionary of subjects and their corresponding feature and label arrays, 
+# This code combines the features and labels from multiple subjects into one array.
+# It takes in a dictionary of subjects and their corresponding feature and label arrays,
 # as well as a subject to leave out (optional) and a boolean for whether to only use the training data (optional).
-# It then loops through each subject, concatenating the features and labels into one array. 
+# It then loops through each subject, concatenating the features and labels into one array.
 # After looping through all subjects, it returns the combined feature and label arrays.
 # It also prints out the number of features used and the shape of the combined trials.
 def combineAllSubjects(fclassDict, subjectLeftOut=None, onlyTrain=False):
@@ -672,14 +672,15 @@ def main():
     if useSepSubjFS:
         globalSignificanceThreshold = 0.01
     # Currently the best. Try with lower fselect threshold and usesepsubjects
-    cmbSize = 3
+    cmbSize = 2
     paraName = paradigm[0]
     repetitionName = f"{paraName}{cmbSize}cmyOwnTest"
     myOwnTest = True
-    repetitionValue = f"{9}{repetitionName}"
+    repetitionValue = f"{12}{repetitionName}"
     onlyCreateFeatures = False
 
     useBestFeaturesTest = True
+    useBestFeaturesPerLabel = True
     if cmbSize == 1:
         useBestFeaturesTest = False
     holdOut = True
@@ -965,8 +966,12 @@ def main():
     ###############################################################
 
     if useBestFeaturesTest:
-        bestFeatures = np.load(
-            f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+        if useBestFeaturesPerLabel:
+            bestFeatures = np.load(
+                f"topFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
+        else:
+            bestFeatures = np.load(
+                f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
         worstFeatures = np.load(
             f"worstFeatures/{worstFeaturesSaveFile}", allow_pickle=True)
         print(bestFeatures)

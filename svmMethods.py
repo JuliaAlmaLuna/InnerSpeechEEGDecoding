@@ -341,6 +341,7 @@ class SvmMets:
         scoresSep = []
         for label in uniqueLabels:
             indexes = np.where(labels == label)
+            
             scoresSep.append(clf.score(data[indexes], labels[indexes]))
         return scoresSep
 
