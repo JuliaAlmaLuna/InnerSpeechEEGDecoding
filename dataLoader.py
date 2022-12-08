@@ -1,5 +1,4 @@
 import mne
-
 import warnings
 import numpy as np
 
@@ -51,7 +50,7 @@ def load_data(
     # Subject number
     N_S = subject_nr  # [1 to 10 d]
 
-    # Load all trials for a sigle subject
+    # Load all trials for a single subject
     X, Y = Extract_data_from_subject(root_dir, N_S, datatype)
 
     print("Data shape: [trials x channels x samples]")
@@ -64,40 +63,11 @@ def load_data(
 
         print("Labels shape")
         print(Y.shape)  # Time stamp, class , condition, session
-    # Classes :  0 = UP, 1 = DOWN, 2 = RIGHT, 3 = LEFT
-    # Conditions : 0 = Pronounced, 1 = Inner, 2 = Visualized
-
-    # Conditions to compared
-    # Conditions = [["Inner"],["Inner"], ["Pronounced"], ["Pronounced"]]
     Conditions = paradigms[0]
-    # [
-    #     ["Inner"],
-    #     ["Inner"],
-    #     ["Inner"],
-    #     ["Inner"],
-    #     #  ["Visualized"], ["Visualized"], [            TRY SEPARATING INNER AND PRONOUNCED AND VISUALIZED
-    #     #         "Visualized"], ["Visualized"],
-    #     # ["Pronounced"], ["Pronounced"], ["Pronounced"], ["Pronounced"]
-    # ]
 
-    # The class for the above condition
-    # Classes = [["Up"], ["Down"]]
-    # Classes    = [  ["Up"] ,["Down"], ["Up"] ,["Down"]]
     Classes = paradigms[1]
-    # [
-    #     ["Up"],
-    #     ["Down"],
-    #     ["Right"],
-    #     ["Left"],
-    # ["Up"], ["Down"], ["Right"], ["Left"],
-    # ["Up"], ["Down"], ["Right"], ["Left"]
-    # ]
-    # Transform data and keep only the trials of interest
     if datatype != "baseline":
         X, Y, Y_AUX = Transform_for_classificator(X, Y, Classes, Conditions)
-        # print(f"Julia3{Y_AUX}")
-        # Y_AUX = np.reshape(Y_AUX, [-1, 4])
-        # print(f"Julia4{Y_AUX}")
         print("Final labels2 shape")
 
         print(Y_AUX.shape)
@@ -147,11 +117,7 @@ def load_multiple_datasets(
         t_end=t_max,
         paradigms=paradigms,
     )
-    # datax = np.concatenate([datax[0:datax.shape[1]//2], np.zeros([datax.shape[0], 1, datax.shape[2]]),
-    # datax[datax.shape[1]//2:]], axis=1)
-    # datax[:,(datax.shape[1]//2)+1, (datax.shape[2]//nr_of_datasets)*0:(datax.shape[2]//nr_of_datasets)*1 ] = 1
 
-    # for x in range(2,nr_of_datasets+1):
     for x in range(2, nr_of_datasets + 1):
         print("runninghere")
         if x == 3:
@@ -164,15 +130,14 @@ def load_multiple_datasets(
             t_start=t_min,
             t_end=t_max,
         )
-        # data1 = np.concatenate([data1, np.zeros([data1.shape[0], nr_of_datasets, data1.shape[2]])], axis=1)
-        # data1[:,data1.shape[1]-x, : ] = 1
+
         datax = np.concatenate([datax, data1], axis=0)
         labelsx = np.concatenate([labelsx, labels1], axis=0)
 
     data = datax
     labels1d = labelsx
     if twoDLabels is True:
-        # len(np.unique(labels1d))
+        raise Exception("NOT IMPLEMENTED CORRECTLY")
         labels = np.zeros([labels1d.shape[0], len(np.unique(labels1d))])
         for row, label in enumerate(labels1d, 0):
             if label == 0:

@@ -2,6 +2,8 @@ import numpy as np
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedShuffleSplit
+
 # import torch
 # from torch import nn
 # # from torch.utils.data import DataLoader
@@ -232,16 +234,23 @@ class SvmMets:
                                       tol=self.tol,
                                       ))
         if self.holdOut:
-            ndata_test2 = ndata_test[(ndata_test.shape[0] // 3) * 2:]
-            ndata_test = ndata_test[0:(ndata_test.shape[0] // 3) * 2]
-            labels_test2 = labels_test[(labels_test.shape[0] // 3) * 2:]
-            labels_test = labels_test[0:(labels_test.shape[0] // 3) * 2]
+
+            sss = StratifiedShuffleSplit(1, train_size=0.66, test_size=0.33, random_state=1
+                                         )
+
+            for train_index, test_index in sss.split(
+                X=np.zeros(labels_test.shape[0]), y=labels_test
+            ):
+                ndata_test2 = ndata_test[test_index]
+                ndata_test = ndata_test[train_index]
+                labels_test2 = labels_test[test_index]
+                labels_test = labels_test[train_index]
         else:
             ndata_test2 = ndata_test
             ndata_test = ndata_test
             labels_test2 = labels_test
             labels_test = labels_test
-    
+
         clf.fit(ndata_train, labels_train)
         scoresList = []
         for ndata_test, labels_test in zip([ndata_test, ndata_test2], [labels_test, labels_test2]):
@@ -257,7 +266,101 @@ class SvmMets:
                 if pred == labels_test[nr]:
                     correct[nr] = 1
                     correctamount += 1
-            sepScores = self.scoresSepLabels(clf, ndata_test, labels_test)
+            sepScores1 = self.scoresSepLabels(clf, ndata_test, labels_test)
+            sepScores = self.scoresSepLabels2(clf, ndata_test, labels_test)
+
+            score = clf.score(ndata_test, labels_test)
+            scores = []
+            scores.append(score)
+            for sepscore in sepScores:
+                scores.append(sepscore)
+            # print(sepScores)
+            scoresList.append(scores)
+
+        # correctamount / labels_test.shape[0]  # , coefs
+        return scoresList[0], scoresList[1]
+    
+    def svmPipelineOVRHoldOutGPU(
+        self,
+        ndata_train,
+        ndata_test,
+        labels_train,
+        labels_test,
+        kernel="linear",
+        degree=3,
+        gamma="auto",
+        C=1,
+    ):
+        # coefs=None,
+        # goodData,
+        """
+        Pipeline using SVM
+
+        Args:
+            data_train (np.array): Training data for SVM pipeline
+            data_test (np.array): Test data for SVM pipeline
+            labels_train (np.array): Training labels for SVM pipeline
+            labels_test (np.array): Test labels for SVM pipeline
+            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
+            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
+            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
+            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
+            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
+            . Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
+        # if coefs is None:
+        #     coefs = np.zeros([1, ndata_train.shape[1]])
+
+        # from sklearn import multioutput as multiO, create new class for multiOutput
+        from sklearn.multiclass import OneVsRestClassifier
+
+        clf = OneVsRestClassifier(SVC(gamma=gamma,
+                                      kernel=kernel,
+                                      degree=degree,
+                                      verbose=False,
+                                      C=C,
+                                      cache_size=1800,
+                                      tol=self.tol,
+                                      ))
+        if self.holdOut:
+
+            sss = StratifiedShuffleSplit(1, train_size=0.66, test_size=0.33, random_state=1
+                                         )
+
+            for train_index, test_index in sss.split(
+                X=np.zeros(labels_test.shape[0]), y=labels_test
+            ):
+                ndata_test2 = ndata_test[test_index]
+                ndata_test = ndata_test[train_index]
+                labels_test2 = labels_test[test_index]
+                labels_test = labels_test[train_index]
+        else:
+            ndata_test2 = ndata_test
+            ndata_test = ndata_test
+            labels_test2 = labels_test
+            labels_test = labels_test
+
+        clf.fit(ndata_train, labels_train)
+        scoresList = []
+        for ndata_test, labels_test in zip([ndata_test, ndata_test2], [labels_test, labels_test2]):
+
+            predictions = clf.predict(ndata_test)
+            correct = np.zeros(labels_test.shape)
+            correctamount = 0
+            # print(clf.score(ndata_test, labels_test))
+            # print(clf.decision_function(ndata_train))
+            # print(f"Labels test : {labels_test}")
+            # print(f"Predictions test : {predictions}")
+            for nr, pred in enumerate(predictions, 0):
+                if pred == labels_test[nr]:
+                    correct[nr] = 1
+                    correctamount += 1
+            sepScores1 = self.scoresSepLabels(clf, ndata_test, labels_test)
+            sepScores = self.scoresSepLabels2(clf, ndata_test, labels_test)
+
             score = clf.score(ndata_test, labels_test)
             scores = []
             scores.append(score)
@@ -341,8 +444,29 @@ class SvmMets:
         scoresSep = []
         for label in uniqueLabels:
             indexes = np.where(labels == label)
-            
+
             scoresSep.append(clf.score(data[indexes], labels[indexes]))
+        return scoresSep
+
+    def scoresSepLabels2(self, clf, data, labels):
+        uniqueLabels = np.unique(labels)
+        scoresSep = []
+        predLabels = clf.predict(data)
+        for label in uniqueLabels:
+            correct = 0
+            total = 0
+            for plabel, tlabel in zip(predLabels, labels):
+                if tlabel == label:
+                    if plabel == label:
+                        correct += 1
+                else:
+                    if plabel != label:
+                        correct += 1
+                total += 1
+
+            # indexes = np.where(labels == label)
+
+            scoresSep.append(correct / total)
         return scoresSep
 
     def testSuiteOVR(

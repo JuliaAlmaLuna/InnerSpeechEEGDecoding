@@ -409,6 +409,22 @@ def sadAngryHappyDisgustedJulia():
     )
 
 
+def UpDownLeftRightJulia():
+    return (
+        "jjjjudrl",
+        [
+            [["Julia"], ["Julia"], ["Julia"], ["Julia"]],
+            [
+                ["Up"],
+                ["Down"],
+                ["Left"],
+                ["Right"],
+                ["None"],
+            ],
+        ],
+    )
+
+
 def rightLeftInnerSpecialPlot():
     return (
         "iirlspecplot",
