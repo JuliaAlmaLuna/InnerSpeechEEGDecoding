@@ -208,13 +208,13 @@ class featureEClass:
             if bestFeatures.shape[0] == 18:
                 for subInd in range(9):
                     for fInd in range(2):
-                        if bestFeatures[subInd * 2 + fInd].ndim > 1:
-                            for x in range(bestFeatures[(subject - 1) * 2 + fInd].shape[0]):
+                        if bestFeatures[subInd + fInd * 9].ndim > 1:
+                            for x in range(bestFeatures[(subject - 1) + fInd * 9].shape[0]):
                                 bestFeatures[subInd * 2 +
-                                             fInd, x] = bestFeatures[(subject - 1) * 2 + fInd, x]
+                                             fInd, x] = bestFeatures[(subject - 1) + fInd * 9, x]
                         else:
-                            bestFeatures[subInd * 2 +
-                                         fInd] = bestFeatures[(subject - 1) * 2 + fInd]
+                            bestFeatures[(subject - 1) + fInd *
+                                         9] = bestFeatures[(subject - 1) + fInd * 9]
 
             if bestFeatures.shape[0] == 36:
                 for subInd in range(9):
@@ -360,11 +360,11 @@ class featureEClass:
 
     # Loading my own recorded data
     def loadOwnData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
-        words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
-        # words = [["Up", 31], ["Down", 32], [
-        #     "Left", 33], ["Right", 34], ["", 88]]
-        testName = "SadAngryHappyDisgusted/"
-        # testName = "4UpDownLeftRight/"
+        # words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
+        words = [["Up", 31], ["Down", 32], [
+            "Left", 33], ["Right", 34]]
+        # testName = "SadAngryHappyDisgusted/"
+        testName = "4UpDownLeftRight/"
         wordDict = dict(words)
         exgData, markerData = dl2(
             dataPath=f"{testName}", t_start=t_min, t_end=t_max, words=wordDict)

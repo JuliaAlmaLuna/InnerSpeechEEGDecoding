@@ -36,7 +36,7 @@ def createEpochs2(words, eegData, markerData, sampling_rate=250, lowestT=2500):
     allTrials = []
     allTrialsLabels = []
     numpyEEG = eegData.to_numpy()
-    numpyEEG = preProcessDataAverage(numpyEEG)
+    numpyEEG = preProcessData2(numpyEEG)
 
     for marker in words.values():
 
@@ -94,7 +94,10 @@ def preProcessData(eegArray, bpass=[1, 100], notchFreq=50):
     # Makes channels second dim. First channel is timestep
     eegArray = np.swapaxes(eegArray, 0, 1)
     # eegArray = add_ref(eegArray)
+
     # Baselining with other ear.
+
+    # Here, do (eegArray[-1, :] / 2 ) instead
     eegArray[1:- 1, :] = eegArray[1:- 1, :] - eegArray[-1, :]
 
     newChannel1 = eegArray[1, :] - eegArray[2, :]  # diff between temples
@@ -137,7 +140,7 @@ def preProcessDataAverage(eegArray, bpass=[1, 100], notchFreq=50):
     eegArray = np.swapaxes(eegArray, 0, 1)
     # eegArray = add_ref(eegArray)
     # Baselining with other ear.
-    eegArray[1:- 1, :] = eegArray[1:- 1, :] - eegArray[-1, :]
+    eegArray[1:- 1, :] = eegArray[1:- 1, :] - (eegArray[-1, :] / 2)
     # 0 channel is time. 7 is other ear
     avg_ref = np.mean(eegArray[1:-1, :], axis=0)
     for i in range(1, 7):
@@ -164,6 +167,8 @@ def preProcessDataAverage(eegArray, bpass=[1, 100], notchFreq=50):
     eegArray = None
     return eegArray2
 
+# When using the upDownLeftRight dataset
+
 
 def preProcessData2(eegArray, bpass=[1, 100], notchFreq=50):
     from scipy import signal as sg
@@ -176,15 +181,28 @@ def preProcessData2(eegArray, bpass=[1, 100], notchFreq=50):
     # Baselining with other ear.
     # eegArray[1:- 1, :] = eegArray[1:- 1, :] - eegArray[-1, :]
 
-    newChannel1 = eegArray[1, :] - eegArray[2, :]  # diff between temples
-    addedChannel = np.empty((eegArray.shape[0] + 1, eegArray.shape[1]))
+    avg_ref = np.mean(eegArray[1:, :], axis=0)  # Using avg ref
+    for i in range(1, 8):
+        eegArray[i, :] -= avg_ref
 
+    # diff between temples
+    newChannel1 = eegArray[1, :] - eegArray[2, :]
+    addedChannel = np.empty((eegArray.shape[0] + 1, eegArray.shape[1]))
     # Add diffChannel
     addedChannel[-1, :] = newChannel1
-
     # Add the rest of the data
     addedChannel[:-1, :] = eegArray
     eegArray = addedChannel
+
+    # diff between forehead and two temples
+    newChannel2 = eegArray[3, :] - \
+        ((eegArray[1, :] / 2) + (eegArray[2, :] / 2))
+    addedChannel2 = np.empty((eegArray.shape[0] + 1, eegArray.shape[1]))
+    # Add diffChannel
+    addedChannel2[-1, :] = newChannel2
+    # Add the rest of the data
+    addedChannel2[:-1, :] = eegArray
+    eegArray = addedChannel2
 
     eegArray2 = np.copy(eegArray)
     # print(eegArray.shape)

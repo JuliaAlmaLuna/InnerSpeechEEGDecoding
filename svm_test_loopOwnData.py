@@ -494,8 +494,8 @@ def main():
     testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     myOwnTest = True
-    paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
-    # paradigm = paradigmSetting.UpDownLeftRightJulia()
+    # paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
+    paradigm = paradigmSetting.UpDownLeftRightJulia()
     paraName = paradigm[0]
     ##############################################################
     # Feature selection parameters
@@ -512,12 +512,13 @@ def main():
     ##############################################################
     # Test parameters
     ##############################################################
-    testName = "myOwnTestAvg"
-    repNr = 26
+    testName = "4UpDownLeftRight"  # "myOwnTestAvg2"
+    repNr = 33
     useBestFeaturesTest = True
     useBestFeaturesPerLabel = True
-    maxCombinationAmount = 3
-    sameSizeBestFeat = True
+    useHoldBest = False
+    maxCombinationAmount = 2
+    sameSizeBestFeat = False
     holdOut = True
     useMasked = False
     quickTest = True
@@ -525,7 +526,7 @@ def main():
     ##############################################################
     # Trial window parameters
     ##############################################################
-    testNameNr = 10
+    testNameNr = 13
     saveFolderName = f"{testName}First{testNameNr}"
     t_min = 6.5
     t_max = 7.5
@@ -796,9 +797,9 @@ def main():
 
     if useBestFeaturesTest:
         if useBestFeaturesPerLabel:
-            if sameSizeBestFeat:
+            if useHoldBest:
                 bestFeatures = np.load(
-                    f"topFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
+                    f"topHoldFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
             else:
                 bestFeatures = np.load(
                     f"topFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
