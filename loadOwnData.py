@@ -36,7 +36,7 @@ def createEpochs2(words, eegData, markerData, sampling_rate=250, lowestT=2500):
     allTrials = []
     allTrialsLabels = []
     numpyEEG = eegData.to_numpy()
-    numpyEEG = preProcessData2(numpyEEG)
+    numpyEEG = preProcessDataAverage(numpyEEG)
 
     for marker in words.values():
 

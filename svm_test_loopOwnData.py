@@ -103,6 +103,7 @@ def mixShuffleSplit(
     bestFeatures,
     useBestFeaturesTest,
     subject,
+    worstFeatures,
 ):
 
     # Copy labels and features list to avoid changes to originals. Probly not needed
@@ -116,6 +117,7 @@ def mixShuffleSplit(
         bestFeatures=bestFeatures,
         useBestFeaturesTest=useBestFeaturesTest,
         subject=subject,
+        worstFeatures=worstFeatures,
     )
     tempLabels = None
     tempFeatureList = None
@@ -494,8 +496,8 @@ def main():
     testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     myOwnTest = True
-    # paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
-    paradigm = paradigmSetting.UpDownLeftRightJulia()
+    paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
+    # paradigm = paradigmSetting.UpDownLeftRightJulia()
     paraName = paradigm[0]
     ##############################################################
     # Feature selection parameters
@@ -512,12 +514,14 @@ def main():
     ##############################################################
     # Test parameters
     ##############################################################
-    testName = "4UpDownLeftRight"  # "myOwnTestAvg2"
-    repNr = 33
+    # "myOwnTestAvg2" # Name tests, myOwnTestUpDownLeftRight instead. or myOwnTestSadAngry...
+    # testName = "4UpDownLeftRight"
+    testName = "myOwnTestSadAngryHappyDisgusted"
+    repNr = 1
     useBestFeaturesTest = True
     useBestFeaturesPerLabel = True
     useHoldBest = False
-    maxCombinationAmount = 2
+    maxCombinationAmount = 1
     sameSizeBestFeat = False
     holdOut = True
     useMasked = False
@@ -526,7 +530,7 @@ def main():
     ##############################################################
     # Trial window parameters
     ##############################################################
-    testNameNr = 13
+    testNameNr = 15
     saveFolderName = f"{testName}First{testNameNr}"
     t_min = 6.5
     t_max = 7.5
@@ -813,6 +817,7 @@ def main():
         print(worstFeatures)
     else:
         bestFeatures = None
+        worstFeatures = None
 
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
@@ -1202,6 +1207,7 @@ def main():
 
             # Creating masked feature List using ANOVA/cov Mask
             if signAll:
+                # worstFeatures
                 mDataList = mixShuffleSplit(
                     fClassDict[f"{sub}"].getMaskedFeatureList(),
                     labels=fClassDict[f"{sub}"].getLabels(),
@@ -1210,6 +1216,7 @@ def main():
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
                     subject=sub,
+                    worstFeatures=worstFeatures,
                 )
             else:
                 mDataList = mixShuffleSplit(
@@ -1220,6 +1227,7 @@ def main():
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
                     subject=sub,
+                    worstFeatures=worstFeatures,
                 )
             allResultsPerSubject = []
             # For loop of each combination of features

@@ -191,6 +191,7 @@ class featureEClass:
         bestFeatures,
         useBestFeaturesTest,
         subject,
+        worstFeatures,
     ):
         onlyBest = False
         print("Mixing Data")
@@ -298,12 +299,18 @@ class featureEClass:
             combos = np.array(combos, dtype=object)
 
         for comb in combos:  # 10000
-
+            skip = False
             nameRow = ""
             dataRo = np.copy(featureList[comb[0]][0])
             labelsRo = np.copy(labels)
             nameRow = nameRow + featureList[comb[0]][1]
-
+            if worstFeatures is not None:
+                for wfeat in worstFeatures:
+                    if wfeat == featureList[comb[0]][1]:
+                        continue
+            # if " WORST FEATURE NAME ONE OF THEM" is in featureList[comb[0]][1]:
+            #     continue
+            # Loop through worst feature list
             for nr in comb[1:]:
 
                 data = np.copy(featureList[nr][0])
@@ -312,7 +319,13 @@ class featureEClass:
                     [dataRo, data], axis=1, dtype=np.float32)
 
                 nameRow = featureList[nr][1] + "_&_" + nameRow
-
+                if worstFeatures is not None:
+                    for wfeat in worstFeatures:
+                        if wfeat == featureList[nr][1]:
+                            skip = True
+                            continue
+            if skip:
+                continue
             dataList.append(dataRo)
 
             nameList.append(nameRow)
@@ -360,11 +373,11 @@ class featureEClass:
 
     # Loading my own recorded data
     def loadOwnData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
-        # words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
-        words = [["Up", 31], ["Down", 32], [
-            "Left", 33], ["Right", 34]]
-        # testName = "SadAngryHappyDisgusted/"
-        testName = "4UpDownLeftRight/"
+        words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
+        # words = [["Up", 31], ["Down", 32], [
+        #     "Left", 33], ["Right", 34]]
+        testName = "SadAngryHappyDisgusted/"
+        # testName = "4UpDownLeftRight/"
         wordDict = dict(words)
         exgData, markerData = dl2(
             dataPath=f"{testName}", t_start=t_min, t_end=t_max, words=wordDict)

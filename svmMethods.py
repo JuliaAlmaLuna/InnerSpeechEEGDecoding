@@ -279,7 +279,7 @@ class SvmMets:
 
         # correctamount / labels_test.shape[0]  # , coefs
         return scoresList[0], scoresList[1]
-    
+
     def svmPipelineOVRHoldOutGPU(
         self,
         ndata_train,
