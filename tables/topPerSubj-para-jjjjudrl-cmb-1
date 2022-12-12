@@ -1,0 +1,5 @@
+,Acc,Sub,Feat,Kernel,C,Label,Paradigm
+0,0.67,1,normDataSecond,rbf,2.5,Up,jjjjudrl
+9,0.73,1,normDataSecond,rbf,2.5,Down,jjjjudrl
+18,0.69,1,normDataSecond,rbf,2.5,Left,jjjjudrl
+27,0.71,1,normDataSecond,rbf,2.5,Right,jjjjudrl

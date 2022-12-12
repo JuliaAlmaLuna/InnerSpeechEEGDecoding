@@ -1,0 +1,5 @@
+,Acc,Sub,Feat,Kernel,C,Label,Paradigm
+0,0.75,1,fftData_BCSecond,sigmoid,2.5,Up,jjjjudrl
+9,0.7,1,fftData_BCSecond,sigmoid,2.5,Down,jjjjudrl
+18,0.68,1,fftData_BCSecond,sigmoid,2.5,Left,jjjjudrl
+27,0.67,1,fftData_BCSecond,sigmoid,2.5,Right,jjjjudrl

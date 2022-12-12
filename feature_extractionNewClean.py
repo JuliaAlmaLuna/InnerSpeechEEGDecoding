@@ -355,6 +355,7 @@ class featureEClass:
         dataList = None
 
         # print("Skipping NORMALIZING")
+        print(f"Amount of combinations tested: {len(normShuffledDataList)}")
         return normShuffledDataList
 
     def shuffleSplitData(self, data_t, labels_t, name):
@@ -373,11 +374,11 @@ class featureEClass:
 
     # Loading my own recorded data
     def loadOwnData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
-        words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
-        # words = [["Up", 31], ["Down", 32], [
-        #     "Left", 33], ["Right", 34]]
-        testName = "SadAngryHappyDisgusted/"
-        # testName = "4UpDownLeftRight/"
+        # words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
+        words = [["Up", 31], ["Down", 32], [
+            "Left", 33], ["Right", 34]]
+        # testName = "SadAngryHappyDisgusted/"
+        testName = "4UpDownLeftRight/"
         wordDict = dict(words)
         exgData, markerData = dl2(
             dataPath=f"{testName}", t_start=t_min, t_end=t_max, words=wordDict)
@@ -1379,9 +1380,28 @@ class featureEClass:
         tempFeatureList = dp(self.createdFeatureList)
         return tempFeatureList
 
+    def getFeatureListOnlyFloat(self):
+        tempFeatureList = dp(self.createdFeatureList)
+        onlyFloat = []
+        for feature in tempFeatureList:
+            onlyFloat.append(feature[0])
+
+        return onlyFloat
+
     def addNameFeat(self, name):
         for feat in self.createdFeatureList:
-            feat[1] = f"{feat[1]}{name}"
+            if "First" in name:
+                feat[1] = f"{feat[1]}First"
+            if "Second" in name:
+                feat[1] = f"{feat[1]}Second"
+            if "Third" in name:
+                feat[1] = f"{feat[1]}Third"
+            if "peak" in name:
+                feat[1] = f"{feat[1]}peak"
+            if "const" in name:
+                feat[1] = f"{feat[1]}const"
+            if "late" in name:
+                feat[1] = f"{feat[1]}late"
         print(f"addedName {name} to featureNames")
 
     def getFeatureListFlat(self):

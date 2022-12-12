@@ -1,0 +1,10 @@
+,Acc,Sub,Feat,Kernel,C,Label,Paradigm
+0,0.37,1,fftData_CV_BCnietoTestlateTimenietoData1,sigmoid,2.5,4,iiiiudrl
+1,0.36,2,fftData_CVnietoTestlateTimenietoData1,sigmoid,2.5,4,iiiiudrl
+2,0.38,3,normData_GR_CV_BCnietoTestconstTimenietoData1,rbf,2.5,4,iiiiudrl
+3,0.36,4,gausData_GR_BCnietoTestconstTimenietoData1,linear,2.5,4,iiiiudrl
+4,0.36,5,fftData_BC_CVnietoTestconstTimenietoData1,linear,2.5,4,iiiiudrl
+5,0.39,6,stftDatanietoTestconstTimenietoData1,linear,2.5,4,iiiiudrl
+6,0.35,7,fftData_CV_BCnietoTestconstTimenietoData1,rbf,2.5,4,iiiiudrl
+7,0.4,8,normDatanietoTestconstTimenietoData1,sigmoid,2.5,4,iiiiudrl
+8,0.41,9,gausDatanietoTestpeakTimenietoData1,linear,2.5,4,iiiiudrl

@@ -496,8 +496,8 @@ def main():
     testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     myOwnTest = True
-    paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
-    # paradigm = paradigmSetting.UpDownLeftRightJulia()
+    # paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
+    paradigm = paradigmSetting.UpDownLeftRightJulia()
     paraName = paradigm[0]
     ##############################################################
     # Feature selection parameters
@@ -516,12 +516,13 @@ def main():
     ##############################################################
     # "myOwnTestAvg2" # Name tests, myOwnTestUpDownLeftRight instead. or myOwnTestSadAngry...
     # testName = "4UpDownLeftRight"
-    testName = "myOwnTestSadAngryHappyDisgusted"
+    # testName = "myOwnTestSadAngryHappyDisgusted"
+    testName = "myOwnTestUpDownLeftRight"
     repNr = 1
     useBestFeaturesTest = True
     useBestFeaturesPerLabel = True
     useHoldBest = False
-    maxCombinationAmount = 1
+    maxCombinationAmount = 3
     sameSizeBestFeat = False
     holdOut = True
     useMasked = False
@@ -530,16 +531,16 @@ def main():
     ##############################################################
     # Trial window parameters
     ##############################################################
-    testNameNr = 15
-    saveFolderName = f"{testName}First{testNameNr}"
+    testNameVersion = "myDataAvg20SmallBaselines1"
+    saveFolderName = f"{testName}First{testNameVersion}"
     t_min = 6.5
     t_max = 7.5
     sampling_rate = 250
-    saveFolderName2 = f"{testName}Second{testNameNr}"
+    saveFolderName2 = f"{testName}Second{testNameVersion}"
     useWinFeat = True
     t_min2 = 7.5
     t_max2 = 8.5
-    saveFolderName3 = f"{testName}Third{testNameNr}"
+    saveFolderName3 = f"{testName}Third{testNameVersion}"
     useWinFeat2 = True
     t_min3 = 8.5
     t_max3 = 9.5
@@ -855,7 +856,7 @@ def main():
                 useSepSubjFS,
                 saveFolderName=saveFolderName,
                 holdOut=holdOut,
-                testNameNr=testNameNr,
+                testNameVersion=testNameVersion,
             )
 
             featIndex = featIndex + 1
@@ -895,7 +896,7 @@ def main():
                     useSepSubjFS,
                     saveFolderName=saveFolderName2,
                     holdOut=holdOut,
-                    testNameNr=testNameNr,
+                    testNameVersion=testNameVersion,
                 )
 
                 featIndex = featIndex + 1
@@ -936,7 +937,7 @@ def main():
                     useSepSubjFS,
                     saveFolderName=saveFolderName3,
                     holdOut=holdOut,
-                    testNameNr=testNameNr,
+                    testNameVersion=testNameVersion,
                 )
 
                 featIndex = featIndex + 1
@@ -1441,7 +1442,7 @@ def onlyCreateFeaturesFunction(
     useSepSubjFS,
     saveFolderName,
     holdOut,
-    testNameNr,
+    testNameVersion,
 ):
 
     # Creating the features for each subject and putting them in a dict
@@ -1492,62 +1493,132 @@ def onlyCreateFeaturesFunction(
         averageBaseline = True
         correctedExists = False
         if correctedExists is False:
-            baseLineFolderNames = f"myOwnBaseline{testNameNr}"
+            baseLineFolderNames = f"myOwnBaseline{testNameVersion}"
             bClassDict[f"{sub}"] = baseLineCorrection(
                 subject=sub,
                 sampling_rate=sampling_rate,
-                saveFolderName=f"{baseLineFolderNames}1",
+                saveFolderName=f"{baseLineFolderNames}{0}-1",
                 chunk=False,
                 chunkAmount=1
             )
             if averageBaseline:
-                bFeatClassDict1 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
-                                                  globalSignificanceThreshold=globalSignificanceThreshold,
-                                                  onlyUniqueFeatures=onlyUniqueFeatures,
-                                                  uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                                  saveFolderName=f"{baseLineFolderNames}1",
-                                                  t_min=0.5, t_max=1.5,
-                                                  sampling_rate=sampling_rate,
-                                                  soloSignificanceThreshold=soloSignificanceThreshold,
-                                                  signAll=signAll,
-                                                  signSolo=signSolo, tolerance=0.1, quickTest=True,
-                                                  baselineF=True, holdOut=holdOut)
-                bFeatClassDict2 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
-                                                  globalSignificanceThreshold=globalSignificanceThreshold,
-                                                  onlyUniqueFeatures=onlyUniqueFeatures,
-                                                  uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                                  saveFolderName=f"{baseLineFolderNames}2",
-                                                  t_min=1.5, t_max=2.5,
-                                                  sampling_rate=sampling_rate,
-                                                  soloSignificanceThreshold=soloSignificanceThreshold,
-                                                  signAll=signAll,
-                                                  signSolo=signSolo, tolerance=0.1, quickTest=True,
-                                                  baselineF=True, holdOut=holdOut)
-                bFeatClassDict3 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
-                                                  globalSignificanceThreshold=globalSignificanceThreshold,
-                                                  onlyUniqueFeatures=onlyUniqueFeatures,
-                                                  uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                                  saveFolderName=f"{baseLineFolderNames}3",
-                                                  t_min=2.5, t_max=3.5,
-                                                  sampling_rate=sampling_rate,
-                                                  soloSignificanceThreshold=soloSignificanceThreshold,
-                                                  signAll=signAll,
-                                                  signSolo=signSolo, tolerance=0.1, quickTest=True,
-                                                  baselineF=True, holdOut=holdOut)
-                features1 = bFeatClassDict1[f"{sub}"].getFeatureList()
-                features2 = bFeatClassDict2[f"{sub}"].getFeatureList()
-                features3 = bFeatClassDict3[f"{sub}"].getFeatureList()
+                baseLineWindowsPer2Second = 20  # Sliding 1 second window
+                lengthPerWindow = 1 / baseLineWindowsPer2Second
+                listOfBaseLines = []
+                for baseLineWindow in range(baseLineWindowsPer2Second):
+                    bFeatClassDict1 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
+                                                      globalSignificanceThreshold=globalSignificanceThreshold,
+                                                      onlyUniqueFeatures=onlyUniqueFeatures,
+                                                      uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                                      saveFolderName=f"{baseLineFolderNames}{baseLineWindow}-1",
+                                                      t_min=0.5 +
+                                                      (baseLineWindow *
+                                                       lengthPerWindow),
+                                                      t_max=(1.5 - lengthPerWindow) +
+                                                      ((baseLineWindow + 1)
+                                                       * lengthPerWindow),
+                                                      sampling_rate=sampling_rate,
+                                                      soloSignificanceThreshold=soloSignificanceThreshold,
+                                                      signAll=signAll,
+                                                      signSolo=signSolo, tolerance=0.1, quickTest=True,
+                                                      baselineF=True, holdOut=holdOut)
+                    test2 = bFeatClassDict1[f"{sub}"].getFeatureList()
+                    listOfBaseLines.append(
+                        bFeatClassDict1[f"{sub}"].getFeatureList())
+                listOfBaseLines.append(
+                    bFeatClassDict1[f"{sub}"].getFeatureList())
                 averageFeatures = dp(
                     bFeatClassDict1[f"{sub}"].getFeatureList())
-                for f1, f2, f3, af in zip(features1, features2, features3, averageFeatures):
-                    feat1, feat2, feat3 = f1[0], f2[0], f3[0]
+                # listOfBaseLines = np.array(
+                #     listOfBaseLines, dtype=object).squeeze()
+                # test = np.mean(listOfBaseLines, axis=-1)
+                # print(test)
+                print(type(listOfBaseLines))
+                print(len(listOfBaseLines))
+                for f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, \
+                        f13, f14, f15, f16, f17, f18, f19, f20, af in zip(*listOfBaseLines):
+                    feat1, feat2, feat3, feat4, feat5, feat6, feat7, feat8, feat9, = f1[
+                        0], f2[0], f3[0], f4[0], f5[0], f6[0], f7[0], f8[0], f9[0]
+                    feat11, feat12, feat13, feat14, feat15, feat16, feat17, feat18, feat19, = f11[
+                        0], f12[0], f13[0], f14[0], f15[0], f16[0], f17[0], f18[0], f19[0]
+                    # , feat11, feat12, feat13, feat14, feat15 =
+                    feat10 = f10[0]
+                    feat20 = f20[0]
                     allFeats = np.concatenate(
                         [np.expand_dims(feat1, axis=0), np.expand_dims(feat2, axis=0),
-                         np.expand_dims(feat3, axis=0)], axis=0)
+                         np.expand_dims(feat3, axis=0), np.expand_dims(
+                             feat4, axis=0),
+                         np.expand_dims(feat5, axis=0), np.expand_dims(
+                             feat6, axis=0),
+                         np.expand_dims(feat7, axis=0), np.expand_dims(
+                             feat8, axis=0),
+                         np.expand_dims(feat9, axis=0), np.expand_dims(
+                             feat10, axis=0),
+                         np.expand_dims(feat11, axis=0), np.expand_dims(
+                             feat12, axis=0),
+                         np.expand_dims(feat13, axis=0), np.expand_dims(
+                             feat14, axis=0),
+                         np.expand_dims(feat15, axis=0), np.expand_dims(
+                             feat16, axis=0),
+                         np.expand_dims(feat17, axis=0), np.expand_dims(
+                             feat18, axis=0),
+                         np.expand_dims(feat19, axis=0), np.expand_dims(
+                             feat20, axis=0)])  # np.expand_dims(feat11, axis=0), np.expand_dims(
+                    # feat12, axis=0),
+                    #  np.expand_dims(feat13, axis=0), np.expand_dims(
+                    #      feat14, axis=0),
+                    #  np.expand_dims(feat15, axis=0)]
 
                     af[0] = np.mean(allFeats, axis=0)
 
-                features4045 = averageFeatures
+                # bFeatClassDict1 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
+                #                                   globalSignificanceThreshold=globalSignificanceThreshold,
+                #                                   onlyUniqueFeatures=onlyUniqueFeatures,
+                #                                   uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                #                                   saveFolderName=f"{baseLineFolderNames}1",
+                #                                   t_min=0.5, t_max=1.5,
+                #                                   sampling_rate=sampling_rate,
+                #                                   soloSignificanceThreshold=soloSignificanceThreshold,
+                #                                   signAll=signAll,
+                #                                   signSolo=signSolo, tolerance=0.1, quickTest=True,
+                #                                   baselineF=True, holdOut=holdOut)
+                # bFeatClassDict2 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
+                #                                   globalSignificanceThreshold=globalSignificanceThreshold,
+                #                                   onlyUniqueFeatures=onlyUniqueFeatures,
+                #                                   uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                #                                   saveFolderName=f"{baseLineFolderNames}2",
+                #                                   t_min=1.5, t_max=2.5,
+                #                                   sampling_rate=sampling_rate,
+                #                                   soloSignificanceThreshold=soloSignificanceThreshold,
+                #                                   signAll=signAll,
+                #                                   signSolo=signSolo, tolerance=0.1, quickTest=True,
+                #                                   baselineF=True, holdOut=holdOut)
+                # bFeatClassDict3 = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
+                #                                   globalSignificanceThreshold=globalSignificanceThreshold,
+                #                                   onlyUniqueFeatures=onlyUniqueFeatures,
+                #                                   uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                #                                   saveFolderName=f"{baseLineFolderNames}3",
+                #                                   t_min=2.5, t_max=3.5,
+                #                                   sampling_rate=sampling_rate,
+                #                                   soloSignificanceThreshold=soloSignificanceThreshold,
+                #                                   signAll=signAll,
+                #                                   signSolo=signSolo, tolerance=0.1, quickTest=True,
+                #                                   baselineF=True, holdOut=holdOut)
+
+                # features1 = bFeatClassDict1[f"{sub}"].getFeatureList()
+                # features2 = bFeatClassDict2[f"{sub}"].getFeatureList()
+                # features3 = bFeatClassDict3[f"{sub}"].getFeatureList()
+                # averageFeatures = dp(
+                #     bFeatClassDict1[f"{sub}"].getFeatureList())
+                # for f1, f2, f3, af in zip(features1, features2, features3, averageFeatures):
+                #     feat1, feat2, feat3 = f1[0], f2[0], f3[0]
+                #     allFeats = np.concatenate(
+                #         [np.expand_dims(feat1, axis=0), np.expand_dims(feat2, axis=0),
+                #          np.expand_dims(feat3, axis=0)], axis=0)
+
+                #     af[0] = np.mean(allFeats, axis=0)
+
+                features4045 = listOfBaseLines[-1]
             else:
                 bFeatClassDict = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
                                                  globalSignificanceThreshold=globalSignificanceThreshold,

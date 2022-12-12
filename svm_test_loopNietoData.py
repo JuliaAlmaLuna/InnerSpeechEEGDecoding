@@ -103,6 +103,7 @@ def mixShuffleSplit(
     bestFeatures,
     useBestFeaturesTest,
     subject,
+    worstFeatures,
 ):
 
     # Copy labels and features list to avoid changes to originals. Probly not needed
@@ -116,6 +117,7 @@ def mixShuffleSplit(
         bestFeatures=bestFeatures,
         useBestFeaturesTest=useBestFeaturesTest,
         subject=subject,
+        worstFeatures=worstFeatures
     )
     tempLabels = None
     tempFeatureList = None
@@ -515,7 +517,8 @@ def main():
     repNr = 1
     useBestFeaturesTest = True
     useBestFeaturesPerLabel = True
-    maxCombinationAmount = 1
+    useHoldBest = False
+    maxCombinationAmount = 2
     sameSizeBestFeat = False
     holdOut = True
     useMasked = True
@@ -524,15 +527,16 @@ def main():
     ##############################################################
     # Trial window parameters
     ##############################################################
-    saveFolderName = "peakTime4SortedSep14"
+    testNameVersion = "nietoData1"
+    saveFolderName = f"{testName}peakTime{testNameVersion}"
     t_min = 1.1
     t_max = 1.6
     sampling_rate = 256
-    saveFolderName2 = "constTimeSortedSep14"
+    saveFolderName2 = f"{testName}constTime{testNameVersion}"
     useWinFeat = True
     t_min2 = 1.6
     t_max2 = 2.1
-    saveFolderName3 = "lateTimeSortedSep14"
+    saveFolderName3 = f"{testName}lateTime{testNameVersion}"
     useWinFeat2 = True
     t_min3 = 2.1
     t_max3 = 2.6
@@ -568,7 +572,7 @@ def main():
     ##############################################################
     # Parameters used if onlyCreate is active
     ##############################################################
-    onlyCreateFeatures = True
+    onlyCreateFeatures = False
     nrFCOT = 2  # nrOfFeaturesToCreateAtOneTime
     featIndex = 0  # Multiplied by nrFCOT, First features to start creating
     featuresToOnlyCreateNotTest = []
@@ -586,7 +590,7 @@ def main():
         52,  # stftData_BC
         65,  # stftData_GR
         53,  # stftData_CV
-        # Only FOR AngrySad.... 66,  # stftData_GR_BC
+        66,  # stftData_GR_BC
         # 54,  # stftData_BC_CV
         # 58,  # stftData_CV_BC
         67,  # stftData_GR_CV
@@ -601,7 +605,7 @@ def main():
     #     56,  # welchData_CV_BC
     # ]
     featuresToTestDict["hilbertFeatures"] = [
-        # Only FOR AngrySad.... 3,  # hilbertData, Needed if create
+        3,  # hilbertData, Needed if create
         8,  # hilbertData_CV Needed if create
         14,  # hilbertData_BC
         57,  # hilbertData_CV_BC
@@ -611,13 +615,13 @@ def main():
     # featuresToOnlyCreateNotTest.append(8)
 
     featuresToTestDict["gaussianFeatures"] = [
-        # Only FOR AngrySad.... 9,  # "gausData"
+        9,  # "gausData"
         # 10,  # dataGCV2
         18,  # gausData_CV
         # 19,  # gausData_CV_BC
         72,  # gausData_GR
-        # Only FOR AngrySad.... 20,  # gausData_BC
-        # Only FOR AngrySad.... 73,  # gausData_GR_CV
+        20,  # gausData_BC
+        73,  # gausData_GR_CV
         21,  # gausData_BC_CV
         # 74,  # gausData_GR_CV_BC
         75,  # gausData_GR_BC
@@ -625,21 +629,21 @@ def main():
     ]
 
     featuresToTestDict["normFeatures"] = [
-        # Only FOR AngrySad.... 87,  # "normData"
+        87,  # "normData"
         # 10,  # dataGCV2
         # 18,  # gausData_CV
         # 19,  # gausData_CV_BC
-        # Only FOR AngrySad.... 88,  # normData_GR
+        88,  # normData_GR
         90,  # normData_GR_BC
-        # Only FOR AngrySad.... 89,  # normData_GR_CV
-        # Only FOR AngrySad.... 91,  # normData_GR_BC_CV
+        89,  # normData_GR_CV
+        91,  # normData_GR_BC_CV
         92,  # normData_GR_CV_BC
         # 93,  # normData_BC_GR
         # 94,  # normData_BC_GR_CV
     ]
 
     featuresToTestDict["inversefftFeatures"] = [
-        # Only FOR AngrySad.... 25,  # fftData_BC_ifft
+        25,  # fftData_BC_ifft
         # 28,  # fftData_BC_ifft_cor2x1
         # 29,  # fftData_BC_ifft_cor2x2
         # 30,  # fftData_BC_ifft_cor2x3
@@ -654,10 +658,10 @@ def main():
         # 10,  # dataGCV2
         # 95,  # gausData2_CV
         # 19,  # gausData_CV_BC
-        # Only FOR AngrySad.... 78,  # gausData2_GR
+        78,  # gausData2_GR
         79,  # gausData2_GR_BC
         83,  # gausData2_GR_CV
-        # Only FOR AngrySad.... 80,  # gausData2_BC
+        80,  # gausData2_BC
         # 81,  # gausData2_CV_BC
         82,  # gausData2_GR_CV_BC
         # 84,  # gausData2_BC_GR_CV
@@ -794,7 +798,7 @@ def main():
 
     if useBestFeaturesTest:
         if useBestFeaturesPerLabel:
-            if sameSizeBestFeat:
+            if useHoldBest:
                 bestFeatures = np.load(
                     f"topHoldFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
             else:
@@ -810,7 +814,7 @@ def main():
         print(worstFeatures)
     else:
         bestFeatures = None
-
+        worstFeatures = None
     featureListIndex = np.arange(len(featureList))
     if onlyCreateFeatures:
 
@@ -847,6 +851,7 @@ def main():
                 useSepSubjFS,
                 saveFolderName=saveFolderName,
                 holdOut=holdOut,
+                testNameVersion=testNameVersion,
             )
 
             featIndex = featIndex + 1
@@ -885,7 +890,8 @@ def main():
                     featureList,
                     useSepSubjFS,
                     saveFolderName=saveFolderName2,
-                    holdOut=holdOut
+                    holdOut=holdOut,
+                    testNameVersion=testNameVersion,
                 )
 
                 featIndex = featIndex + 1
@@ -926,6 +932,7 @@ def main():
                     useSepSubjFS,
                     saveFolderName=saveFolderName3,
                     holdOut=holdOut,
+                    testNameVersion=testNameVersion,
                 )
 
                 featIndex = featIndex + 1
@@ -1168,17 +1175,17 @@ def main():
 
         print(len(createdFeatureList))
         print(f"Printing features created so far for subject {sub}")
-        if useBestFeaturesTest:
-            newCreatedFeatureList = []
-            for createdFeature in createdFeatureList:
-                if createdFeature[1] not in worstFeatures:
-                    newCreatedFeatureList.append(createdFeature)
-                else:
-                    print(f"Removed {createdFeature[1]} with worst feat check")
-            createdFeatureList = newCreatedFeatureList
-        else:
-            for createdFeature in createdFeatureList:
-                print(createdFeature[1])
+        # if useBestFeaturesTest:
+        #     newCreatedFeatureList = []
+        #     for createdFeature in createdFeatureList:
+        #         if createdFeature[1] not in worstFeatures:
+        #             newCreatedFeatureList.append(createdFeature)
+        #         else:
+        #             print(f"Removed {createdFeature[1]} with worst feat check")
+        #     createdFeatureList = newCreatedFeatureList
+        # else:
+        for createdFeature in createdFeatureList:
+            print(createdFeature[1])
 
         for sub in subjects:
             fClassDict[f"{sub}"] = fclass.featureEClass(
@@ -1231,6 +1238,7 @@ def main():
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
                     subject=sub,
+                    worstFeatures=worstFeatures,
                 )
             else:
                 mDataList = mixShuffleSplit(
@@ -1241,6 +1249,7 @@ def main():
                     bestFeatures=bestFeatures,
                     useBestFeaturesTest=useBestFeaturesTest,
                     subject=sub,
+                    worstFeatures=worstFeatures,
                 )
             allResultsPerSubject = []
             # For loop of each combination of features
@@ -1464,6 +1473,7 @@ def onlyCreateFeaturesFunction(
     useSepSubjFS,
     saveFolderName,
     holdOut,
+    testNameVersion,
     myOwnTest=False,
 ):
 
@@ -1523,20 +1533,20 @@ def onlyCreateFeaturesFunction(
         print(f"Corrected Exists = {correctedExists}")
         correctedExists = False
         if correctedExists is False:
-
+            baseLineFolderNames = f"nietoBaseline{testNameVersion}"
             bClassDict[f"{sub}"] = baseLineCorrection(
                 subject=sub,
                 sampling_rate=sampling_rate,
+                saveFolderName=f"{baseLineFolderNames}1",
                 chunk=False,
                 chunkAmount=1,
-                saveFolderName="afterBaselineSortedSep14"  # Doesn't matter if chunk = False
             )
 
             bFeatClassDict = winFeatFunction(featureList=featureList, subjects=[sub, ], paradigm=paradigm,
                                              globalSignificanceThreshold=globalSignificanceThreshold,
                                              onlyUniqueFeatures=onlyUniqueFeatures,
                                              uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
-                                             saveFolderName="afterBaselineSortedSep14",
+                                             saveFolderName=f"{baseLineFolderNames}1",
                                              t_min=4, t_max=4.5,
                                              sampling_rate=sampling_rate,
                                              soloSignificanceThreshold=soloSignificanceThreshold,
