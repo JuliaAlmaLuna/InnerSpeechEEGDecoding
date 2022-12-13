@@ -1,0 +1,5 @@
+,Acc,Sub,Feat,Kernel,C,Label,Paradigm
+0,0.79,1,gausData_GRSecond_&_fftData_BC_ifft_CVThird_&_stftData_CVFirst_&_fftData_BC_ifft_CVSecond,linear,2.5,Up,jjjjudrl
+9,0.78,1,fftData_CVSecond_&_fftData_BCSecond_&_fftData_BCFirst_&_fftData_BCThird,linear,2.5,Down,jjjjudrl
+18,0.76,1,fftData_CV_BCSecond_&_fftData_BC_ifftFirst_&_gausData_BCSecond_&_fftData_BCThird,linear,2.5,Left,jjjjudrl
+27,0.79,1,hilbertData_BCSecond_&_fftData_BC_ifftFirst_&_gausData_BCSecond_&_fftData_BCThird,linear,2.5,Right,jjjjudrl

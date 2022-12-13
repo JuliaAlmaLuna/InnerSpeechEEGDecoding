@@ -34,6 +34,8 @@ def testLoop(
     useOVR,
     fmetDict,
     sub,
+    data_testC,
+    data_trainC,
 ):
 
     # If else statements that swap between different train/test models.
@@ -76,7 +78,9 @@ def testLoop(
             labels_test,
             name,
             # gdData,
-            kernels=["linear", "sigmoid", "rbf"],  #
+            kernels=["linear", "sigmoid", "rbf"],
+            data_testC=data_testC,
+            data_trainC=data_trainC,
         )
     else:
         allResults = fmetDict["allSame"].testSuite(
@@ -496,8 +500,8 @@ def main():
     testSize = 7  # Nr of seed iterations until stopping
     seed = 39  # Arbitrary, could be randomized as well.
     myOwnTest = True
-    # paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
-    paradigm = paradigmSetting.UpDownLeftRightJulia()
+    paradigm = paradigmSetting.sadAngryHappyDisgustedJulia()
+    # paradigm = paradigmSetting.UpDownLeftRightJulia()
     paraName = paradigm[0]
     ##############################################################
     # Feature selection parameters
@@ -516,22 +520,23 @@ def main():
     ##############################################################
     # "myOwnTestAvg2" # Name tests, myOwnTestUpDownLeftRight instead. or myOwnTestSadAngry...
     # testName = "4UpDownLeftRight"
-    # testName = "myOwnTestSadAngryHappyDisgusted"
-    testName = "myOwnTestUpDownLeftRight"
-    repNr = 1
+    testName = "myOwnTestSadAngryHappyDisgusted"
+    # testName = "myOwnTestUpDownLeftRight"
+    repNr = 7
     useBestFeaturesTest = True
     useBestFeaturesPerLabel = True
     useHoldBest = False
-    maxCombinationAmount = 3
+    maxCombinationAmount = 2
     sameSizeBestFeat = False
     holdOut = True
     useMasked = False
     quickTest = True
     useBestAvg = False
+
     ##############################################################
     # Trial window parameters
     ##############################################################
-    testNameVersion = "myDataAvg20SmallBaselines1"
+    testNameVersion = "myDataAvg20SmallBaselines2"
     saveFolderName = f"{testName}First{testNameVersion}"
     t_min = 6.5
     t_max = 7.5
@@ -544,6 +549,16 @@ def main():
     useWinFeat2 = True
     t_min3 = 8.5
     t_max3 = 9.5
+    saveFolderNameCalm = f"{testName}Calm1{testNameVersion}"
+    testCalm = True
+    t_minCalm = 0.5
+    t_maxCalm = 1.5
+    saveFolderNameCalm2 = f"{testName}Calm2{testNameVersion}"
+    t_minCalm2 = 1.5
+    t_maxCalm2 = 2.5
+    saveFolderNameCalm3 = f"{testName}Calm3{testNameVersion}"
+    t_minCalm3 = 2.5
+    t_maxCalm3 = 3.5
     ##############################################################
     # Continuation of test parameters
     ##############################################################
@@ -824,6 +839,7 @@ def main():
     if onlyCreateFeatures:
 
         while True:
+
             if usefeaturesToTestList:
                 for featureI in featureListIndex:
                     featureList[featureI] = False
@@ -862,8 +878,10 @@ def main():
             featIndex = featIndex + 1
 
         if useWinFeat:
+
             featIndex = 0
             while True:
+
                 if usefeaturesToTestList:
                     for featureI in featureListIndex:
                         featureList[featureI] = False
@@ -903,8 +921,10 @@ def main():
                 # print(feature)
 
         if useWinFeat2:
+
             featIndex = 0
             while True:
+
                 if usefeaturesToTestList:
                     for featureI in featureListIndex:
                         featureList[featureI] = False
@@ -942,6 +962,124 @@ def main():
 
                 featIndex = featIndex + 1
 
+        if testCalm:
+            featIndex = 0
+            while True:
+                if usefeaturesToTestList:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featuresToTestList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+                else:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+
+                if (featIndex * nrFCOT) > (len(featuresToTestList) - 1):
+                    break
+
+                print(featureList)
+                onlyCreateFeaturesFunction(
+                    subjects,
+                    paradigm,
+                    signAll,
+                    signSolo,
+                    soloSignificanceThreshold,
+                    globalSignificanceThreshold,
+                    onlyUniqueFeatures,
+                    uniqueThresh,
+                    t_minCalm,
+                    t_maxCalm,
+                    sampling_rate,
+                    maxCombinationAmount,
+                    featureList,
+                    useSepSubjFS,
+                    saveFolderName=saveFolderNameCalm,
+                    holdOut=holdOut,
+                    testNameVersion=testNameVersion,
+                )
+
+                featIndex = featIndex + 1
+            featIndex = 0
+
+            while True:
+                if usefeaturesToTestList:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featuresToTestList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+                else:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+
+                if (featIndex * nrFCOT) > (len(featuresToTestList) - 1):
+                    break
+
+                print(featureList)
+                onlyCreateFeaturesFunction(
+                    subjects,
+                    paradigm,
+                    signAll,
+                    signSolo,
+                    soloSignificanceThreshold,
+                    globalSignificanceThreshold,
+                    onlyUniqueFeatures,
+                    uniqueThresh,
+                    t_minCalm2,
+                    t_maxCalm2,
+                    sampling_rate,
+                    maxCombinationAmount,
+                    featureList,
+                    useSepSubjFS,
+                    saveFolderName=saveFolderNameCalm2,
+                    holdOut=holdOut,
+                    testNameVersion=testNameVersion,
+                )
+
+                featIndex = featIndex + 1
+            featIndex = 0
+
+            while True:
+                if usefeaturesToTestList:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featuresToTestList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+                else:
+                    for featureI in featureListIndex:
+                        featureList[featureI] = False
+                        if featureI in featureList[featIndex * nrFCOT:(featIndex + 1) * nrFCOT]:
+                            featureList[featureI] = True
+
+                if (featIndex * nrFCOT) > (len(featuresToTestList) - 1):
+                    break
+
+                print(featureList)
+                onlyCreateFeaturesFunction(
+                    subjects,
+                    paradigm,
+                    signAll,
+                    signSolo,
+                    soloSignificanceThreshold,
+                    globalSignificanceThreshold,
+                    onlyUniqueFeatures,
+                    uniqueThresh,
+                    t_minCalm3,
+                    t_maxCalm3,
+                    sampling_rate,
+                    maxCombinationAmount,
+                    featureList,
+                    useSepSubjFS,
+                    saveFolderName=saveFolderNameCalm3,
+                    holdOut=holdOut,
+                    testNameVersion=testNameVersion,
+                )
+
+                featIndex = featIndex + 1
+
     for featureI in featureListIndex:
         featureList[featureI] = False
 
@@ -956,6 +1094,7 @@ def main():
     print(f"FeatureList so far: {featureList}")
     # Creating the features for each subject and putting them in a dict
     fClassDict = dict()
+    fClassDictCalm = dict()
     fmetDict = dict()
     if useMasked is False:
         bClassDict = dict()
@@ -1125,6 +1264,105 @@ def main():
                     fClassDict[f"{sub}"].createMaskedFeatureList()
             fClassDict2 = None
 
+        if testCalm:
+            for sub in subjects:  #
+
+                fClassDictCalm[f"{sub}"] = fclass.featureEClass(
+                    sub,
+                    paradigm[0],
+                    globalSignificance=globalSignificanceThreshold,
+                    onlyUniqueFeatures=onlyUniqueFeatures,
+                    uniqueThresh=uniqueThresh,
+                    useSepSubjFS=useSepSubjFS,
+                    saveFolderName=saveFolderNameCalm,
+                    holdOut=holdOut,
+
+                )
+                fClassDictCalm[f"{sub}"].loadOwnData(
+                    t_min=t_minCalm,
+                    t_max=t_maxCalm,
+                    sampling_rate=sampling_rate,
+                    twoDLabels=False,
+                    paradigms=paradigm[1],
+                )
+
+                fmetDict["allSame"] = svmMet.SvmMets(
+                    significanceThreshold=soloSignificanceThreshold,
+                    signAll=signAll,
+                    signSolo=signSolo,
+                    verbose=False,
+                    tol=tolerance,
+                    quickTest=quickTest,
+                    holdOut=holdOut,
+                )
+                print(f"Creating features for subject:{sub}")
+                createdFeatureList, labels, correctedExists = fClassDictCalm[f"{sub}"].getFeatures(
+                    featureList=featureList,
+                    verbose=True,
+                )
+
+                print(len(createdFeatureList))
+                print(f"Printing features created so far for subject {sub}")
+                for createdFeature in createdFeatureList:
+                    print(createdFeature[1])
+                print(f"Corrected Exists = {correctedExists}")
+                createdFeatureList = None
+                createdFeature = None
+                fClassDictCalm[f"{sub}"].data = None
+
+            if useWinFeat:
+                fClassDictCalm2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
+                                                  globalSignificanceThreshold=globalSignificanceThreshold,
+                                                  onlyUniqueFeatures=onlyUniqueFeatures,
+                                                  uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                                  saveFolderName=saveFolderNameCalm2,
+                                                  t_min=t_minCalm2, t_max=t_maxCalm2,
+                                                  sampling_rate=sampling_rate,
+                                                  soloSignificanceThreshold=soloSignificanceThreshold,
+                                                  signAll=signAll,
+                                                  signSolo=signSolo,
+                                                  tolerance=tolerance,
+                                                  quickTest=quickTest,
+                                                  holdOut=holdOut)
+
+                for sub in subjects:
+                    fClassDictCalm2[f"{sub}"].getGlobalGoodFeaturesMask()
+                    fClassDictCalm[f"{sub}"].addNameFeat(saveFolderName)
+                    fClassDictCalm2[f"{sub}"].addNameFeat(saveFolderName2)
+
+                    fClassDictCalm[f"{sub}"].extendFeatureList(
+                        fClassDictCalm2[f"{sub}"].getFeatureList()
+                    )
+                    fClassDictCalm2[f"{sub}"] = None
+                fClassDictCalm2 = None
+
+            if useWinFeat2:
+                fClassDictCalm2 = winFeatFunction(featureList=featureList, subjects=subjects, paradigm=paradigm,
+                                                  globalSignificanceThreshold=globalSignificanceThreshold,
+                                                  onlyUniqueFeatures=onlyUniqueFeatures,
+                                                  uniqueThresh=uniqueThresh, useSepSubjFS=useSepSubjFS,
+                                                  saveFolderName=saveFolderNameCalm3,
+                                                  t_min=t_minCalm3, t_max=t_maxCalm3,
+                                                  sampling_rate=sampling_rate,
+                                                  soloSignificanceThreshold=soloSignificanceThreshold,
+                                                  signAll=signAll,
+                                                  signSolo=signSolo,
+                                                  tolerance=tolerance,
+                                                  quickTest=quickTest,
+                                                  holdOut=holdOut)
+
+                for sub in subjects:
+                    fClassDictCalm2[f"{sub}"].getGlobalGoodFeaturesMask()
+                    # fClassDict[f"{sub}"].addNameFeat(saveFolderName)
+                    fClassDictCalm2[f"{sub}"].addNameFeat(saveFolderName3)
+
+                    fClassDictCalm[f"{sub}"].extendFeatureList(
+                        fClassDictCalm2[f"{sub}"].getFeatureList()
+                    )
+
+                    fClassDictCalm2[f"{sub}"] = None
+                fClassDictCalm2 = None
+
     if useMasked:
         sub = 1
         fClassDict[f"{sub}"] = fclass.featureEClass(
@@ -1199,11 +1437,14 @@ def main():
 
     for sub in subjects:
         fClassDict[f"{sub}"].setOrder(seed, testSize)
+        fClassDictCalm[f"{sub}"].setOrder(seed, testSize)
+
     # A for loop just running all subjects using different seeds for train/data split
     for testNr in np.arange(testSize):
 
         for sub in subjects:  #
             fClassDict[f"{sub}"].setTestNr(testNr)
+            fClassDictCalm[f"{sub}"].setTestNr(testNr)
             print(f"Starting test of subject:{sub} , testNr:{testNr}")
 
             # Creating masked feature List using ANOVA/cov Mask
@@ -1219,6 +1460,7 @@ def main():
                     subject=sub,
                     worstFeatures=worstFeatures,
                 )
+                mDataListCalm = None
             else:
                 mDataList = mixShuffleSplit(
                     fClassDict[f"{sub}"].getFeatureListFlat(),
@@ -1230,6 +1472,20 @@ def main():
                     subject=sub,
                     worstFeatures=worstFeatures,
                 )
+                if testCalm:
+                    mDataListCalm = mixShuffleSplit(
+                        fClassDictCalm[f"{sub}"].getFeatureListFlat(),
+                        labels=fClassDictCalm[f"{sub}"].getLabels(),
+                        featureClass=fClassDictCalm[f"{sub}"],
+                        maxCombinationAmount=maxCombinationAmount,
+                        bestFeatures=bestFeatures,
+                        useBestFeaturesTest=useBestFeaturesTest,
+                        subject=sub,
+                        worstFeatures=worstFeatures,
+                    )
+                else:
+                    mDataListCalm = None
+                    # fmetDict["allSame"].addCalmTrials(mDataListCalm)
             allResultsPerSubject = []
             # For loop of each combination of features
             # Training a SVM using each one and then saving the result
@@ -1252,8 +1508,13 @@ def main():
                     useOVR,
                     fmetDict,
                     sub,
+                    data_testC,
+                    data_trainC,
+
                 )
-                for data_train, data_test, labels_train, labels_test, name in mDataList
+                for [data_train, data_test, labels_train, labels_test, name],
+                [data_trainC, data_testC, labels_trainC, labels_testC,
+                    nameC] in zip(mDataList, mDataListCalm)
             )
 
             # Creating testInfo
@@ -1493,7 +1754,10 @@ def onlyCreateFeaturesFunction(
         averageBaseline = True
         correctedExists = False
         if correctedExists is False:
-            baseLineFolderNames = f"myOwnBaseline{testNameVersion}"
+            if "Calm" in saveFolderName:
+                baseLineFolderNames = f"myOwnCalmBaseline{testNameVersion}"
+            else:
+                baseLineFolderNames = f"myOwnBaseline{testNameVersion}"
             bClassDict[f"{sub}"] = baseLineCorrection(
                 subject=sub,
                 sampling_rate=sampling_rate,

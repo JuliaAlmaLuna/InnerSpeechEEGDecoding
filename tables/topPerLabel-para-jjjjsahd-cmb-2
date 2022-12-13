@@ -1,5 +1,5 @@
-,Acc,Sub,Feat,Kernel,C,Label,Paradigm
-0,0.8,1,fftData_BC_ifftmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1_&_fftData_BCmyOwnTestSadAngryHappyDisgustedSecondmyDataAvg20SmallBaselines1,linear,2.5,Sad,jjjjsahd
-9,0.82,1,gausData2_GR_CVmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1_&_stftData_GR_CVmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1,rbf,2.5,Angry,jjjjsahd
-18,0.8,1,fftData_BC_ifftmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1_&_stftDatamyOwnTestSadAngryHappyDisgustedSecondmyDataAvg20SmallBaselines1,linear,2.5,Happy,jjjjsahd
-27,0.85,1,fftDatamyOwnTestSadAngryHappyDisgustedSecondmyDataAvg20SmallBaselines1_&_stftDatamyOwnTestSadAngryHappyDisgustedSecondmyDataAvg20SmallBaselines1,linear,2.5,Disgusted,jjjjsahd
+,Acc,Sub,Feat,Kernel,C,Diff,Label,Paradigm
+0,0.8,1,fftData_BC_ifftThird_&_fftData_BCSecond,linear,2.5,0.05754235791568309,Sad,jjjjsahd
+9,0.82,1,gausData2_GR_CVThird_&_stftData_GR_CVThird,rbf,2.5,0.010397508877088565,Angry,jjjjsahd
+18,0.8,1,fftData_BC_ifftThird_&_stftDataSecond,linear,2.5,0.05062260688178999,Happy,jjjjsahd
+27,0.85,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.1952739272177637,Disgusted,jjjjsahd

@@ -1,5 +1,5 @@
-,Acc,Sub,Feat,Kernel,C,Label,Paradigm
-0,0.77,1,stftData_GRmyOwnTestSadAngryHappyDisgustedSecondmyDataAvg20SmallBaselines1,sigmoid,2.5,Sad,jjjjsahd
-9,0.74,1,stftData_GR_BCmyOwnTestSadAngryHappyDisgustedFirstmyDataAvg20SmallBaselines1,sigmoid,2.5,Angry,jjjjsahd
-18,0.76,1,stftData_GR_CVmyOwnTestSadAngryHappyDisgustedFirstmyDataAvg20SmallBaselines1,rbf,2.5,Happy,jjjjsahd
-27,0.81,1,stftDatamyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1,sigmoid,2.5,Disgusted,jjjjsahd
+,Acc,Sub,Feat,Kernel,C,Label,Diff,Paradigm
+0,0.77,1,stftData_GRSecond,sigmoid,2.5,0.0006876953663838373,1,jjjjsahd
+9,0.74,1,stftData_GR_BCFirst,sigmoid,2.5,0.0,2,jjjjsahd
+18,0.76,1,stftData_GR_CVFirst,rbf,2.5,0.0,3,jjjjsahd
+27,0.81,1,stftDataThird,sigmoid,2.5,0.016425511788237188,4,jjjjsahd

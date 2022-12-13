@@ -374,11 +374,14 @@ class featureEClass:
 
     # Loading my own recorded data
     def loadOwnData(self, t_min, t_max, sampling_rate, twoDLabels, paradigms):
-        # words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
-        words = [["Up", 31], ["Down", 32], [
-            "Left", 33], ["Right", 34]]
-        # testName = "SadAngryHappyDisgusted/"
-        testName = "4UpDownLeftRight/"
+        words = [["Sad", 51], ["Angry", 52], ["Happy", 53], ["Disgusted", 54]]
+        if "Calm" in self.saveFolderName:
+            words = [["Happy", 53]]
+
+        # words = [["Up", 31], ["Down", 32], [
+        #     "Left", 33], ["Right", 34]]
+        testName = "SadAngryHappyDisgusted/"
+        # testName = "4UpDownLeftRight/"
         wordDict = dict(words)
         exgData, markerData = dl2(
             dataPath=f"{testName}", t_start=t_min, t_end=t_max, words=wordDict)

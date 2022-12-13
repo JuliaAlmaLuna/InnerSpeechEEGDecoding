@@ -27,6 +27,7 @@ class SvmMets:
         verbose=True,
         quickTest=False,
         holdOut=False,
+        calmTrials=None,
     ):
         print("new SvmMets")
         self.signAll = signAll
@@ -38,6 +39,7 @@ class SvmMets:
         self.hyperParams = None
         self.featCombos = []
         self.holdOut = holdOut
+        self.calmTrials = calmTrials
 
         if verbose is not True:
             import warnings
@@ -57,6 +59,10 @@ class SvmMets:
         This class handles SVM pipeline testing.
         Right now it is very janky!
         """
+
+    def addCalmTrials(self, calmTrialList):
+        self.calmTrials = calmTrialList
+        print("Added calmTrials")
 
     # Does not seem to improve much at the moment if at all! I think, some sore of early stopping is probably better.
     # or regularization
@@ -198,6 +204,8 @@ class SvmMets:
         degree=3,
         gamma="auto",
         C=1,
+        data_testC=None,
+        data_trainC=None
     ):
         # coefs=None,
         # goodData,
@@ -225,14 +233,25 @@ class SvmMets:
         # from sklearn import multioutput as multiO, create new class for multiOutput
         from sklearn.multiclass import OneVsRestClassifier
 
-        clf = OneVsRestClassifier(SVC(gamma=gamma,
-                                      kernel=kernel,
-                                      degree=degree,
-                                      verbose=False,
-                                      C=C,
-                                      cache_size=1800,
-                                      tol=self.tol,
-                                      ))
+        if data_testC is not None:
+            clf = OneVsRestClassifier(SVC(gamma=gamma,
+                                          kernel=kernel,
+                                          degree=degree,
+                                          verbose=False,
+                                          C=C,
+                                          cache_size=1800,
+                                          tol=self.tol,
+                                          probability=True
+                                          ))
+        else:
+            clf = OneVsRestClassifier(SVC(gamma=gamma,
+                                          kernel=kernel,
+                                          degree=degree,
+                                          verbose=False,
+                                          C=C,
+                                          cache_size=1800,
+                                          tol=self.tol,
+                                          ))
         if self.holdOut:
 
             sss = StratifiedShuffleSplit(1, train_size=0.66, test_size=0.33, random_state=1
@@ -253,7 +272,35 @@ class SvmMets:
 
         clf.fit(ndata_train, labels_train)
         scoresList = []
-        for ndata_test, labels_test in zip([ndata_test, ndata_test2], [labels_test, labels_test2]):
+
+        if data_testC is not None:
+            probsCalmData = clf.predict_proba(data_testC)
+            # print("Labels below")
+            # print(labels_test)
+            diffList = []
+            uniqueLabels = np.unique(labels_test)
+            for labelInd, label in enumerate(uniqueLabels):
+                indexes = np.where(labels_test == label)
+                probsLabeledData = clf.predict_proba(ndata_test[indexes])
+
+                diff = np.mean(
+                    probsLabeledData[:, labelInd]) - np.mean(probsCalmData[:, labelInd])
+                diffList.append(diff)
+            # # print(probsLabeledData)
+
+            # # print(probsCalmData)
+            # print("Calm Below")
+            # print(np.max(probsCalmData, axis=1))
+            # print("Prob labels below")
+            # print(np.max(probsLabeledData, axis=1))
+            probsLabeledData = clf.predict_proba(ndata_test)
+            diff = np.mean(np.max(probsLabeledData, axis=1)) - \
+                np.mean(np.max(probsCalmData, axis=1))
+            diffList.append(diff)
+
+            # print(diff)
+        for ndata_test, labels_test in zip([ndata_test, ndata_test2],
+                                           [labels_test, labels_test2]):
 
             predictions = clf.predict(ndata_test)
             correct = np.zeros(labels_test.shape)
@@ -278,99 +325,7 @@ class SvmMets:
             scoresList.append(scores)
 
         # correctamount / labels_test.shape[0]  # , coefs
-        return scoresList[0], scoresList[1]
-
-    def svmPipelineOVRHoldOutGPU(
-        self,
-        ndata_train,
-        ndata_test,
-        labels_train,
-        labels_test,
-        kernel="linear",
-        degree=3,
-        gamma="auto",
-        C=1,
-    ):
-        # coefs=None,
-        # goodData,
-        """
-        Pipeline using SVM
-
-        Args:
-            data_train (np.array): Training data for SVM pipeline
-            data_test (np.array): Test data for SVM pipeline
-            labels_train (np.array): Training labels for SVM pipeline
-            labels_test (np.array): Test labels for SVM pipeline
-            kernel (str, optional): What kernel the SVM pipeline should use. Defaults to "linear".
-            degree (int, optional): Degree of SVM pipeline. Defaults to 3.
-            gamma (str, optional): Gamma of SVM pipeline. Defaults to "auto".
-            C (int, optional): Learning coeffecient for SVM Pipeline. Defaults to 1.
-            coefs (_type_, optional): When SelectKBest is used, these are its coefficients
-            . Defaults to None.
-
-        Returns:
-            _type_: _description_
-        """
-        # if coefs is None:
-        #     coefs = np.zeros([1, ndata_train.shape[1]])
-
-        # from sklearn import multioutput as multiO, create new class for multiOutput
-        from sklearn.multiclass import OneVsRestClassifier
-
-        clf = OneVsRestClassifier(SVC(gamma=gamma,
-                                      kernel=kernel,
-                                      degree=degree,
-                                      verbose=False,
-                                      C=C,
-                                      cache_size=1800,
-                                      tol=self.tol,
-                                      ))
-        if self.holdOut:
-
-            sss = StratifiedShuffleSplit(1, train_size=0.66, test_size=0.33, random_state=1
-                                         )
-
-            for train_index, test_index in sss.split(
-                X=np.zeros(labels_test.shape[0]), y=labels_test
-            ):
-                ndata_test2 = ndata_test[test_index]
-                ndata_test = ndata_test[train_index]
-                labels_test2 = labels_test[test_index]
-                labels_test = labels_test[train_index]
-        else:
-            ndata_test2 = ndata_test
-            ndata_test = ndata_test
-            labels_test2 = labels_test
-            labels_test = labels_test
-
-        clf.fit(ndata_train, labels_train)
-        scoresList = []
-        for ndata_test, labels_test in zip([ndata_test, ndata_test2], [labels_test, labels_test2]):
-
-            predictions = clf.predict(ndata_test)
-            correct = np.zeros(labels_test.shape)
-            correctamount = 0
-            # print(clf.score(ndata_test, labels_test))
-            # print(clf.decision_function(ndata_train))
-            # print(f"Labels test : {labels_test}")
-            # print(f"Predictions test : {predictions}")
-            for nr, pred in enumerate(predictions, 0):
-                if pred == labels_test[nr]:
-                    correct[nr] = 1
-                    correctamount += 1
-            sepScores1 = self.scoresSepLabels(clf, ndata_test, labels_test)
-            sepScores = self.scoresSepLabels2(clf, ndata_test, labels_test)
-
-            score = clf.score(ndata_test, labels_test)
-            scores = []
-            scores.append(score)
-            for sepscore in sepScores:
-                scores.append(sepscore)
-            # print(sepScores)
-            scoresList.append(scores)
-
-        # correctamount / labels_test.shape[0]  # , coefs
-        return scoresList[0], scoresList[1]
+        return scoresList[0], scoresList[1], diffList
 
     def svmPipelineOVR(
         self,
@@ -558,12 +513,20 @@ class SvmMets:
         labels_test,
         name,
         kernels=["linear", "rbf", "sigmoid"],
+        data_testC=None,
+        data_trainC=None,
     ):
         scaler = StandardScaler()
         scaler = scaler.fit(data_train)
 
         ndata_train = scaler.transform(data_train)
         ndata_test = scaler.transform(data_test)
+
+        # if "stftData" not in name:
+        #     return np.array([name, 0, "linear", 2.5, 0], dtype=object)
+        scaler = StandardScaler()
+        scaler = scaler.fit(data_trainC)
+        ndata_testC = scaler.transform(data_testC)
         # print("Shuffling")
         # np.random.shuffle(labels_train)
         # print(labels_train.shape)
@@ -582,7 +545,7 @@ class SvmMets:
             if kernel == "linear":
                 c = clist[0]
                 for degree in range(1, 2):
-                    res, hres = self.svmPipelineOVRHoldOut(
+                    res, hres, diff = self.svmPipelineOVRHoldOut(
                         ndata_train,
                         ndata_test,
                         labels_train,
@@ -591,6 +554,7 @@ class SvmMets:
                         degree=degree,
                         kernel=kernel,
                         C=c,
+                        data_testC=ndata_testC,
                         # coefs=coefs,
                     )
                     if self.verbose:
@@ -599,12 +563,12 @@ class SvmMets:
                                 degree, kernel, (c * 100 // 10) / 10, res
                             )
                         )
-                    allResults.append([name, res, kernel, c, hres])
+                    allResults.append([name, res, kernel, c, hres, diff])
 
             else:
                 for c in clist:
                     for gamma in ["auto"]:
-                        res, hres = self.svmPipelineOVRHoldOut(
+                        res, hres, diff = self.svmPipelineOVRHoldOut(
                             ndata_train,
                             ndata_test,
                             labels_train,
@@ -614,6 +578,7 @@ class SvmMets:
                             kernel=kernel,
                             gamma=gamma,
                             C=c,
+                            data_testC=ndata_testC,
                         )
                         if self.verbose:
                             print(
@@ -621,7 +586,7 @@ class SvmMets:
                                     gamma, kernel, (c * 100 // 10) / 10, res[0]
                                 )
                             )
-                        allResults.append([name, res, kernel, c, hres])
+                        allResults.append([name, res, kernel, c, hres, diff])
 
         # coefs = np.reshape(coefs, [128, -1])
         # hyperParams = []

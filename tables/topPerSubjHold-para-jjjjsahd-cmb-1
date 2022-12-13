@@ -1,5 +1,5 @@
-,Acc,Sub,Feat,Kernel,C,Label,Paradigm
-0,0.7,1,fftData_BC_ifftmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1,rbf,2.5,Sad,jjjjsahd
-9,0.69,1,fftData_BC_ifftmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1,rbf,2.5,Angry,jjjjsahd
-18,0.76,1,fftData_BC_ifftmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1,rbf,2.5,Happy,jjjjsahd
-27,0.77,1,fftData_BC_ifftmyOwnTestSadAngryHappyDisgustedThirdmyDataAvg20SmallBaselines1,rbf,2.5,Disgusted,jjjjsahd
+,Acc,Sub,Feat,Kernel,C,Diff,Label,Paradigm
+0,0.7,1,fftData_BC_ifftThird,rbf,2.5,0.0,Sad,jjjjsahd
+9,0.69,1,fftData_BC_ifftThird,rbf,2.5,0.0,Angry,jjjjsahd
+18,0.76,1,fftData_BC_ifftThird,rbf,2.5,0.0,Happy,jjjjsahd
+27,0.77,1,fftData_BC_ifftThird,rbf,2.5,0.0,Disgusted,jjjjsahd
