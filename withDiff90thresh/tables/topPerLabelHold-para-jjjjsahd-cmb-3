@@ -1,0 +1,6 @@
+,Acc,Sub,Feat,Kernel,C,Diff,Label,Paradigm
+0,0.74,1,stftData_GRThird_&_fftData_BC_CVThird_&_fftData_BC_ifft_CVThird,rbf,2.5,0.85,Sad,jjjjsahd
+9,0.75,1,normData_GR_BC_CVThird_&_stftData_GR_CVThird_&_stftData_GR_BCSecond,rbf,2.5,0.7,Angry,jjjjsahd
+18,0.74,1,fftData_BCFirst_&_stftData_GR_CVFirst_&_stftData_GRSecond,rbf,2.5,0.78,Happy,jjjjsahd
+27,0.8,1,gausData2_GR_CVFirst_&_stftData_GR_CVFirst_&_stftDataSecond,linear,2.5,0.84,Disgusted,jjjjsahd
+36,0.67,1,normData_GRThird_&_stftData_GR_CVThird_&_stftData_GR_BCSecond,rbf,2.5,0,None,jjjjsahd

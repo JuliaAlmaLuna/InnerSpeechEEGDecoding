@@ -1,5 +1,5 @@
 ,Acc,Sub,Feat,Kernel,C,Diff,Label,Paradigm
-0,0.81,1,gausData2_GR_CV_BCThird_&_stftDataSecond,sigmoid,2.5,0.011431313994567963,Sad,jjjjsahd
-9,0.73,1,gausData2_GR_CV_BCThird_&_stftDataSecond,sigmoid,2.5,0.0,Angry,jjjjsahd
-18,0.74,1,gausData2_GR_CV_BCThird_&_stftDataSecond,sigmoid,2.5,0.023280607870600555,Happy,jjjjsahd
-27,0.79,1,gausData2_GR_CV_BCThird_&_stftDataSecond,sigmoid,2.5,0.07323786192535338,Disgusted,jjjjsahd
+0,0.69,1,fftDataThird_&_fftData_BCSecond,linear,2.5,0.0,Sad,jjjjsahd
+9,0.76,1,fftDataThird_&_fftData_BCSecond,linear,2.5,0.0,Angry,jjjjsahd
+18,0.63,1,fftDataThird_&_fftData_BCSecond,linear,2.5,0.0,Happy,jjjjsahd
+27,0.84,1,fftDataThird_&_fftData_BCSecond,linear,2.5,0.14502959355028308,Disgusted,jjjjsahd

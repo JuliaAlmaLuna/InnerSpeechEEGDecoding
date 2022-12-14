@@ -521,12 +521,14 @@ def main():
     # "myOwnTestAvg2" # Name tests, myOwnTestUpDownLeftRight instead. or myOwnTestSadAngry...
     # testName = "4UpDownLeftRight"
     testName = "myOwnTestSadAngryHappyDisgusted"
+    bestFeaturesFolder = "withDiff90thresh/"
     # testName = "myOwnTestUpDownLeftRight"
-    repNr = 7
+    repNr = 5
     useBestFeaturesTest = True
     useBestFeaturesPerLabel = True
+    useWorstFeatures = True
     useHoldBest = False
-    maxCombinationAmount = 2
+    maxCombinationAmount = 3
     sameSizeBestFeat = False
     holdOut = True
     useMasked = False
@@ -819,20 +821,22 @@ def main():
         if useBestFeaturesPerLabel:
             if useHoldBest:
                 bestFeatures = np.load(
-                    f"topHoldFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
+                    f"{bestFeaturesFolder}topHoldFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
             else:
                 bestFeatures = np.load(
-                    f"topFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
+                    f"{bestFeaturesFolder}topFeaturesPerLabel/{bestFeaturesSaveFile}", allow_pickle=True)
         else:
             bestFeatures = np.load(
-                f"topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
+                f"{bestFeaturesFolder}topFeatures/{bestFeaturesSaveFile}", allow_pickle=True)
         worstFeatures = np.load(
-            f"worstFeatures/{worstFeaturesSaveFile}", allow_pickle=True)
+            f"{bestFeaturesFolder}worstFeatures/{worstFeaturesSaveFile}", allow_pickle=True)
         print(bestFeatures)
         print(bestFeatures.shape)
         print(worstFeatures)
     else:
         bestFeatures = None
+        worstFeatures = None
+    if useWorstFeatures is False:
         worstFeatures = None
 
     featureListIndex = np.arange(len(featureList))

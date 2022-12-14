@@ -233,7 +233,7 @@ class SvmMets:
         # from sklearn import multioutput as multiO, create new class for multiOutput
         from sklearn.multiclass import OneVsRestClassifier
 
-        if data_testC is not None:
+        if data_trainC is not None:
             clf = OneVsRestClassifier(SVC(gamma=gamma,
                                           kernel=kernel,
                                           degree=degree,
@@ -273,8 +273,9 @@ class SvmMets:
         clf.fit(ndata_train, labels_train)
         scoresList = []
 
-        if data_testC is not None:
-            probsCalmData = clf.predict_proba(data_testC)
+        if data_trainC is not None:
+            probsCalmData = clf.predict_proba(data_trainC)
+            probsCalmDataTest = clf.predict_proba(data_testC)
             # print("Labels below")
             # print(labels_test)
             diffList = []
@@ -282,9 +283,14 @@ class SvmMets:
             for labelInd, label in enumerate(uniqueLabels):
                 indexes = np.where(labels_test == label)
                 probsLabeledData = clf.predict_proba(ndata_test[indexes])
-
+                probsCalmData = np.sort(probsCalmData, axis=1)
+                probsLabeledData = np.sort(probsLabeledData, axis=1)
+                highestToSecondHighestLabeled = probsLabeledData[:, -
+                                                                 1] - probsLabeledData[:, -2]
+                highestToSecondHighestCalm = probsCalmData[:, -
+                                                           1] - probsCalmData[:, -2]
                 diff = np.mean(
-                    probsLabeledData[:, labelInd]) - np.mean(probsCalmData[:, labelInd])
+                    highestToSecondHighestLabeled) - np.mean(highestToSecondHighestCalm)
                 diffList.append(diff)
             # # print(probsLabeledData)
 
@@ -294,15 +300,40 @@ class SvmMets:
             # print("Prob labels below")
             # print(np.max(probsLabeledData, axis=1))
             probsLabeledData = clf.predict_proba(ndata_test)
-            diff = np.mean(np.max(probsLabeledData, axis=1)) - \
-                np.mean(np.max(probsCalmData, axis=1))
+            probsCalmData = np.sort(probsCalmData, axis=1)
+            probsCalmDataTest = np.sort(probsCalmDataTest, axis=1)
+
+            probsLabeledData = np.sort(probsLabeledData, axis=1)
+            highestToSecondHighestLabeled = probsLabeledData[:, -
+                                                             1] - probsLabeledData[:, -2]
+            highestToSecondHighestCalm = probsCalmData[:, -
+                                                       1] - probsCalmData[:, -2]
+            highestToSecondHighestCalmTest = probsCalmDataTest[:, -
+                                                               1] - probsCalmDataTest[:, -2]
+            diff = np.mean(
+                highestToSecondHighestLabeled) - np.mean(highestToSecondHighestCalm)
             diffList.append(diff)
+            diffThresh = np.percentile(highestToSecondHighestCalm, 90)
+
+            highestToSecondHighestCalmTest[highestToSecondHighestCalmTest > diffThresh] = 0
+            correctCalmTest = np.count_nonzero(
+                highestToSecondHighestCalmTest) / len(highestToSecondHighestCalmTest)
+
+            # probsLabeledData = clf.predict_proba(ndata_test)
+            # diff = np.mean(np.max(probsLabeledData, axis=1)) - \
+            #     np.mean(np.max(probsCalmData, axis=1))
 
             # print(diff)
         for ndata_test, labels_test in zip([ndata_test, ndata_test2],
                                            [labels_test, labels_test2]):
 
             predictions = clf.predict(ndata_test)
+            probsLabeledData = clf.predict_proba(ndata_test)
+            probsLabeledDataSorted = np.sort(probsLabeledData, axis=1)
+            highestToSecondHighestLabeled = probsLabeledDataSorted[:, -
+                                                                   1] - probsLabeledDataSorted[:, -2]
+            BadPredictions = np.where(
+                highestToSecondHighestLabeled < diffThresh)[0]
             correct = np.zeros(labels_test.shape)
             correctamount = 0
             # print(clf.score(ndata_test, labels_test))
@@ -313,10 +344,17 @@ class SvmMets:
                 if pred == labels_test[nr]:
                     correct[nr] = 1
                     correctamount += 1
-            sepScores1 = self.scoresSepLabels(clf, ndata_test, labels_test)
-            sepScores = self.scoresSepLabels2(clf, ndata_test, labels_test)
-
+            # sepScores1 = self.scoresSepLabels(clf, ndata_test, labels_test)
+            sepScores = self.scoresSepLabels2(
+                clf, ndata_test, labels_test, BadPredictions)
+            sepScores.append(correctCalmTest)
+            wrongCorrect = 0
+            for label, pred, lInd in zip(labels_test, predictions, np.arange(len(labels_test))):
+                if lInd in BadPredictions and label == pred:
+                    wrongCorrect += 1
+            wrongCorrectPercent = wrongCorrect / len(labels_test)
             score = clf.score(ndata_test, labels_test)
+            score = score - wrongCorrectPercent
             scores = []
             scores.append(score)
             for sepscore in sepScores:
@@ -403,17 +441,18 @@ class SvmMets:
             scoresSep.append(clf.score(data[indexes], labels[indexes]))
         return scoresSep
 
-    def scoresSepLabels2(self, clf, data, labels):
+    def scoresSepLabels2(self, clf, data, labels, badPredictions):
         uniqueLabels = np.unique(labels)
         scoresSep = []
         predLabels = clf.predict(data)
         for label in uniqueLabels:
             correct = 0
             total = 0
-            for plabel, tlabel in zip(predLabels, labels):
+            for plabel, tlabel, ind in zip(predLabels, labels, np.arange(len(labels))):
                 if tlabel == label:
                     if plabel == label:
-                        correct += 1
+                        if ind not in badPredictions:
+                            correct += 1
                 else:
                     if plabel != label:
                         correct += 1
@@ -527,6 +566,8 @@ class SvmMets:
         scaler = StandardScaler()
         scaler = scaler.fit(data_trainC)
         ndata_testC = scaler.transform(data_testC)
+        ndata_trainC = scaler.transform(data_trainC)
+
         # print("Shuffling")
         # np.random.shuffle(labels_train)
         # print(labels_train.shape)
@@ -555,6 +596,7 @@ class SvmMets:
                         kernel=kernel,
                         C=c,
                         data_testC=ndata_testC,
+                        data_trainC=ndata_trainC,
                         # coefs=coefs,
                     )
                     if self.verbose:
@@ -579,6 +621,7 @@ class SvmMets:
                             gamma=gamma,
                             C=c,
                             data_testC=ndata_testC,
+                            data_trainC=ndata_trainC,
                         )
                         if self.verbose:
                             print(

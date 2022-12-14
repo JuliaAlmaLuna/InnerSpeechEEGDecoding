@@ -1,5 +1,5 @@
 ,Acc,Sub,Feat,Kernel,C,Diff,Label,Paradigm
-0,0.74,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.005148380407174116,Sad,jjjjsahd
-9,0.78,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.0,Angry,jjjjsahd
-18,0.73,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.0,Happy,jjjjsahd
-27,0.85,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.1952739272177637,Disgusted,jjjjsahd
+0,0.74,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.008453538547139778,Sad,jjjjsahd
+9,0.78,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.004628321495885035,Angry,jjjjsahd
+18,0.73,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.002143866371226328,Happy,jjjjsahd
+27,0.85,1,fftDataSecond_&_stftDataSecond,linear,2.5,0.1615842578335339,Disgusted,jjjjsahd

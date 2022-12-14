@@ -1,2 +1,2 @@
 ,Acc,Sub,Feat,Kernel,C,Diff,Label,Paradigm
-0,0.53,1,gausData2_GR_CV_BCThird_&_stftDataSecond,sigmoid,2.5,0.0,4,jjjjsahd
+0,0.46,1,fftDataThird_&_fftData_BCSecond,linear,2.5,0.02844425956474181,4,jjjjsahd
